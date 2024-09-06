@@ -31,16 +31,18 @@ namespace forest
     }
 
     [System.Serializable]
-    public class Tile
+    public class PlayfieldTile
     {
         public TileType tileType = TileType.DEFAULT;
 
-        [System.NonSerialized] public ulong id;
+        public int tileID;  // 0 means no ID has been assigned
+        public int unitID;  // 0 means no ID association with anything
 
-        public Tile(TileType tileType)
+        public PlayfieldTile(TileType tileType)
         {
             this.tileType = tileType;
-            id = 0;
+            tileID = 1;
+            unitID = 0;
         }
     }
 }

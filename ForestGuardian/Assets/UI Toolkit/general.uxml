@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/general.uss?fileID=7433441132597879392&amp;guid=f216915121ef7374c8c87ab5364a735a&amp;type=3#general" />
+    <ui:VisualElement style="flex-grow: 1;">
+        <ui:VisualElement name="banner" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0.21); flex-basis: 20%; align-items: center; align-self: stretch; bottom: 259px; top: 77px; width: auto; -unity-background-scale-mode: stretch-to-fill; position: absolute; left: 40px; right: 40px; transition-duration: 1s, 1s; transform-origin: center; max-height: 50px; min-height: 50px; transition-property: translate, translate; transition-delay: 0s, 2s; translate: 0 0;">
+            <ui:Label tabindex="-1" text="current state here" parse-escape-sequences="true" display-tooltip-when-elided="true" name="bannerLabel" style="position: relative; left: 0; top: 0; right: 7px; bottom: -44px; -unity-text-align: upper-center; flex-shrink: 0; flex-basis: auto; transition-property: width; transition-duration: 1s; font-size: 22px;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
