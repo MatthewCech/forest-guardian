@@ -728,6 +728,7 @@ MonoBehaviour:
   maxSize: 3
   moveSpeed: 2
   attackRange: 2
+  associatedDataID: 0
 --- !u!61 &7397799963576805088
 BoxCollider2D:
   m_ObjectHideFlags: 0

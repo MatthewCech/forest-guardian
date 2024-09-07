@@ -197,7 +197,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d65b8a4f9b39f094bb2f1cf60a732f3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveTemplate: {fileID: 6136525596022710436, guid: 891fe58b212c85e4d9a238b3989b473c, type: 3}
+  moveTemplate: {fileID: 4283725978537098870, guid: 891fe58b212c85e4d9a238b3989b473c, type: 3}
   tileTemplates:
   - tileTemplate: {fileID: 1420120552449842933, guid: 2504cac9ccd300644a23d29d20a99a29, type: 3}
     tileType: 1

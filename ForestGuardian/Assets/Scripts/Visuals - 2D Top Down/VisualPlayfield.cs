@@ -10,22 +10,22 @@ namespace forest
         [Range(0f, 1f)][SerializeField] private float gridSpacing = 0.1f;
 
         // Internal tracking
-        private List<VisualSpawnedObjectTracker> tileTracking;
-        private List<VisualSpawnedObjectTracker> unitTracking;
-        private List<GameObject> moveVisuals;
+        private List<Tile> tileTracking;
+        private List<Unit> unitTracking;
+        private List<Indicator> moveVisuals;
 
         // Base parent object
         private Transform spawnParent;
-        private Lookup lookup;
+        private VisualLookup lookup;
 
         private void Awake()
         {
-            tileTracking = new List<VisualSpawnedObjectTracker>();
-            unitTracking = new List<VisualSpawnedObjectTracker>();
-            moveVisuals = new List<GameObject>();
+            tileTracking = new List<Tile>();
+            unitTracking = new List<Unit>();
+            moveVisuals = new List<Indicator>();
         }
 
-        public void Initialize(Lookup lookup)
+        public void Initialize(VisualLookup lookup)
         {
             this.lookup = lookup;
         }
@@ -45,9 +45,9 @@ namespace forest
 
             for (int i = 0; i < tileTracking.Count; i++)
             {
-                VisualSpawnedObjectTracker cur = tileTracking[i];
-                float xCur = cur.spawned.transform.position.x;
-                float yCur = cur.spawned.transform.position.y;
+                Tile cur = tileTracking[i];
+                float xCur = cur.transform.position.x;
+                float yCur = cur.transform.position.y;
 
                 xMin = Mathf.Min(xCur, xMin);
                 yMin = Mathf.Min(yCur, yMin);
@@ -65,7 +65,7 @@ namespace forest
                 return;
             }
 
-            foreach(GameObject visual in moveVisuals)
+            foreach(Indicator visual in moveVisuals)
             {
                 GameObject.Destroy(visual);
             }
@@ -73,7 +73,7 @@ namespace forest
             moveVisuals.Clear();
         }
 
-        public void ShowMove(PlayfieldUnit unit)
+        public void ShowMove(PlayfieldUnit unit, Playfield playfield)
         {
             Vector2Int headLocation = unit.locations[unit.headIndex];
 
@@ -84,17 +84,25 @@ namespace forest
             {
                 for(int y = 0; y < moveSquareWidth; ++y)
                 {
-                    ShowMove(moveSquareCorner.x - x, moveSquareCorner.y - y);
+                    int modX = moveSquareCorner.x - x;
+                    int modY = moveSquareCorner.y - y;
+                    
+                    ShowMove(modX, modY, playfield);
                 }
             }
         }
 
-        public void ShowMove(int x, int y)
+        public void ShowMove(int x, int y, Playfield playfield)
         {
-            GameObject movePreview = Instantiate(lookup.moveTemplate);
+            Indicator movePreview = Instantiate(lookup.moveTemplate);
+            PlayfieldTile tile = playfield.world.Get(x, y);
+            movePreview.associatedTile = tile;
+            movePreview.OverlaidPosition = new Vector2Int(x, y);
+
             float xPos = Offset(x);
             float yPos = Offset(y);
             movePreview.transform.position = new Vector2(xPos, -yPos);
+
             moveVisuals.Add(movePreview);
         }
 
@@ -141,11 +149,9 @@ namespace forest
 
             Tile instance = GameObject.Instantiate(template, spawnParent);
             instance.transform.position = new Vector3(x, -y, 0);
+            instance.associatedDataID = data.id;
 
-            VisualSpawnedObjectTracker tile = new VisualSpawnedObjectTracker(data.tileID);
-            tile.spawned = instance.gameObject;
-
-            tileTracking.Add(tile);
+            tileTracking.Add(instance);
         }
 
         public void CreatUnit(PlayfieldUnit data)
@@ -158,14 +164,13 @@ namespace forest
             {
                 Vector2Int curLocation = data.locations[i];
                 Unit instance = GameObject.Instantiate(template, spawnParent);
+                instance.associatedDataID = data.id;
 
                 float x = Offset(curLocation.x);
                 float y = Offset(curLocation.y);
                 instance.transform.position = new Vector3(x, -y, 0);
 
-                VisualSpawnedObjectTracker unit = new VisualSpawnedObjectTracker(data.id);
-                unit.spawned = instance.gameObject;
-                unitTracking.Add(unit);
+                unitTracking.Add(instance);
             }
 
 

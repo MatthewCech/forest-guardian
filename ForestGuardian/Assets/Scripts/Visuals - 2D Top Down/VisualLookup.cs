@@ -6,9 +6,9 @@ using static forest.VisualPlayfield;
 
 namespace forest
 {
-    public class Lookup : MonoBehaviour
+    public class VisualLookup : MonoBehaviour
     {
-        public GameObject moveTemplate;
+        public Indicator moveTemplate;
 
         public List<TileInfo> tileTemplates;
         public List<UnitInfo> unitTemplates;

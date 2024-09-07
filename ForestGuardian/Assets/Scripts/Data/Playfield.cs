@@ -137,6 +137,7 @@ namespace forest
                     char cur = rows[y][x];
                     int num = cur - '0';
                     PlayfieldTile newTile = new PlayfieldTile((TileType)num);
+                    newTile.id = playfield.GetNextID();
                     toFill.Set(x, y, newTile);
                 }
             }
@@ -152,7 +153,7 @@ namespace forest
                 for (int j = 0; j < cur.locations.Count; ++j)
                 {
                     Vector2Int curLocation = cur.locations[j];
-                    toCorrect.Get(curLocation.x, curLocation.y).unitID = cur.id;
+                    toCorrect.Get(curLocation.x, curLocation.y).associatedUnitID = cur.id;
                 }
             }
         }

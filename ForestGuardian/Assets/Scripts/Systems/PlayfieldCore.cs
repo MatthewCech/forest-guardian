@@ -10,7 +10,7 @@ namespace forest
 {
     public class PlayfieldCore : MonoBehaviour
     {
-        [SerializeField] private Lookup lookup;
+        [SerializeField] private VisualLookup lookup;
         [SerializeField] private Playfield playfield;
         [SerializeField] private VisualPlayfield visualizerPlayfield;
         [SerializeField] private Camera mainCam;
@@ -76,7 +76,7 @@ namespace forest
 
         private IEnumerator Startup()
         {
-            yield return new WaitForSeconds(1);
+            yield return null;// new WaitForSeconds(0.5f);
             SetState(TurnState.PrepareTurn);
         }
 
@@ -96,7 +96,7 @@ namespace forest
         private IEnumerator PlayerMove()
         {
             PlayfieldUnit playerTmp = playfield.units[0];
-            visualizerPlayfield.ShowMove(playerTmp);
+            visualizerPlayfield.ShowMove(playerTmp, playfield);
             yield return null;
         }
 
