@@ -77,27 +77,69 @@ namespace forest
         {
             Vector2Int headLocation = unit.locations[unit.headIndex];
 
-            Vector2Int moveSquareCorner = new Vector2Int(headLocation.x + unit.movesRemaining, headLocation.y + unit.movesRemaining);
-            int moveSquareWidth = unit.movesRemaining * 2 + 1;
+            DisplayMovePreviewDiamond(unit, playfield, headLocation);
 
-            for (int x = 0; x < moveSquareWidth; ++x)
+            TryShowMove(headLocation.x - 1, headLocation.y, playfield, unit, lookup.moveInteractionTemplate);
+            TryShowMove(headLocation.x + 1, headLocation.y, playfield, unit, lookup.moveInteractionTemplate);
+            TryShowMove(headLocation.x, headLocation.y - 1, playfield, unit, lookup.moveInteractionTemplate);
+            TryShowMove(headLocation.x, headLocation.y + 1, playfield, unit, lookup.moveInteractionTemplate);
+        }
+
+        private void DisplayMovePreviewDiamond(PlayfieldUnit unit, Playfield playfield, Vector2Int headLocation)
+        {
+            Vector2Int moveSquareCorner = new Vector2Int(headLocation.x + unit.movesRemaining, headLocation.y + unit.movesRemaining);
+
+            int moveAreaWidth = unit.movesRemaining * 2 + 1; // Guarenteed to be odd
+            int halfWidth = moveAreaWidth / 2;
+
+            for (int x = 0; x < moveAreaWidth; ++x)
             {
-                for(int y = 0; y < moveSquareWidth; ++y)
+                for (int y = 0; y < moveAreaWidth; ++y)
                 {
                     int modX = moveSquareCorner.x - x;
                     int modY = moveSquareCorner.y - y;
-                    
-                    ShowMove(modX, modY, playfield);
+
+                    // Prevent wrapping around the map, we just don't want to deal with that now.
+                    if (modX < 0 || modY < 0)
+                    {
+                        continue;
+                    }
+
+                    // Prevent showing preview on head specifically.
+                    if(modX == headLocation.x && modY == headLocation.y)
+                    {
+                        continue;
+                    }
+
+                    if (x >= Mathf.Abs(moveAreaWidth - y - 1 - halfWidth)
+                    && moveAreaWidth - x > Mathf.Abs(moveAreaWidth - y - 1 - halfWidth))
+                    {
+                        TryShowMove(modX, modY, playfield, unit, lookup.movePreviewTemplate);
+                    }
                 }
             }
         }
 
-        public void ShowMove(int x, int y, Playfield playfield)
+        private void TryShowMove(int x, int y, Playfield playfield, PlayfieldUnit associatedUnit, Indicator indicatorTempalte)
         {
-            Indicator movePreview = Instantiate(lookup.moveTemplate);
+            EnsureParentObjectExists();
+
             PlayfieldTile tile = playfield.world.Get(x, y);
+
+            // Explode on DEFAULT case. That's a bad tile, and it should be known about!
+            UnityEngine.Assertions.Assert.IsFalse(tile.tileType == TileType.DEFAULT, "Default tiles are an invalid type of tile, and are not allowed for gameplay. Ensure all tiles are properly initialized.");
+
+            // No impassable tiles!
+            if(tile.tileType == TileType.Impassable || tile.tileType == TileType.Nothing)
+            {
+                return;
+            }
+
+            Indicator movePreview = Instantiate(indicatorTempalte, spawnParent);
+            PlayfieldUnit unit = associatedUnit;
             movePreview.associatedTile = tile;
-            movePreview.OverlaidPosition = new Vector2Int(x, y);
+            movePreview.ownerUnit = unit;
+            movePreview.overlaidPosition = new Vector2Int(x, y);
 
             float xPos = Offset(x);
             float yPos = Offset(y);
@@ -141,6 +183,12 @@ namespace forest
             UpdateUnits(toDisplay);
         }
 
+        /// <summary>
+        /// Generate a tracked tile at a specified grid location
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="data"></param>
         public void CreateTile(float x, float y, PlayfieldTile data)
         {
             EnsureParentObjectExists();

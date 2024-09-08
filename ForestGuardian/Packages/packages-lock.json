@@ -292,6 +292,13 @@
       },
       "url": "https://packages.unity.com"
     },
+    "net.loam.utils": {
+      "version": "https://github.com/LoamNet/net.loam.package.utils.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "3a997aef44e352a197936da53584a735cb766bbf"
+    },
     "com.unity.modules.ai": {
       "version": "1.0.0",
       "depth": 0,

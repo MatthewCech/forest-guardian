@@ -8,7 +8,8 @@ namespace forest
 {
     public class VisualLookup : MonoBehaviour
     {
-        public Indicator moveTemplate;
+        public Indicator movePreviewTemplate;
+        public Indicator moveInteractionTemplate;
 
         public List<TileInfo> tileTemplates;
         public List<UnitInfo> unitTemplates;

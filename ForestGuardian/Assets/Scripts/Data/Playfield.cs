@@ -22,6 +22,34 @@ namespace forest
         {
             return nextID++;
         }
+
+        /// <summary>
+        /// Returns the first Unit with the specified ID, or null if no unit was found.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public bool TryGetUnit(int id, out PlayfieldUnit unit)
+        {
+            for (int i = 0; i < units.Count; i++)
+            {
+                PlayfieldUnit cur = units[i];
+                if (units[i].id == id)
+                {
+                    unit = cur;
+                    return true;
+                }
+            }
+
+            unit = null;
+            return false;
+        }
+
+        public PlayfieldUnit GetUnit(int id)
+        {
+            bool didFind = TryGetUnit(id, out PlayfieldUnit unit);
+            UnityEngine.Assertions.Assert.IsTrue(didFind, "A unit is expected.");
+            return unit;
+        }
     }
 
     public class PlayfieldUtils

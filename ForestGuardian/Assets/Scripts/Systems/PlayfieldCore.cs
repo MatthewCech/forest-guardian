@@ -4,7 +4,7 @@ using Unity.VisualScripting;
 using UnityEditor.Search;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static UnityEngine.UI.CanvasScaler;
+using Loam;
 
 namespace forest
 {
@@ -22,8 +22,11 @@ namespace forest
 
         void Start()
         {
-            playfield = PlayfieldUtils.BuildPlayfield(PlayfieldUtils.testFile);
+            Postmaster.Instance.Configure(PostmasterConfig.Default());
+            
 
+
+            playfield = PlayfieldUtils.BuildPlayfield(PlayfieldUtils.testFile);
             visualizerPlayfield.Initialize(lookup);
             visualizerPlayfield.DisplayAll(playfield);
 
@@ -64,11 +67,12 @@ namespace forest
                     break;
 
                 case TurnState.PlayerMove:
-                    StartCoroutine(PlayerMove());
-                    executeState = false; 
+                    PlayerMove();
                     break;
 
-                case TurnState.OpponentMove: break;
+                case TurnState.OpponentMove:
+                    executeState = false;
+                    break;
                 case TurnState.Victory: break;
                 case TurnState.Defeat: break;
             }
@@ -76,7 +80,7 @@ namespace forest
 
         private IEnumerator Startup()
         {
-            yield return null;// new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.33f);
             SetState(TurnState.PrepareTurn);
         }
 
@@ -93,11 +97,35 @@ namespace forest
             SetState(TurnState.PlayerMove);
         }
 
-        private IEnumerator PlayerMove()
+        // Lmao
+        private bool exitPlayerState = false;
+        private bool playerStateStartup = true;
+        private void PlayerMove()
         {
-            PlayfieldUnit playerTmp = playfield.units[0];
-            visualizerPlayfield.ShowMove(playerTmp, playfield);
-            yield return null;
+            // Eww eww ewwwwww get a proper state system, you - and do this on state enter
+            MessageSubscription sub = null;
+            if (playerStateStartup)
+            {
+                sub = Postmaster.Instance.Subscribe<MsgIndicatorClicked>(PlayerMove_MsgMoveTileClicked);
+                PlayfieldUnit playerTmp = playfield.units[0];
+                visualizerPlayfield.ShowMove(playerTmp, playfield);
+                playerStateStartup = false;
+            }
+
+            if(exitPlayerState)
+            {
+                sub?.Dispose();
+                exitPlayerState = false;
+                playerStateStartup = true;
+                SetState(TurnState.OpponentMove);
+            }
+        }
+        void PlayerMove_MsgMoveTileClicked(Message raw)
+        {
+            MsgIndicatorClicked msg = raw as MsgIndicatorClicked;
+            PlayfieldUnit unit = msg.indicator.ownerUnit;
+
+            --unit.movesRemaining;
         }
 
         private void SetState(TurnState newState)
