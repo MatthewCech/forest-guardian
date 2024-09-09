@@ -37,11 +37,43 @@ namespace forest
         public enum TurnState
         {
             Startup,
+
+            /// <summary>
+            /// Get everything ready for a turn
+            /// </summary>
             PrepareTurn,
+
+            /// <summary>
+            /// Player-controlled input! Yay!
+            /// </summary>
             PlayerMove,
+
+            /// <summary>
+            /// Computer play turn.
+            /// </summary>
             OpponentMove,
+
+            /// <summary>
+            /// Did someone win? Someone lose? something go on that needs correcting?
+            /// Some sort of end-of-turn logic? This is the place!
+            /// </summary>
+            EvaluateTurn,
+
+            /// <summary>
+            /// If the player won
+            /// </summary>
             Victory,
+
+            /// <summary>
+            /// If the player lost
+            /// </summary>
             Defeat,
+
+            /// <summary>
+            /// Clean up, we're done. Shut the scene down, recording and tucking
+            /// anything we need to away.
+            /// </summary>
+            Shutdown
         }
 
         private void Update()
@@ -50,10 +82,13 @@ namespace forest
             {
                 ProcessState(turnState);
             }
+
+            Postmaster.Instance.Upkeep();
         }
 
         public void ProcessState(TurnState state)
         {
+
             switch(state)
             {
                 case TurnState.Startup:
@@ -71,16 +106,41 @@ namespace forest
                     break;
 
                 case TurnState.OpponentMove:
+                    StartCoroutine(OpponentMove());
                     executeState = false;
                     break;
-                case TurnState.Victory: break;
-                case TurnState.Defeat: break;
+
+                case TurnState.EvaluateTurn:
+                    StartCoroutine(EvaluateTurn());
+                    executeState = false;
+                    break;
+
+                case TurnState.Victory:
+                    StartCoroutine(Victory());
+                    executeState = false;
+                    break;
+
+                case TurnState.Defeat:
+                    StartCoroutine(Defeat());
+                    executeState = false; 
+                    break;
+
+                case TurnState.Shutdown:
+                    StartCoroutine(Shutdown());
+                    executeState = false; 
+                    break;
             }
+        }
+        private void SetState(TurnState newState)
+        {
+            turnState = newState;
+            ui.rootVisualElement.Q<Label>("bannerLabel").text = turnState.ToString();
+            executeState = true;
         }
 
         private IEnumerator Startup()
         {
-            yield return new WaitForSeconds(0.33f);
+            yield return new WaitForSeconds(0.1f);
             SetState(TurnState.PrepareTurn);
         }
 
@@ -90,31 +150,80 @@ namespace forest
             {
                 PlayfieldUnit cur = playfield.units[i];
                 Unit unit = lookup.GetUnityByTag(cur.tag).unitTemplate;
-                cur.movesRemaining = unit.moveSpeed;
+                cur.movementBudget = unit.moveSpeed;
             }
 
             yield return null;
             SetState(TurnState.PlayerMove);
         }
 
-        // Lmao
+        /// <summary>
+        /// Want to see PlayerMove? Scroll down for the real one, it's horrid lol
+        /// </summary>
+        /// <returns></returns>
+        //private IEnumerator PlayerMove()
+        //{
+        //    yield return new WaitForSeconds(0.1f);
+        //    SetState(TurnState.OpponentMove);
+        //}
+
+        private IEnumerator OpponentMove()
+        {
+            yield return new WaitForSeconds(0.1f);
+            SetState(TurnState.EvaluateTurn);
+        }
+
+        private IEnumerator EvaluateTurn()
+        {
+            yield return new WaitForSeconds(0.1f);
+            SetState(TurnState.PrepareTurn);
+        }
+
+        private IEnumerator Victory()
+        {
+            yield return new WaitForSeconds(0.1f);
+            SetState(TurnState.PlayerMove);
+        }
+
+        private IEnumerator Defeat()
+        {
+            yield return new WaitForSeconds(0.1f);
+            SetState(TurnState.PlayerMove);
+        }
+
+        private IEnumerator Shutdown()
+        {
+            yield return new WaitForSeconds(0.1f);
+            throw new System.Exception("Signal for scene unload or something");
+        }
+
+
+
+
+
+
+        // Lol, lmao even.
         private bool exitPlayerState = false;
         private bool playerStateStartup = true;
+        MessageSubscription sub = null;
+
         private void PlayerMove()
         {
-            // Eww eww ewwwwww get a proper state system, you - and do this on state enter
-            MessageSubscription sub = null;
+            // TODO: Ewwww make a proper class based state system and do this on state enter
+            // Not the highest priority but a real important thing long term for sanity.
             if (playerStateStartup)
             {
                 sub = Postmaster.Instance.Subscribe<MsgIndicatorClicked>(PlayerMove_MsgMoveTileClicked);
-                PlayfieldUnit playerTmp = playfield.units[0];
+                // NOTE: Currently hardcoded. Need to select players piece by piece in the future.
+                PlayfieldUnit playerTmp = playfield.units[0]; 
                 visualizerPlayfield.ShowMove(playerTmp, playfield);
                 playerStateStartup = false;
             }
 
+            // TODO: See above TODO on class-based state system. 
             if(exitPlayerState)
             {
-                sub?.Dispose();
+                sub.Dispose();
                 exitPlayerState = false;
                 playerStateStartup = true;
                 SetState(TurnState.OpponentMove);
@@ -123,16 +232,35 @@ namespace forest
         void PlayerMove_MsgMoveTileClicked(Message raw)
         {
             MsgIndicatorClicked msg = raw as MsgIndicatorClicked;
+
+            if(msg.indicator.type != IndicatorType.ImmediateMove)
+            {
+                return;
+            }
+
             PlayfieldUnit unit = msg.indicator.ownerUnit;
+            int idToFind = msg.indicator.associatedTile.id;
+            bool success = playfield.TryGetTileXY(idToFind, out Vector2Int tilePos);
 
-            --unit.movesRemaining;
-        }
+            if(!success)
+            {
+                throw new System.Exception($"Tile with ID '{idToFind}' not found!");
+            }
 
-        private void SetState(TurnState newState)
-        {
-            turnState = newState;
-            ui.rootVisualElement.Q<Label>("bannerLabel").text = turnState.ToString();
-            executeState = true;
+            // Step the unit to the new place. Ensure this happens before visualizer update.
+            Utils.StepUnitTo(unit, playfield, tilePos, moveCost: 1);
+
+            visualizerPlayfield.UpdateUnits(playfield);
+            visualizerPlayfield.ShowMove(unit, playfield);
+
+            Debug.Log("Processed move click");
+
+            // NOTE: Check for going to next friendly movable target or just leave if no moves are allowed.
+            // For now, if no moves, we're done.
+            if (unit.movementBudget <= 0)
+            {
+                exitPlayerState = true;
+            }
         }
     }
 }

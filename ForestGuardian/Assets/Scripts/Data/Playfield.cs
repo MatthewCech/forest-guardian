@@ -50,6 +50,28 @@ namespace forest
             UnityEngine.Assertions.Assert.IsTrue(didFind, "A unit is expected.");
             return unit;
         }
+
+        public bool TryGetTileXY(int id, out Vector2Int loc)
+        {
+            int w = world.GetWidth();
+            int h = world.GetHeight();
+
+            for(int x = 0; x < w; ++x)
+            {
+                for(int y = 0; y < h; ++y)
+                {
+                    PlayfieldTile t = world.Get(x, y);
+                    if(t.id == id)
+                    {
+                        loc = new Vector2Int(x, y);
+                        return true;
+                    }
+                }
+            }
+
+            loc = Vector2Int.zero;
+            return false;
+        }
     }
 
     public class PlayfieldUtils

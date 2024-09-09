@@ -67,7 +67,7 @@ namespace forest
 
             foreach(Indicator visual in moveVisuals)
             {
-                GameObject.Destroy(visual);
+                GameObject.Destroy(visual.gameObject);
             }
 
             moveVisuals.Clear();
@@ -75,21 +75,34 @@ namespace forest
 
         public void ShowMove(PlayfieldUnit unit, Playfield playfield)
         {
+            HideMove();
+
             Vector2Int headLocation = unit.locations[unit.headIndex];
+
+            if(unit.movementBudget == 0)
+            {
+                return;
+            }
 
             DisplayMovePreviewDiamond(unit, playfield, headLocation);
 
-            TryShowMove(headLocation.x - 1, headLocation.y, playfield, unit, lookup.moveInteractionTemplate);
-            TryShowMove(headLocation.x + 1, headLocation.y, playfield, unit, lookup.moveInteractionTemplate);
-            TryShowMove(headLocation.x, headLocation.y - 1, playfield, unit, lookup.moveInteractionTemplate);
-            TryShowMove(headLocation.x, headLocation.y + 1, playfield, unit, lookup.moveInteractionTemplate);
+            ShowMove(headLocation.x - 1, headLocation.y, playfield, unit, lookup.moveInteractionTemplate);
+            ShowMove(headLocation.x + 1, headLocation.y, playfield, unit, lookup.moveInteractionTemplate);
+            ShowMove(headLocation.x, headLocation.y - 1, playfield, unit, lookup.moveInteractionTemplate);
+            ShowMove(headLocation.x, headLocation.y + 1, playfield, unit, lookup.moveInteractionTemplate);
         }
+
 
         private void DisplayMovePreviewDiamond(PlayfieldUnit unit, Playfield playfield, Vector2Int headLocation)
         {
-            Vector2Int moveSquareCorner = new Vector2Int(headLocation.x + unit.movesRemaining, headLocation.y + unit.movesRemaining);
+            if(unit.movementBudget == 0)
+            {
+                return;
+            }
 
-            int moveAreaWidth = unit.movesRemaining * 2 + 1; // Guarenteed to be odd
+            Vector2Int moveSquareCorner = new Vector2Int(headLocation.x + unit.movementBudget, headLocation.y + unit.movementBudget);
+
+            int moveAreaWidth = unit.movementBudget * 2 + 1; // Guarenteed to be odd
             int halfWidth = moveAreaWidth / 2;
 
             for (int x = 0; x < moveAreaWidth; ++x)
@@ -114,13 +127,13 @@ namespace forest
                     if (x >= Mathf.Abs(moveAreaWidth - y - 1 - halfWidth)
                     && moveAreaWidth - x > Mathf.Abs(moveAreaWidth - y - 1 - halfWidth))
                     {
-                        TryShowMove(modX, modY, playfield, unit, lookup.movePreviewTemplate);
+                        ShowMove(modX, modY, playfield, unit, lookup.movePreviewTemplate);
                     }
                 }
             }
         }
 
-        private void TryShowMove(int x, int y, Playfield playfield, PlayfieldUnit associatedUnit, Indicator indicatorTempalte)
+        private void ShowMove(int x, int y, Playfield playfield, PlayfieldUnit associatedUnit, Indicator indicatorTempalte)
         {
             EnsureParentObjectExists();
 
@@ -143,7 +156,7 @@ namespace forest
 
             float xPos = Offset(x);
             float yPos = Offset(y);
-            movePreview.transform.position = new Vector2(xPos, -yPos);
+            movePreview.transform.position = new Vector3(xPos, -yPos, -lookup.interactionZPriority);
 
             moveVisuals.Add(movePreview);
         }
@@ -154,6 +167,13 @@ namespace forest
         /// <param name="toDisplay"></param>
         public void UpdateUnits(Playfield toDisplay)
         {
+            for(int i = 0; i < unitTracking.Count; ++i)
+            {
+                Destroy(unitTracking[i].gameObject);
+            }
+
+            unitTracking.Clear();
+
             for(int i = 0; i < toDisplay.units.Count; ++i)
             {
                 PlayfieldUnit unit = toDisplay.units[i];
@@ -212,15 +232,16 @@ namespace forest
             {
                 Vector2Int curLocation = data.locations[i];
                 Unit instance = GameObject.Instantiate(template, spawnParent);
-                instance.associatedDataID = data.id;
+                instance.associatedData = data;
+
+                instance.SetBodyVisibility(i == data.headIndex);
 
                 float x = Offset(curLocation.x);
                 float y = Offset(curLocation.y);
-                instance.transform.position = new Vector3(x, -y, 0);
+                instance.transform.position = new Vector3(x, -y, -lookup.unitZPriority);
 
                 unitTracking.Add(instance);
             }
-
 
         }
 
