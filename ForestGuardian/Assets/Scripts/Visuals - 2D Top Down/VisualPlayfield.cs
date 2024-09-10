@@ -77,9 +77,9 @@ namespace forest
         {
             HideMove();
 
-            Vector2Int headLocation = unit.locations[unit.headIndex];
+            Vector2Int headLocation = unit.locations[PlayfieldUnit.HEAD_INDEX];
 
-            if(unit.movementBudget == 0)
+            if(unit.curMovementBudget == 0)
             {
                 return;
             }
@@ -95,14 +95,14 @@ namespace forest
 
         private void DisplayMovePreviewDiamond(PlayfieldUnit unit, Playfield playfield, Vector2Int headLocation)
         {
-            if(unit.movementBudget == 0)
+            if(unit.curMovementBudget == 0)
             {
                 return;
             }
 
-            Vector2Int moveSquareCorner = new Vector2Int(headLocation.x + unit.movementBudget, headLocation.y + unit.movementBudget);
+            Vector2Int moveSquareCorner = new Vector2Int(headLocation.x + unit.curMovementBudget, headLocation.y + unit.curMovementBudget);
 
-            int moveAreaWidth = unit.movementBudget * 2 + 1; // Guarenteed to be odd
+            int moveAreaWidth = unit.curMovementBudget * 2 + 1; // Guarenteed to be odd
             int halfWidth = moveAreaWidth / 2;
 
             for (int x = 0; x < moveAreaWidth; ++x)
@@ -136,6 +136,11 @@ namespace forest
         private void ShowMove(int x, int y, Playfield playfield, PlayfieldUnit associatedUnit, Indicator indicatorTempalte)
         {
             EnsureParentObjectExists();
+
+            if (x < 0 || x >= playfield.world.GetWidth() || y < 0 || y >= playfield.world.GetHeight())
+            {
+                return;
+            }
 
             PlayfieldTile tile = playfield.world.Get(x, y);
 
@@ -233,8 +238,9 @@ namespace forest
                 Vector2Int curLocation = data.locations[i];
                 Unit instance = GameObject.Instantiate(template, spawnParent);
                 instance.associatedData = data;
+                instance.gridPos = curLocation;
 
-                instance.SetBodyVisibility(i == data.headIndex);
+                instance.SetBodyVisibility(i == PlayfieldUnit.HEAD_INDEX);
 
                 float x = Offset(curLocation.x);
                 float y = Offset(curLocation.y);

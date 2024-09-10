@@ -150,7 +150,8 @@ namespace forest
             {
                 PlayfieldUnit cur = playfield.units[i];
                 Unit unit = lookup.GetUnityByTag(cur.tag).unitTemplate;
-                cur.movementBudget = unit.moveSpeed;
+                cur.curMovementBudget = unit.moveSpeed;
+                cur.curMaxSize = unit.maxSize;
             }
 
             yield return null;
@@ -161,11 +162,7 @@ namespace forest
         /// Want to see PlayerMove? Scroll down for the real one, it's horrid lol
         /// </summary>
         /// <returns></returns>
-        //private IEnumerator PlayerMove()
-        //{
-        //    yield return new WaitForSeconds(0.1f);
-        //    SetState(TurnState.OpponentMove);
-        //}
+        private IEnumerator PlayerMoveStub() { yield return null; }
 
         private IEnumerator OpponentMove()
         {
@@ -257,7 +254,7 @@ namespace forest
 
             // NOTE: Check for going to next friendly movable target or just leave if no moves are allowed.
             // For now, if no moves, we're done.
-            if (unit.movementBudget <= 0)
+            if (unit.curMovementBudget <= 0)
             {
                 exitPlayerState = true;
             }

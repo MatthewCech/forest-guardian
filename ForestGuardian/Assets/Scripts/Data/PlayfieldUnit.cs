@@ -13,10 +13,12 @@ namespace forest
 
     public class PlayfieldUnit
     {
+
         public string tag;
         public int id; // PLAYFIELD-SPECIFIC id.
         public Team team = Team.DEFAULT;
-        public int headIndex = 0;
+
+        public const int HEAD_INDEX = 0;
         public List<Vector2Int> locations = new List<Vector2Int>();
 
         // Per-turn variables... These don't need serialization in practice,
@@ -24,7 +26,11 @@ namespace forest
         // because removing this wouldn't impact state saving meaningfully but yeah. Like this is
         // information that all units have, and you should be able to interact with between units but it
         // also could be argued that it's only related to the specific visual+controller implementation.
-        public int movementBudget = 0;
+        public int curMovementBudget = 0;
+
+        // Like this one for example. You'd expect it to be serialized, but it's entirely reasonable to
+        // buffer or tweak the max length based on various gameplay elements. 
+        public int curMaxSize = 1;
     }
 }
 

@@ -79,16 +79,18 @@ namespace forest
         public static string testFile = ""
                 + "1,guardian,3,7\n"
                 + "[map]\n"
-                + "1222222111\n"
-                + "1112222211\n"
                 + "1122222211\n"
-                + "1123222111\n"
-                + "1123222111\n"
-                + "1122233111\n"
-                + "1122233111\n"
-                + "1122222111\n"
-                + "1112211111\n"
-                + "1111111111\n"
+                + "2222332111\n"
+                + "1112222211\n"
+                + "1222222222\n"
+                + "1223222211\n"
+                + "2223222111\n"
+                + "1122233211\n"
+                + "1122233222\n"
+                + "1222222232\n"
+                + "1222211112\n"
+                + "2222111222\n"
+                + "3211111122\n"
             ;
 
 
@@ -154,7 +156,6 @@ namespace forest
                 toAdd.tag = tag;
                 toAdd.id = playfield.GetNextID();
                 toAdd.team = team;
-                toAdd.headIndex = 0;
                 toAdd.locations = new List<Vector2Int>
                 {
                     new Vector2Int(x, y)

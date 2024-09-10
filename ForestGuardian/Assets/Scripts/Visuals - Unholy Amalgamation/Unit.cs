@@ -17,6 +17,7 @@ namespace forest
         // CONSIDER: Replace with int ID if the reference creates issues.
         [Header("Runtime Association")]
         public PlayfieldUnit associatedData;
+        public Vector2Int gridPos;
 
 #if UNITY_EDITOR
         private void OnDrawGizmos()
@@ -27,14 +28,27 @@ namespace forest
             if(associatedData != null)
             {
                 id = associatedData.id;
-                moves = associatedData.movementBudget;
+                moves = associatedData.curMovementBudget;
             }
 
             GUIStyle style = new GUIStyle();
-            style.normal.textColor = Color.green;
+            style.normal.textColor = new Color(.2f, .8f, .2f, 1);
 
-            UnityEditor.Handles.Label(transform.position + Vector3.left * .4f - Vector3.down * .3f, "id: " + id, style);
-            UnityEditor.Handles.Label(transform.position + Vector3.left * .4f - Vector3.down * .4f, "ms: " + moves, style);
+            UnityEditor.Handles.Label(transform.position + Vector3.left * .4f - Vector3.down * .2f, "id: " + id, style);
+            UnityEditor.Handles.Label(transform.position + Vector3.left * .4f - Vector3.down * .3f, "mov: " + moves, style);
+
+            int locIndex = -1;
+            for(int i = 0; i < associatedData.locations.Count; ++i)
+            {
+                Vector2Int cur = associatedData.locations[i];
+                if(cur == gridPos)
+                {
+                    locIndex = i;
+                    break;
+                }
+            }
+
+            UnityEditor.Handles.Label(transform.position + Vector3.left * .4f - Vector3.down * .4f, "#: " + locIndex, style);
         }
 #endif 
 
