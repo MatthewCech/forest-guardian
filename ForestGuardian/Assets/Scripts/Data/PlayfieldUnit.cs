@@ -13,7 +13,6 @@ namespace forest
 
     public class PlayfieldUnit
     {
-
         public string tag;
         public int id; // PLAYFIELD-SPECIFIC id.
         public Team team = Team.DEFAULT;

@@ -37,18 +37,21 @@ namespace forest
             UnityEditor.Handles.Label(transform.position + Vector3.left * .4f - Vector3.down * .2f, "id: " + id, style);
             UnityEditor.Handles.Label(transform.position + Vector3.left * .4f - Vector3.down * .3f, "mov: " + moves, style);
 
-            int locIndex = -1;
-            for(int i = 0; i < associatedData.locations.Count; ++i)
+            if (associatedData != null)
             {
-                Vector2Int cur = associatedData.locations[i];
-                if(cur == gridPos)
+                int locIndex = -1;
+                for (int i = 0; i < associatedData.locations.Count; ++i)
                 {
-                    locIndex = i;
-                    break;
+                    Vector2Int cur = associatedData.locations[i];
+                    if (cur == gridPos)
+                    {
+                        locIndex = i;
+                        break;
+                    }
                 }
-            }
 
-            UnityEditor.Handles.Label(transform.position + Vector3.left * .4f - Vector3.down * .4f, "#: " + locIndex, style);
+                UnityEditor.Handles.Label(transform.position + Vector3.left * .4f - Vector3.down * .4f, "#: " + locIndex, style);
+            }
         }
 #endif 
 

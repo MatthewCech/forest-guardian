@@ -14,4 +14,13 @@ namespace forest
     {
         public Indicator indicator;
     }
+
+    [MessageMetadata(
+    friendlyName: "Collectable Acquired",
+    description: "Indicates that a collectable was interacted with",
+    isVisible: true)]
+    public class MsgCollectableGrabbed : Loam.Message
+    {
+        public Collectable collectable;
+    }
 }
