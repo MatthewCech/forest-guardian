@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Toolkit/general.uss?fileID=7433441132597879392&amp;guid=f216915121ef7374c8c87ab5364a735a&amp;type=3#general" />
+    <ui:VisualElement style="flex-grow: 1; width: 421px;">
+        <ui:SliderInt label="Width" high-value="25" show-input-field="true" low-value="5" name="sliderWidth" />
+        <ui:SliderInt label="Height" high-value="25" show-input-field="true" low-value="5" name="sliderHeight" />
+        <ui:Button text="Save" parse-escape-sequences="true" display-tooltip-when-elided="true" name="buttonSave" style="height: 18px; width: 73px;" />
+    </ui:VisualElement>
+</ui:UXML>

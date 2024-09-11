@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4408976066660474407}
   - component: {fileID: 5838401722071854688}
   m_Layer: 0
-  m_Name: Collectable
+  m_Name: Acorn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

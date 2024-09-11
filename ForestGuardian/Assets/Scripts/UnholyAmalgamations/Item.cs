@@ -5,7 +5,7 @@ using Loam;
 
 namespace forest
 {
-    public class Collectable : MonoBehaviour
+    public class Item : MonoBehaviour
     {
         public void Collect()
         {

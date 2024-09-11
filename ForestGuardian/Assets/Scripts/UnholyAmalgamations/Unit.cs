@@ -59,10 +59,5 @@ namespace forest
         {
             head.SetActive(visible);
         }
-
-        private void OnMouseDown()
-        {
-            Debug.Log("A unit has been clicked!");
-        }
     }
 }

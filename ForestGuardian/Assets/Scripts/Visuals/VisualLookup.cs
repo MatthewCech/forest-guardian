@@ -6,7 +6,11 @@ using static forest.VisualPlayfield;
 
 namespace forest
 {
-    public class VisualLookup : MonoBehaviour
+    /// <summary>
+    /// NOTE: This can be turned into addressables long term if desired.
+    /// </summary>
+    [CreateAssetMenu(fileName = "Lookup Data", menuName = "ScriptableObjects/Lookup Data", order = 1)]
+    public class VisualLookup : ScriptableObject
     {
         public float interactionZPriority = 0.5f; // Used as -z in practice to move towards camera
         public float unitZPriority = 0.2f; // Used as -z in practice to move towards camera
@@ -16,6 +20,7 @@ namespace forest
 
         public List<TileInfo> tileTemplates;
         public List<UnitInfo> unitTemplates;
+        public List<ItemInfo> itemTemplates;
 
         /// <summary>
         /// Access to the unit that's associated with with the specified tag.
@@ -68,6 +73,12 @@ namespace forest
         public class UnitInfo
         {
             public Unit unitTemplate;
+        }
+
+        [System.Serializable]
+        public class ItemInfo
+        {
+            public Item itemTemplate;
         }
     }
 }

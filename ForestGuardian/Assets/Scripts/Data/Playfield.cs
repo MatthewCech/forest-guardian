@@ -8,7 +8,8 @@ namespace forest
     {
         public List<PlayfieldUnit> units;
         public Collection2D<PlayfieldTile> world;
-        
+        public List<PlayfieldItem> items;
+
         // Internal tracking for playfield.
         // This is not unique across the game, just the specific playfield.
         private int nextID;
@@ -76,34 +77,17 @@ namespace forest
 
     public class PlayfieldUtils
     {
-        public static string testFile = ""
-                + "1,guardian,3,7\n"
-                + "[map]\n"
-                + "1122222211\n"
-                + "2222332111\n"
-                + "1112222211\n"
-                + "1222222222\n"
-                + "1223222211\n"
-                + "2223222111\n"
-                + "1122233211\n"
-                + "1122233222\n"
-                + "1222222232\n"
-                + "1222211112\n"
-                + "2222111222\n"
-                + "3211111122\n"
-            ;
-
-
         public static Playfield BuildPlayfield(string toParse)
         {
             Playfield toBuild = new Playfield();
 
-            string[] sections = toParse.Split("[map]");
-            string unitsRaw = sections[0];
-            string mapRaw = sections[1];
+            string[] splitOnmap = toParse.Split("[map]");
+            string mixedMapEntities = splitOnmap[0];
+            string mapRaw = splitOnmap[1];
 
             toBuild.world = Parse2DCollection(toBuild, mapRaw);
-            toBuild.units = ParseUnitList(toBuild, unitsRaw);
+            toBuild.units = ParseUnitList(toBuild, mixedMapEntities);
+            toBuild.items = ParseItemList(toBuild, mixedMapEntities);
 
             AssignUnits(toBuild.world, toBuild.units);
 
@@ -129,17 +113,22 @@ namespace forest
         /// <returns></returns>
         private static List<PlayfieldUnit> ParseUnitList(Playfield playfield, string unitSection)
         {
-
             string[] rows = unitSection.Trim().Split('\n');
 
             List<PlayfieldUnit> toFill = new List<PlayfieldUnit>();
 
             for(int i = 0; i < rows.Length; ++i)
             {
+                // Current operating string. See if we need to leave early.
+                string row = rows[i];
+                if(row[0] == 'i')
+                {
+                    continue;
+                }
+
                 PlayfieldUnit toAdd = new PlayfieldUnit();
 
                 // Split, left to right.
-                string row = rows[i];
                 string[] split = row.Split(',');
 
                 // Team info
@@ -167,6 +156,38 @@ namespace forest
             return toFill;
         }
 
+        // This is super duped code. Convert input type to something like JSON or similar to reduce this noise.
+        private static List<PlayfieldItem> ParseItemList(Playfield playfield, string unitSection)
+        {
+            string[] rows = unitSection.Trim().Split('\n');
+
+            List<PlayfieldItem> toFill = new List<PlayfieldItem>();
+
+            for (int i = 0; i < rows.Length; ++i)
+            {
+                string row = rows[i];
+                if (row[0] != 'i')
+                {
+                    continue;
+                }
+
+                PlayfieldItem toAdd = new PlayfieldItem();
+
+                string[] split = row.Split(',');
+                string tag = split[1];
+
+                int x = int.Parse(split[2]);
+                int y = int.Parse(split[3]);
+
+                toAdd.id = playfield.GetNextID();
+                toAdd.tag = tag;
+
+                toFill.Add(toAdd);
+            }
+
+            return toFill;
+        }
+
 
         /// <summary>
         /// Assumes inpute 
@@ -176,16 +197,17 @@ namespace forest
         private static Collection2D<PlayfieldTile> Parse2DCollection(Playfield playfield, string mapSection)
         {
             string[] rows = mapSection.Trim().Split('\n');
-            int width = rows[0].Length;
+            int width = rows[0].Trim().Length;
             int height = rows.Length;
 
             Collection2D<PlayfieldTile> toFill = new Collection2D<PlayfieldTile>(width, height);
 
             for (int y = 0; y < height; ++y)
             {
+                string row = rows[y].Trim();
                 for (int x = 0; x < width; ++x)
                 {
-                    char cur = rows[y][x];
+                    char cur = row[x];
                     int num = cur - '0';
                     PlayfieldTile newTile = new PlayfieldTile((TileType)num);
                     newTile.id = playfield.GetNextID();

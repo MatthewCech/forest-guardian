@@ -11,7 +11,7 @@ namespace forest
         protected int height;
 
         // Internal access only.
-        protected T[,] tiles;
+        protected T[,] data;
 
         /// <summary>
         /// Hey future self: I really don't recommend using this, but you
@@ -35,7 +35,7 @@ namespace forest
             this.width = width;
             this.height = height;
 
-            tiles = new T[width, height];
+            data = new T[width, height];
         }
 
         /// <summary>
@@ -49,7 +49,11 @@ namespace forest
             x %= width;
             y %= height;
 
-            return tiles[x, y];
+            return data[x, y];
+        }
+        public T Get(Vector2Int pos)
+        {
+            return Get(pos.x, pos.y);
         }
 
         /// <summary>
@@ -63,7 +67,11 @@ namespace forest
             x %= width;
             y %= height;
 
-            tiles[x, y] = newValue;
+            data[x, y] = newValue;
+        }
+        public void Set(Vector2Int pos, T newValue)
+        {
+            Set(pos.x, pos.y, newValue);
         }
 
         public int GetWidth()
@@ -74,6 +82,23 @@ namespace forest
         public int GetHeight()
         {
             return height;
+        }
+
+        /// <summary>
+        /// Superimpose the data from target onto ourselves, with no regard for size compatibility.
+        /// The collection with the smaller dimension provides the dimension bound.
+        /// This is done WITHOUT regard for shallow vs deep copying - direct assignment is used.
+        /// </summary>
+        /// <param name="target">The other collection to scrape data from</param>
+        public void ScrapeDataFrom(Collection2D<T> target)
+        {
+            for(int x = 0; x < target.width && x < width; ++x)
+            {
+                for(int y = 0; y < target.height && y < height; ++y)
+                {
+                    data[x, y] = target.data[x, y];
+                }
+            }
         }
     }
 }

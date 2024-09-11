@@ -12,7 +12,8 @@ namespace forest
         // Internal tracking
         private List<Tile> tileTracking;
         private List<Unit> unitTracking;
-        private List<Indicator> moveVisuals;
+        private List<Item> itemTracking;
+        private List<Indicator> indicatorTracking;
 
         // Base parent object
         private Transform spawnParent;
@@ -22,7 +23,9 @@ namespace forest
         {
             tileTracking = new List<Tile>();
             unitTracking = new List<Unit>();
-            moveVisuals = new List<Indicator>();
+            itemTracking = new List<Item>();
+
+            indicatorTracking = new List<Indicator>();
         }
 
         public void Initialize(VisualLookup lookup)
@@ -60,17 +63,17 @@ namespace forest
 
         public void HideMove()
         {
-            if(moveVisuals == null)
+            if(indicatorTracking == null)
             {
                 return;
             }
 
-            foreach(Indicator visual in moveVisuals)
+            foreach(Indicator visual in indicatorTracking)
             {
                 GameObject.Destroy(visual.gameObject);
             }
 
-            moveVisuals.Clear();
+            indicatorTracking.Clear();
         }
 
         public void ShowMove(PlayfieldUnit unit, Playfield playfield)
@@ -163,7 +166,7 @@ namespace forest
             float yPos = Offset(y);
             movePreview.transform.position = new Vector3(xPos, -yPos, -lookup.interactionZPriority);
 
-            moveVisuals.Add(movePreview);
+            indicatorTracking.Add(movePreview);
         }
 
         /// <summary>
@@ -195,17 +198,44 @@ namespace forest
             int width = toDisplay.world.GetWidth();
             int height = toDisplay.world.GetHeight();
 
+            DestroyAll();
+
             for (int x = 0; x < width; ++x)
             {
-                float xPos = Offset(x);
                 for (int y = 0; y < height; ++y)
                 {
-                    float yPos = Offset(y);
-                    CreateTile(xPos, yPos, toDisplay.world.Get(x, y));
+                    CreateTile(x, y, toDisplay.world.Get(x, y));
                 }
             }
 
             UpdateUnits(toDisplay);
+        }
+
+        /// <summary>
+        /// Internal utility for clearing out all tracked lists and objects. Expensive, but sometimes necessary.
+        /// </summary>
+        private void DestroyAll()
+        {
+            for (int i = 0; i < tileTracking.Count; ++i)
+            {
+                Destroy(tileTracking[i].gameObject);
+            }
+            tileTracking.Clear();
+            for (int i = 0; i < unitTracking.Count; ++i)
+            {
+                Destroy(unitTracking[i].gameObject);
+            }
+            unitTracking.Clear();
+            for (int i = 0; i < itemTracking.Count; ++i)
+            {
+                Destroy(itemTracking[i].gameObject);
+            }
+            itemTracking.Clear();
+            for (int i = 0; i < indicatorTracking.Count; ++i)
+            {
+                Destroy(indicatorTracking[i].gameObject);
+            }
+            indicatorTracking.Clear();
         }
 
         /// <summary>
@@ -214,15 +244,20 @@ namespace forest
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <param name="data"></param>
-        public void CreateTile(float x, float y, PlayfieldTile data)
+        public void CreateTile(int x, int y, PlayfieldTile data)
         {
             EnsureParentObjectExists();
 
             Tile template = lookup.GetTileByType(data.tileType).tileTemplate;
 
             Tile instance = GameObject.Instantiate(template, spawnParent);
-            instance.transform.position = new Vector3(x, -y, 0);
+
+            float xPos = Offset(x);
+            float yPos = Offset(y);
+
+            instance.transform.position = new Vector3(xPos, -yPos, 0);
             instance.associatedDataID = data.id;
+            instance.associatedPos = new Vector2Int(x, y);
 
             tileTracking.Add(instance);
         }

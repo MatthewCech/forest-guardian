@@ -10,6 +10,7 @@ namespace forest
 {
     public class PlayfieldCore : MonoBehaviour
     {
+        [SerializeField] private TextAsset levelData;
         [SerializeField] private VisualLookup lookup;
         [SerializeField] private Playfield playfield;
         [SerializeField] private VisualPlayfield visualizerPlayfield;
@@ -24,9 +25,7 @@ namespace forest
         {
             Postmaster.Instance.Configure(PostmasterConfig.Default());
             
-
-
-            playfield = PlayfieldUtils.BuildPlayfield(PlayfieldUtils.testFile);
+            playfield = PlayfieldUtils.BuildPlayfield(levelData.text);
             visualizerPlayfield.Initialize(lookup);
             visualizerPlayfield.DisplayAll(playfield);
 
