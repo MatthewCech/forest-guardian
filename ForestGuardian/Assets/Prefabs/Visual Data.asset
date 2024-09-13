@@ -25,5 +25,6 @@ MonoBehaviour:
     tileType: 3
   unitTemplates:
   - unitTemplate: {fileID: -8435911677690845889, guid: f0535de490cedc949b962a5d60bb9372, type: 3}
+  - unitTemplate: {fileID: -8435911677690845889, guid: 758399eb882b43f4785c56cec129a8ed, type: 3}
   itemTemplates:
   - itemTemplate: {fileID: 4408976066660474407, guid: 1740172c0b8df774288afab0d9845380, type: 3}
