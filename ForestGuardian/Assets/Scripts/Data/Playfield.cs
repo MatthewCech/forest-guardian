@@ -45,6 +45,40 @@ namespace forest
             return false;
         }
 
+        /// <summary>
+        /// See if we have an item at the specified location, and return it if so.
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public bool TryGetItemAt(Vector2Int pos, out PlayfieldItem item)
+        {
+            for(int i = 0; i < items.Count; ++i)
+            {
+                PlayfieldItem current = items[i];
+                if (current.location == pos)
+                {
+                    item = current;
+                    return true;
+                }
+            }
+
+            item = null;
+            return false;
+        }
+
+        public void RemoveItemAt(Vector2Int pos)
+        {
+            for(int i = items.Count - 1; i >= 0; --i)
+            {
+                if (items[i].location == pos)
+                {
+                    items.RemoveAt(i);
+                    break;
+                }
+            }
+        }
+
         public PlayfieldUnit GetUnit(int id)
         {
             bool didFind = TryGetUnit(id, out PlayfieldUnit unit);
@@ -181,6 +215,7 @@ namespace forest
 
                 toAdd.id = playfield.GetNextID();
                 toAdd.tag = tag;
+                toAdd.location = new Vector2Int(x, y);
 
                 toFill.Add(toAdd);
             }

@@ -14,7 +14,7 @@ namespace forest
     {
         public float interactionZPriority = 0.5f; // Used as -z in practice to move towards camera
         public float unitZPriority = 0.2f; // Used as -z in practice to move towards camera
-
+        
         public Indicator movePreviewTemplate;
         public Indicator moveInteractionTemplate;
 
@@ -24,6 +24,7 @@ namespace forest
 
         /// <summary>
         /// Access to the unit that's associated with with the specified tag.
+        /// This lookup ignores case.
         /// </summary>
         /// <param name="tag"></param>
         /// <returns></returns>
@@ -41,6 +42,25 @@ namespace forest
             return null;
         }
 
+        /// <summary>
+        /// Access the lookup entry associated with with the specified tag.
+        /// This lookup ignores case.
+        /// </summary>
+        /// <param name="tag"></param>
+        /// <returns></returns>
+        public ItemInfo GetItemByTag(string tag)
+        {
+            for (int i = 0; i < itemTemplates.Count; ++i)
+            {
+                ItemInfo cur = itemTemplates[i];
+                if (cur.itemTemplate.name.Equals(tag, System.StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return cur;
+                }
+            }
+
+            return null;
+        }
 
         /// <summary>
         /// Access to the tile associated with the specific tile type laid out in the TileType enum.

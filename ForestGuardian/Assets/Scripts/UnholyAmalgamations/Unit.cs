@@ -40,6 +40,7 @@ namespace forest
             if (associatedData != null)
             {
                 int locIndex = -1;
+                
                 for (int i = 0; i < associatedData.locations.Count; ++i)
                 {
                     Vector2Int cur = associatedData.locations[i];

@@ -30,7 +30,7 @@ namespace forest
         [Header("Runtime Visual Association")]
         public PlayfieldTile associatedTile = null; // Also could be ID?
         public PlayfieldUnit ownerUnit = null; // Eh? ID?
-        public Vector2Int overlaidPosition = Vector2Int.zero;
+        public Vector2Int overlaidPosition = Vector2Int.zero; // The location we're targeting
 
         private void OnMouseDown()
         {

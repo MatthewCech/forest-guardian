@@ -20,6 +20,8 @@ namespace forest
         // Internal
         private TurnState turnState = TurnState.Startup;
         private bool executeState = false;
+        private float artificalTurnDelay = 0.2f; // seconds
+        private float winLoseScreenShowTime = 3f; // seconds
 
         void Start()
         {
@@ -139,7 +141,7 @@ namespace forest
 
         private IEnumerator Startup()
         {
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(artificalTurnDelay);
             SetState(TurnState.PrepareTurn);
         }
 
@@ -165,34 +167,42 @@ namespace forest
 
         private IEnumerator OpponentMove()
         {
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(artificalTurnDelay);
             SetState(TurnState.EvaluateTurn);
         }
 
         private IEnumerator EvaluateTurn()
         {
-            yield return new WaitForSeconds(0.1f);
-            SetState(TurnState.PrepareTurn);
+            yield return new WaitForSeconds(artificalTurnDelay);
+
+            // Win value, in this case I've hardcoded to be "No items left"
+            if (playfield.items.Count == 0)
+            {
+                SetState(TurnState.Victory);
+            }
+            else
+            {
+                SetState(TurnState.PrepareTurn);
+            }
         }
 
         private IEnumerator Victory()
         {
-            yield return new WaitForSeconds(0.1f);
-            SetState(TurnState.PlayerMove);
+            yield return new WaitForSeconds(3);
+            SetState(TurnState.Shutdown);
         }
 
         private IEnumerator Defeat()
         {
-            yield return new WaitForSeconds(0.1f);
-            SetState(TurnState.PlayerMove);
+            yield return new WaitForSeconds(3);
+            SetState(TurnState.Shutdown);
         }
 
         private IEnumerator Shutdown()
         {
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(artificalTurnDelay);
             throw new System.Exception("Signal for scene unload or something");
         }
-
 
 
 
@@ -211,13 +221,17 @@ namespace forest
             {
                 sub = Postmaster.Instance.Subscribe<MsgIndicatorClicked>(PlayerMove_MsgMoveTileClicked);
                 // NOTE: Currently hardcoded. Need to select players piece by piece in the future.
-                PlayfieldUnit playerTmp = playfield.units[0]; 
+                PlayfieldUnit playerTmp = playfield.units[0];
                 visualizerPlayfield.ShowMove(playerTmp, playfield);
                 playerStateStartup = false;
             }
 
+            PlayfieldUnit toProcess = playfield.units[0];
+
+            ProcessKeyboardInput(toProcess);
+
             // TODO: See above TODO on class-based state system. 
-            if(exitPlayerState)
+            if (exitPlayerState)
             {
                 sub.Dispose();
                 exitPlayerState = false;
@@ -225,28 +239,70 @@ namespace forest
                 SetState(TurnState.OpponentMove);
             }
         }
+
+        private void ProcessKeyboardInput(PlayfieldUnit toProcess)
+        {
+            Vector2Int head = toProcess.locations[PlayfieldUnit.HEAD_INDEX];
+            if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                Vector2Int target = head + Vector2Int.down;
+                if (visualizerPlayfield.IsValidImmediatelyPlaceToMoveTo(target))
+                {
+                    TryMoveUnitToLocation(toProcess, target);
+                }
+            }
+            else if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
+            {
+                Vector2Int target = head + Vector2Int.up;
+                if (visualizerPlayfield.IsValidImmediatelyPlaceToMoveTo(target))
+                {
+                    TryMoveUnitToLocation(toProcess, target);
+                }
+            }
+            else if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                Vector2Int target = head + Vector2Int.left;
+                if (visualizerPlayfield.IsValidImmediatelyPlaceToMoveTo(target))
+                {
+                    TryMoveUnitToLocation(toProcess, target);
+                }
+            }
+            else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                Vector2Int target = head + Vector2Int.right;
+                if (visualizerPlayfield.IsValidImmediatelyPlaceToMoveTo(target))
+                {
+                    TryMoveUnitToLocation(toProcess, target);
+                }
+            }
+        }
+
         void PlayerMove_MsgMoveTileClicked(Message raw)
         {
             MsgIndicatorClicked msg = raw as MsgIndicatorClicked;
 
-            if(msg.indicator.type != IndicatorType.ImmediateMove)
+            if (msg.indicator.type != IndicatorType.ImmediateMove)
             {
                 return;
             }
 
             PlayfieldUnit unit = msg.indicator.ownerUnit;
-            int idToFind = msg.indicator.associatedTile.id;
-            bool success = playfield.TryGetTileXY(idToFind, out Vector2Int tilePos);
+            Vector2Int target = msg.indicator.overlaidPosition;
+            TryMoveUnitToLocation(unit, target);
+        }
 
-            if(!success)
+        private void TryMoveUnitToLocation(PlayfieldUnit unit, Vector2Int target)
+        {
+            // Step the unit to the new place. Ensure this happens before visualizer update.
+            Utils.StepUnitTo(unit, playfield, target, moveCost: 1);
+
+            if (playfield.TryGetItemAt(target, out PlayfieldItem item))
             {
-                throw new System.Exception($"Tile with ID '{idToFind}' not found!");
+                playfield.RemoveItemAt(target);
             }
 
-            // Step the unit to the new place. Ensure this happens before visualizer update.
-            Utils.StepUnitTo(unit, playfield, tilePos, moveCost: 1);
-
-            visualizerPlayfield.UpdateUnits(playfield);
+            visualizerPlayfield.DisplayUnits(playfield);
+            visualizerPlayfield.DisplayItems(playfield);
             visualizerPlayfield.ShowMove(unit, playfield);
 
             Debug.Log("Processed move click");

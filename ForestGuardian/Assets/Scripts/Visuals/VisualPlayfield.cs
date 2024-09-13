@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEditor.UIElements;
 using UnityEngine;
 
 namespace forest
@@ -68,12 +70,7 @@ namespace forest
                 return;
             }
 
-            foreach(Indicator visual in indicatorTracking)
-            {
-                GameObject.Destroy(visual.gameObject);
-            }
-
-            indicatorTracking.Clear();
+            ClearMonoBehaviourList(indicatorTracking);
         }
 
         public void ShowMove(PlayfieldUnit unit, Playfield playfield)
@@ -136,6 +133,26 @@ namespace forest
             }
         }
 
+        public bool IsValidImmediatelyPlaceToMoveTo(Vector2Int toCheck)
+        {
+            for(int i = 0; i < indicatorTracking.Count; ++i)
+            {
+                Indicator indicator = indicatorTracking[i];
+
+                if(indicator.type != IndicatorType.ImmediateMove)
+                {
+                    continue;
+                }
+
+                if(indicator.overlaidPosition == toCheck)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private void ShowMove(int x, int y, Playfield playfield, PlayfieldUnit associatedUnit, Indicator indicatorTempalte)
         {
             EnsureParentObjectExists();
@@ -173,19 +190,25 @@ namespace forest
         /// Re-draws just the units
         /// </summary>
         /// <param name="toDisplay"></param>
-        public void UpdateUnits(Playfield toDisplay)
+        public void DisplayUnits(Playfield toDisplay)
         {
-            for(int i = 0; i < unitTracking.Count; ++i)
-            {
-                Destroy(unitTracking[i].gameObject);
-            }
+            ClearMonoBehaviourList(unitTracking);
 
-            unitTracking.Clear();
-
-            for(int i = 0; i < toDisplay.units.Count; ++i)
+            for (int i = 0; i < toDisplay.units.Count; ++i)
             {
                 PlayfieldUnit unit = toDisplay.units[i];
-                CreatUnit(unit);
+                CreateUnit(unit);
+            }
+        }
+
+        public void DisplayItems(Playfield toDisplay)
+        {
+            ClearMonoBehaviourList(itemTracking);
+
+            for (int i = 0; i < toDisplay.items.Count; ++i)
+            {
+                PlayfieldItem item = toDisplay.items[i];
+                CreateItem(item);
             }
         }
 
@@ -208,7 +231,8 @@ namespace forest
                 }
             }
 
-            UpdateUnits(toDisplay);
+            DisplayUnits(toDisplay);
+            DisplayItems(toDisplay);
         }
 
         /// <summary>
@@ -216,26 +240,10 @@ namespace forest
         /// </summary>
         private void DestroyAll()
         {
-            for (int i = 0; i < tileTracking.Count; ++i)
-            {
-                Destroy(tileTracking[i].gameObject);
-            }
-            tileTracking.Clear();
-            for (int i = 0; i < unitTracking.Count; ++i)
-            {
-                Destroy(unitTracking[i].gameObject);
-            }
-            unitTracking.Clear();
-            for (int i = 0; i < itemTracking.Count; ++i)
-            {
-                Destroy(itemTracking[i].gameObject);
-            }
-            itemTracking.Clear();
-            for (int i = 0; i < indicatorTracking.Count; ++i)
-            {
-                Destroy(indicatorTracking[i].gameObject);
-            }
-            indicatorTracking.Clear();
+            ClearMonoBehaviourList(tileTracking);
+            ClearMonoBehaviourList(unitTracking);
+            ClearMonoBehaviourList(itemTracking);
+            ClearMonoBehaviourList(indicatorTracking);
         }
 
         /// <summary>
@@ -262,7 +270,10 @@ namespace forest
             tileTracking.Add(instance);
         }
 
-        public void CreatUnit(PlayfieldUnit data)
+        /// <summary>
+        /// Generate a unit based on the specified data and place it in the world
+        /// </summary>
+        public void CreateUnit(PlayfieldUnit data)
         {
             EnsureParentObjectExists();
 
@@ -283,7 +294,24 @@ namespace forest
 
                 unitTracking.Add(instance);
             }
+        }
 
+        /// <summary>
+        /// Create a visual representation of the provided data within the world itself
+        /// </summary>
+        /// <param name="data"></param>
+        public void CreateItem(PlayfieldItem data)
+        {
+            EnsureParentObjectExists();
+
+            Item template = lookup.GetItemByTag(data.tag).itemTemplate;
+            Item instance = GameObject.Instantiate(template, spawnParent);
+            Vector2Int curLocation = data.location;
+            float x = Offset(curLocation.x);
+            float y = Offset(curLocation.y);
+
+            instance.transform.position = new Vector3(x, -y, -lookup.unitZPriority);
+            itemTracking.Add(instance);
         }
 
         /// <summary>
@@ -298,12 +326,29 @@ namespace forest
             return rawVal + (rawVal * gridSpacing);
         }
 
+        /// <summary>
+        /// Ensure there's an object to hold all spawned objects under.
+        /// </summary>
         private void EnsureParentObjectExists()
         {
             if (spawnParent == null)
             {
                 spawnParent = new GameObject(this.GetType().Name).transform;
             }
+        }
+
+        /// <summary>
+        /// Clear out a list of monobehaviors and clears the list in place. All elements cleared after a Destroy call.
+        /// </summary>
+        /// <param name="target">The list to operate on.</param>
+        private void ClearMonoBehaviourList<T>(List<T> target) where T: MonoBehaviour
+        {
+            foreach (MonoBehaviour behavior in target)
+            {
+                Destroy(behavior.gameObject);
+            }
+
+            target.Clear();
         }
     }
 }
