@@ -173,6 +173,12 @@ namespace forest
                 return;
             }
 
+            // No non-self units!
+            if (tile.associatedUnitID > 0 && tile.associatedUnitID != associatedUnit.id)
+            {
+                return;
+            }
+
             Indicator movePreview = Instantiate(indicatorTempalte, spawnParent);
             PlayfieldUnit unit = associatedUnit;
             movePreview.associatedTile = tile;

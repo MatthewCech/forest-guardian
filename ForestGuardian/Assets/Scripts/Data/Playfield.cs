@@ -6,6 +6,8 @@ namespace forest
 {
     public class Playfield
     {
+        public const int NO_ID = -1;
+
         public List<PlayfieldUnit> units;
         public Collection2D<PlayfieldTile> world;
         public List<PlayfieldItem> items;
@@ -244,7 +246,8 @@ namespace forest
                 {
                     char cur = row[x];
                     int num = cur - '0';
-                    PlayfieldTile newTile = new PlayfieldTile((TileType)num);
+                    PlayfieldTile newTile = new PlayfieldTile();
+                    newTile.tileType = (TileType)num;
                     newTile.id = playfield.GetNextID();
                     toFill.Set(x, y, newTile);
                 }

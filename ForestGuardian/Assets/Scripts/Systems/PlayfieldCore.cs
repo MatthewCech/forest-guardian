@@ -171,12 +171,27 @@ namespace forest
             SetState(TurnState.EvaluateTurn);
         }
 
+
+        private bool HasEnemies()
+        {
+            for(int i = 0; i < playfield.units.Count; ++i)
+            {
+                PlayfieldUnit current = playfield.units[i];
+                if(current.team != Team.Player)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private IEnumerator EvaluateTurn()
         {
             yield return new WaitForSeconds(artificalTurnDelay);
 
             // Win value, in this case I've hardcoded to be "No items left"
-            if (playfield.items.Count == 0)
+            if (playfield.items.Count == 0 && !HasEnemies())
             {
                 SetState(TurnState.Victory);
             }
@@ -304,8 +319,6 @@ namespace forest
             visualizerPlayfield.DisplayUnits(playfield);
             visualizerPlayfield.DisplayItems(playfield);
             visualizerPlayfield.ShowMove(unit, playfield);
-
-            Debug.Log("Processed move click");
 
             // NOTE: Check for going to next friendly movable target or just leave if no moves are allowed.
             // For now, if no moves, we're done.

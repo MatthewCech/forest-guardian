@@ -89,7 +89,8 @@ namespace forest
             {
                 for (int y = 0; y < newHeight; ++y)
                 {
-                    PlayfieldTile tile = new PlayfieldTile(TileType.Nothing);
+                    PlayfieldTile tile = new PlayfieldTile();
+                    tile.tileType = TileType.Nothing;
                     newPlayfield.world.Set(x, y, tile);
                 }
             }
@@ -221,12 +222,6 @@ namespace forest
             {
                 for(int x = 0; x < width; ++x)
                 {
-                    // Fencepost
-                    if(x != 0)
-                    {
-                        writer.Write(SEPARATOR);
-                    }
-
                     writer.Write((int)workingPlayfield.world.Get(x, y).tileType);
                 }
 

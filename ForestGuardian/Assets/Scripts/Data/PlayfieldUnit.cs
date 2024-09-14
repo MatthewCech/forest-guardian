@@ -13,8 +13,8 @@ namespace forest
 
     public class PlayfieldUnit
     {
-        public string tag;
-        public int id; // PLAYFIELD-SPECIFIC id.
+        public string tag = null;
+        public int id = Playfield.NO_ID; // PLAYFIELD-SPECIFIC id.
         public Team team = Team.DEFAULT;
 
         public const int HEAD_INDEX = 0;

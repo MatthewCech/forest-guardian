@@ -6,8 +6,8 @@ namespace forest
 {
     public class PlayfieldItem
     {
-        public string tag; // Name
-        public int id;     // PLAYFIELD-SPECIFIC id.
-        public Vector2Int location;
+        public string tag = null;        // Unique tag for template
+        public int id = Playfield.NO_ID; // PLAYFIELD-SPECIFIC id.
+        public Vector2Int location = Vector2Int.zero;
     }
 }

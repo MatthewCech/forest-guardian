@@ -40,14 +40,7 @@ namespace forest
     {
         public TileType tileType = TileType.DEFAULT;
 
-        public int id;                // The ID for this. 0 means no ID has been assigned.
-        public int associatedUnitID;  // 0 means no ID association with anything
-
-        public PlayfieldTile(TileType tileType)
-        {
-            this.tileType = tileType;
-            id = -1;
-            associatedUnitID = -1;
-        }
+        public int id = Playfield.NO_ID;                // The ID for this. 0 means no ID has been assigned.
+        public int associatedUnitID = Playfield.NO_ID;  // 0 means no ID association with anything
     }
 }

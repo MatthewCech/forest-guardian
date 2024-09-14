@@ -12,6 +12,13 @@ namespace forest
             target.transform.position = new Vector3(targetPos.x, targetPos.y, target.transform.position.z);
         }
 
+        /// <summary>
+        /// This forcebly moves you to a new location, but does not restrict unexpected movements.
+        /// </summary>
+        /// <param name="unit"></param>
+        /// <param name="playfield"></param>
+        /// <param name="pos"></param>
+        /// <param name="moveCost"></param>
         public static void StepUnitTo(PlayfieldUnit unit, Playfield playfield, Vector2Int pos, int moveCost)
         {
             UnityEngine.Assertions.Assert.IsFalse(unit.curMovementBudget - moveCost < 0, $"You must have enough available steps to pay for the projected move cost. Some check elsewhere probably failed. Had: {unit.curMovementBudget}, Cost: {moveCost}");
