@@ -15,25 +15,25 @@ namespace forest
         /// <summary>
         /// This forcebly moves you to a new location, but does not restrict unexpected movements.
         /// </summary>
-        /// <param name="unit"></param>
+        /// <param name="unitToMove"></param>
         /// <param name="playfield"></param>
         /// <param name="pos"></param>
         /// <param name="moveCost"></param>
-        public static void StepUnitTo(PlayfieldUnit unit, Playfield playfield, Vector2Int pos, int moveCost)
+        public static void StepUnitTo(PlayfieldUnit unitToMove, Playfield playfield, Vector2Int pos, int moveCost)
         {
-            UnityEngine.Assertions.Assert.IsFalse(unit.curMovementBudget - moveCost < 0, $"You must have enough available steps to pay for the projected move cost. Some check elsewhere probably failed. Had: {unit.curMovementBudget}, Cost: {moveCost}");
+            UnityEngine.Assertions.Assert.IsFalse(unitToMove.curMovementBudget - moveCost < 0, $"You must have enough available steps to pay for the projected move cost. Some check elsewhere probably failed. Had: {unitToMove.curMovementBudget}, Cost: {moveCost}");
 
             PlayfieldTile targetTile = playfield.world.Get(pos.x, pos.y);
 
             // Associate new tile.
-            targetTile.associatedUnitID = unit.id;
+            targetTile.associatedUnitID = unitToMove.id;
 
             // See if we're going to be stepping on ourselves.
             bool isSteppingOnSelf = false;
             int indexBeingSteppedOn = -1;
-            for(int i = 0; i < unit.locations.Count; ++i)
+            for(int i = 0; i < unitToMove.locations.Count; ++i)
             {
-                if (unit.locations[i] == pos)
+                if (unitToMove.locations[i] == pos)
                 {
                     isSteppingOnSelf = true;
                     indexBeingSteppedOn = i;
@@ -45,20 +45,52 @@ namespace forest
             // we already have to the head index - so we need to pull it out.
             if (isSteppingOnSelf)
             {
-                unit.locations.RemoveAt(indexBeingSteppedOn);
+                unitToMove.locations.RemoveAt(indexBeingSteppedOn);
             }
 
             // Head remains where it was, we just moved here, so insert at that spot.
-            unit.locations.Insert(PlayfieldUnit.HEAD_INDEX, pos);
+            unitToMove.locations.Insert(PlayfieldUnit.HEAD_INDEX, pos);
 
             // Trim end if it's too long
-            if (unit.locations.Count > unit.curMaxSize)
+            if (unitToMove.locations.Count > unitToMove.curMaxSize)
             {
-                unit.locations.RemoveAt(unit.locations.Count - 1);
+                int index = unitToMove.locations.Count - 1;
+                Vector2Int tileToUpdatePos = unitToMove.locations[index];
+                PlayfieldTile tileToUpdate = playfield.world.Get(tileToUpdatePos);
+                tileToUpdate.associatedUnitID = Playfield.NO_ID;
+                unitToMove.locations.RemoveAt(unitToMove.locations.Count - 1);
             }
 
             // Charge 'em!
-            unit.curMovementBudget -= moveCost;
+            unitToMove.curMovementBudget -= moveCost;
+        }
+
+        /// <summary>
+        /// Determine if you can move to a specified tile
+        /// </summary>
+        /// <param name="unitTryingToMove"></param>
+        /// <param name="tile"></param>
+        /// <returns></returns>
+        public static bool CanUnitMoveTo(PlayfieldUnit unitTryingToMove, PlayfieldTile tile)
+        {
+            // No impassable tiles, do it as a permitted list so you can't go by default.
+            if (tile.tileType != TileType.Basic)
+            {
+                return false;
+            }
+
+            // No non-self units at tiles!
+            if (tile.associatedUnitID > 0 && tile.associatedUnitID != unitTryingToMove.id)
+            {
+                return false;
+            }
+
+            return true;
+        }
+        public static bool CanUnitMoveTo(Playfield playfield, PlayfieldUnit unitTryingToMove, Vector2Int location)
+        {
+            PlayfieldTile tile = playfield.world.Get(location);
+            return CanUnitMoveTo(unitTryingToMove, tile);
         }
     }
 }

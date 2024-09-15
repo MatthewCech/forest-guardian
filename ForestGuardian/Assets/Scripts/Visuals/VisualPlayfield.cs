@@ -63,17 +63,12 @@ namespace forest
             return new Vector2(xMin + (xMax - xMin) / 2, yMin + (yMax - yMin) / 2);
         }
 
-        public void HideMove()
-        {
-            if(indicatorTracking == null)
-            {
-                return;
-            }
-
-            ClearMonoBehaviourList(indicatorTracking);
-        }
-
-        public void ShowMove(PlayfieldUnit unit, Playfield playfield)
+        /// <summary>
+        /// Given a unit, shows the moves the unit can take based on remaining moves available and the current playfield.
+        /// </summary>
+        /// <param name="unit"></param>
+        /// <param name="playfield"></param>
+        public void DisplayMovePreview(PlayfieldUnit unit, Playfield playfield)
         {
             HideMove();
 
@@ -86,12 +81,21 @@ namespace forest
 
             DisplayMovePreviewDiamond(unit, playfield, headLocation);
 
-            ShowMove(headLocation.x - 1, headLocation.y, playfield, unit, lookup.moveInteractionTemplate);
-            ShowMove(headLocation.x + 1, headLocation.y, playfield, unit, lookup.moveInteractionTemplate);
-            ShowMove(headLocation.x, headLocation.y - 1, playfield, unit, lookup.moveInteractionTemplate);
-            ShowMove(headLocation.x, headLocation.y + 1, playfield, unit, lookup.moveInteractionTemplate);
+            DisplayMove(headLocation.x - 1, headLocation.y, playfield, unit, lookup.moveInteractionTemplate);
+            DisplayMove(headLocation.x + 1, headLocation.y, playfield, unit, lookup.moveInteractionTemplate);
+            DisplayMove(headLocation.x, headLocation.y - 1, playfield, unit, lookup.moveInteractionTemplate);
+            DisplayMove(headLocation.x, headLocation.y + 1, playfield, unit, lookup.moveInteractionTemplate);
         }
 
+        public void HideMove()
+        {
+            if (indicatorTracking == null)
+            {
+                return;
+            }
+
+            ClearMonoBehaviourList(indicatorTracking);
+        }
 
         private void DisplayMovePreviewDiamond(PlayfieldUnit unit, Playfield playfield, Vector2Int headLocation)
         {
@@ -127,33 +131,13 @@ namespace forest
                     if (x >= Mathf.Abs(moveAreaWidth - y - 1 - halfWidth)
                     && moveAreaWidth - x > Mathf.Abs(moveAreaWidth - y - 1 - halfWidth))
                     {
-                        ShowMove(modX, modY, playfield, unit, lookup.movePreviewTemplate);
+                        DisplayMove(modX, modY, playfield, unit, lookup.movePreviewTemplate);
                     }
                 }
             }
         }
 
-        public bool IsValidImmediatelyPlaceToMoveTo(Vector2Int toCheck)
-        {
-            for(int i = 0; i < indicatorTracking.Count; ++i)
-            {
-                Indicator indicator = indicatorTracking[i];
-
-                if(indicator.type != IndicatorType.ImmediateMove)
-                {
-                    continue;
-                }
-
-                if(indicator.overlaidPosition == toCheck)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private void ShowMove(int x, int y, Playfield playfield, PlayfieldUnit associatedUnit, Indicator indicatorTempalte)
+        private void DisplayMove(int x, int y, Playfield playfield, PlayfieldUnit unitTryingtToMove, Indicator indicatorTempalte)
         {
             EnsureParentObjectExists();
 
@@ -167,22 +151,14 @@ namespace forest
             // Explode on DEFAULT case. That's a bad tile, and it should be known about!
             UnityEngine.Assertions.Assert.IsFalse(tile.tileType == TileType.DEFAULT, "Default tiles are an invalid type of tile, and are not allowed for gameplay. Ensure all tiles are properly initialized.");
 
-            // No impassable tiles!
-            if(tile.tileType == TileType.Impassable || tile.tileType == TileType.Nothing)
-            {
-                return;
-            }
-
-            // No non-self units!
-            if (tile.associatedUnitID > 0 && tile.associatedUnitID != associatedUnit.id)
+            if(!Utils.CanUnitMoveTo(unitTryingtToMove, tile))
             {
                 return;
             }
 
             Indicator movePreview = Instantiate(indicatorTempalte, spawnParent);
-            PlayfieldUnit unit = associatedUnit;
             movePreview.associatedTile = tile;
-            movePreview.ownerUnit = unit;
+            movePreview.ownerUnit = unitTryingtToMove;
             movePreview.overlaidPosition = new Vector2Int(x, y);
 
             float xPos = Offset(x);

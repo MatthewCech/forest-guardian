@@ -150,9 +150,9 @@ namespace forest
             for(int i = 0; i < playfield.units.Count; i++)
             {
                 PlayfieldUnit cur = playfield.units[i];
-                Unit unit = lookup.GetUnityByTag(cur.tag).unitTemplate;
-                cur.curMovementBudget = unit.moveSpeed;
-                cur.curMaxSize = unit.maxSize;
+                Unit template = lookup.GetUnityByTag(cur.tag).unitTemplate;
+                cur.curMovementBudget = template.moveSpeed;
+                cur.curMaxSize = template.maxSize;
             }
 
             yield return null;
@@ -167,10 +167,73 @@ namespace forest
 
         private IEnumerator OpponentMove()
         {
-            yield return new WaitForSeconds(artificalTurnDelay);
+            const float visualDisplayDelay = 0.5f;
+
+            if(!TryGetOpponentsTarget(out PlayfieldUnit targeted))
+            {
+                // If we're here, we're not gonna get anything done
+                // since there are no players yet.
+                SetState(TurnState.EvaluateTurn);
+                yield break;
+            }
+
+            yield return null;
+            for (int i = 0; i < playfield.units.Count; ++i)
+            {
+                PlayfieldUnit curOpponentToMove = playfield.units[i];
+                if (curOpponentToMove.team != Team.Opponent)
+                {
+                    continue;
+                }
+
+                visualizerPlayfield.DisplayMovePreview(curOpponentToMove, playfield);
+                yield return new WaitForSeconds(visualDisplayDelay);
+
+                Vector2Int curHead = curOpponentToMove.locations[PlayfieldUnit.HEAD_INDEX];
+                Vector2Int targetHead = targeted.locations[PlayfieldUnit.HEAD_INDEX];
+
+                int xDif = curHead.x - targetHead.x;
+                int yDif = curHead.y - targetHead.y;
+
+                // Recall that upper-left is 0, 0
+                Vector2Int yDir = Vector2Int.zero;
+                Vector2Int xDir = Vector2Int.zero;
+
+                if (yDif > 0) { yDir = Vector2Int.down; }
+                else if (yDif < 0) { yDir = Vector2Int.up; }
+
+                if (xDif > 0) { xDir = Vector2Int.left; }
+                else if (xDif < 0) { xDir = Vector2Int.right; }
+
+                Vector2Int toUse = Mathf.Abs(yDif) > Mathf.Abs(xDif) ? yDir : xDir;
+                Debug.Log($"yDiff{yDir}, xDiff{xDif}");
+                Vector2Int targetPos = curHead + toUse;
+                if (Utils.CanUnitMoveTo(playfield, curOpponentToMove, targetPos))
+                {
+                    TryMoveUnitToLocation(curOpponentToMove, targetPos);
+                }
+
+                yield return new WaitForSeconds(visualDisplayDelay);
+            }
+
             SetState(TurnState.EvaluateTurn);
         }
 
+        private bool TryGetOpponentsTarget(out PlayfieldUnit targeted)
+        {
+            for (int i = 0; i < playfield.units.Count; ++i)
+            {
+                PlayfieldUnit cur = playfield.units[i];
+                if (cur.team == Team.Player)
+                {
+                    targeted = playfield.units[i];
+                    return true;
+                }
+            }
+
+            targeted = null;
+            return false;
+        }
 
         private bool HasEnemies()
         {
@@ -237,8 +300,9 @@ namespace forest
                 sub = Postmaster.Instance.Subscribe<MsgIndicatorClicked>(PlayerMove_MsgMoveTileClicked);
                 // NOTE: Currently hardcoded. Need to select players piece by piece in the future.
                 PlayfieldUnit playerTmp = playfield.units[0];
-                visualizerPlayfield.ShowMove(playerTmp, playfield);
+                visualizerPlayfield.DisplayMovePreview(playerTmp, playfield);
                 playerStateStartup = false;
+                exitPlayerState = false;
             }
 
             PlayfieldUnit toProcess = playfield.units[0];
@@ -255,41 +319,43 @@ namespace forest
             }
         }
 
-        private void ProcessKeyboardInput(PlayfieldUnit toProcess)
+        /// <summary>
+        /// General catch all variadic function that, given a controlled unit, attempt to 
+        /// move it to the target if any of the following keys as parameters are met.
+        /// </summary>
+        /// <param name="controlledUnit">The unit that we're attempting to move.</param>
+        /// <param name="target">A target position to try and move to. This is absolute, not relative.</param>
+        /// <param name="keyList">Any number of keys to consider</param>
+        private void TryMoveOnKeyInput(PlayfieldUnit controlledUnit, Vector2Int target, params KeyCode[] keyList)
         {
-            Vector2Int head = toProcess.locations[PlayfieldUnit.HEAD_INDEX];
-            if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
+            Vector2Int head = controlledUnit.locations[PlayfieldUnit.HEAD_INDEX];
+            Vector2Int newMovement = head + target;
+
+            bool relevantKeyDown = false;
+            for (int i = 0; i < keyList.Length; i++)
             {
-                Vector2Int target = head + Vector2Int.down;
-                if (visualizerPlayfield.IsValidImmediatelyPlaceToMoveTo(target))
+                KeyCode keyCode = keyList[i];
+                if(Input.GetKeyDown(keyCode))
                 {
-                    TryMoveUnitToLocation(toProcess, target);
+                    relevantKeyDown = true;
                 }
             }
-            else if (Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
+
+            if(relevantKeyDown)
             {
-                Vector2Int target = head + Vector2Int.up;
-                if (visualizerPlayfield.IsValidImmediatelyPlaceToMoveTo(target))
+                if (Utils.CanUnitMoveTo(playfield, controlledUnit, target))
                 {
-                    TryMoveUnitToLocation(toProcess, target);
+                    TryMoveUnitToLocation(controlledUnit, target);
                 }
             }
-            else if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
-            {
-                Vector2Int target = head + Vector2Int.left;
-                if (visualizerPlayfield.IsValidImmediatelyPlaceToMoveTo(target))
-                {
-                    TryMoveUnitToLocation(toProcess, target);
-                }
-            }
-            else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
-            {
-                Vector2Int target = head + Vector2Int.right;
-                if (visualizerPlayfield.IsValidImmediatelyPlaceToMoveTo(target))
-                {
-                    TryMoveUnitToLocation(toProcess, target);
-                }
-            }
+        }
+
+        private void ProcessKeyboardInput(PlayfieldUnit controlledUnit)
+        {
+            TryMoveOnKeyInput(controlledUnit, Vector2Int.down, KeyCode.W, KeyCode.UpArrow);
+            TryMoveOnKeyInput(controlledUnit, Vector2Int.up, KeyCode.S, KeyCode.DownArrow);
+            TryMoveOnKeyInput(controlledUnit, Vector2Int.left, KeyCode.A, KeyCode.LeftArrow);
+            TryMoveOnKeyInput(controlledUnit, Vector2Int.right, KeyCode.D, KeyCode.RightArrow);
         }
 
         void PlayerMove_MsgMoveTileClicked(Message raw)
@@ -318,7 +384,7 @@ namespace forest
 
             visualizerPlayfield.DisplayUnits(playfield);
             visualizerPlayfield.DisplayItems(playfield);
-            visualizerPlayfield.ShowMove(unit, playfield);
+            visualizerPlayfield.DisplayMovePreview(unit, playfield);
 
             // NOTE: Check for going to next friendly movable target or just leave if no moves are allowed.
             // For now, if no moves, we're done.
