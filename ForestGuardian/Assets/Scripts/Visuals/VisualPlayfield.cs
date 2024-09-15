@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor.UIElements;
 using UnityEngine;
+using Loam;
 
 namespace forest
 {
@@ -68,9 +69,9 @@ namespace forest
         /// </summary>
         /// <param name="unit"></param>
         /// <param name="playfield"></param>
-        public void DisplayMovePreview(PlayfieldUnit unit, Playfield playfield)
+        public void DisplayIndicatorMovePreview(PlayfieldUnit unit, Playfield playfield)
         {
-            HideMove();
+            ClearMonoBehaviourList(indicatorTracking);
 
             Vector2Int headLocation = unit.locations[PlayfieldUnit.HEAD_INDEX];
 
@@ -79,34 +80,37 @@ namespace forest
                 return;
             }
 
-            DisplayMovePreviewDiamond(unit, playfield, headLocation);
+            DisplayIndicatorPreviewDiamond(unit, unit.curMovementBudget, playfield, headLocation, lookup.movePreviewTemplate);
 
-            DisplayMove(headLocation.x - 1, headLocation.y, playfield, unit, lookup.moveInteractionTemplate);
-            DisplayMove(headLocation.x + 1, headLocation.y, playfield, unit, lookup.moveInteractionTemplate);
-            DisplayMove(headLocation.x, headLocation.y - 1, playfield, unit, lookup.moveInteractionTemplate);
-            DisplayMove(headLocation.x, headLocation.y + 1, playfield, unit, lookup.moveInteractionTemplate);
+            DisplayIndicator(headLocation.x - 1, headLocation.y, playfield, unit, lookup.moveInteractionTemplate);
+            DisplayIndicator(headLocation.x + 1, headLocation.y, playfield, unit, lookup.moveInteractionTemplate);
+            DisplayIndicator(headLocation.x, headLocation.y - 1, playfield, unit, lookup.moveInteractionTemplate);
+            DisplayIndicator(headLocation.x, headLocation.y + 1, playfield, unit, lookup.moveInteractionTemplate);
         }
 
-        public void HideMove()
+        public void HideIndicators()
         {
-            if (indicatorTracking == null)
-            {
-                return;
-            }
-
             ClearMonoBehaviourList(indicatorTracking);
         }
 
-        private void DisplayMovePreviewDiamond(PlayfieldUnit unit, Playfield playfield, Vector2Int headLocation)
+        public void DisplayIndicatorAttackPreview(PlayfieldUnit unit, Playfield playfield)
         {
-            if(unit.curMovementBudget == 0)
+            ClearMonoBehaviourList(indicatorTracking);
+
+            Vector2Int headLocation = unit.locations[PlayfieldUnit.HEAD_INDEX];
+            DisplayIndicatorPreviewDiamond(unit, unit.curAttackRange, playfield, headLocation, lookup.attackPreview);
+        }
+
+        private void DisplayIndicatorPreviewDiamond(PlayfieldUnit unit, int range, Playfield playfield, Vector2Int headLocation, Indicator indicator)
+        {
+            if(range == 0)
             {
                 return;
             }
 
-            Vector2Int moveSquareCorner = new Vector2Int(headLocation.x + unit.curMovementBudget, headLocation.y + unit.curMovementBudget);
+            Vector2Int moveSquareCorner = new Vector2Int(headLocation.x + range, headLocation.y + range);
 
-            int moveAreaWidth = unit.curMovementBudget * 2 + 1; // Guarenteed to be odd
+            int moveAreaWidth = range * 2 + 1; // Guarenteed to be odd
             int halfWidth = moveAreaWidth / 2;
 
             for (int x = 0; x < moveAreaWidth; ++x)
@@ -131,13 +135,66 @@ namespace forest
                     if (x >= Mathf.Abs(moveAreaWidth - y - 1 - halfWidth)
                     && moveAreaWidth - x > Mathf.Abs(moveAreaWidth - y - 1 - halfWidth))
                     {
-                        DisplayMove(modX, modY, playfield, unit, lookup.movePreviewTemplate);
+                        DisplayIndicator(modX, modY, playfield, unit, indicator);
                     }
                 }
             }
         }
 
-        private void DisplayMove(int x, int y, Playfield playfield, PlayfieldUnit unitTryingtToMove, Indicator indicatorTempalte)
+        private Unit GetUnit(PlayfieldUnit unit)
+        {
+            for(int i = 0; i < unitTracking.Count; ++i)
+            {
+                Unit cur = unitTracking[i];
+                if(cur.associatedData.id == unit.id)
+                {
+                    return cur;
+                }
+            }
+
+            return null;
+        }
+
+        public void DamageUnit(PlayfieldUnit attackingUnit, PlayfieldUnit defendingUnit, Playfield playfield)
+        {
+            if(attackingUnit.id == defendingUnit.id)
+            {
+                return;
+            }
+
+            Unit attacking = GetUnit(attackingUnit);
+            Unit defending = GetUnit(defendingUnit);
+
+            int damage = attacking.attackDamage;
+            if(damage <= 0)
+            {
+                return;
+            }
+
+            while (damage-- > 0 && defendingUnit.id != Playfield.NO_ID)
+            {
+                Vector2Int willBeNuked = defendingUnit.locations.Tail();
+                Utils.ShortenUnitTailByOne(defendingUnit, playfield);
+
+                MsgUnitSegmentDestroyed msg = new MsgUnitSegmentDestroyed();
+                msg.attackingUnitID = attackingUnit.id;
+                msg.defendingUnitID = defendingUnit.id;
+                msg.destroyedPosition = willBeNuked;
+
+                Postmaster.Instance.Send(msg);
+            }
+
+            if(defendingUnit.id == Playfield.NO_ID)
+            {
+                unitTracking.Remove(defending); // Remove tracking of visuals
+                Destroy(defending.gameObject); // Destroy visuals
+            }
+            
+            DisplayUnits(playfield);
+        }
+
+
+        private void DisplayIndicator(int x, int y, Playfield playfield, PlayfieldUnit unitDisplayingIndicatorFor, Indicator indicatorTemplate)
         {
             EnsureParentObjectExists();
 
@@ -146,19 +203,23 @@ namespace forest
                 return;
             }
 
-            PlayfieldTile tile = playfield.world.Get(x, y);
+            PlayfieldTile toOverlay = playfield.world.Get(x, y);
 
             // Explode on DEFAULT case. That's a bad tile, and it should be known about!
-            UnityEngine.Assertions.Assert.IsFalse(tile.tileType == TileType.DEFAULT, "Default tiles are an invalid type of tile, and are not allowed for gameplay. Ensure all tiles are properly initialized.");
+            UnityEngine.Assertions.Assert.IsFalse(toOverlay.tileType == TileType.DEFAULT, "Default tiles are an invalid type of tile, and are not allowed for gameplay. Ensure all tiles are properly initialized.");
 
-            if(!Utils.CanUnitMoveTo(unitTryingtToMove, tile))
+            // Confirm if immediate move is possible if that's the indicator type.
+            if (indicatorTemplate.type == IndicatorType.ImmediateMove || indicatorTemplate.type == IndicatorType.Preview)
             {
-                return;
+                if (!Utils.CanUnitMoveTo(unitDisplayingIndicatorFor, toOverlay))
+                {
+                    return;
+                }
             }
 
-            Indicator movePreview = Instantiate(indicatorTempalte, spawnParent);
-            movePreview.associatedTile = tile;
-            movePreview.ownerUnit = unitTryingtToMove;
+            Indicator movePreview = Instantiate(indicatorTemplate, spawnParent);
+            movePreview.associatedTile = toOverlay;
+            movePreview.ownerUnit = unitDisplayingIndicatorFor;
             movePreview.overlaidPosition = new Vector2Int(x, y);
 
             float xPos = Offset(x);
@@ -169,7 +230,7 @@ namespace forest
         }
 
         /// <summary>
-        /// Re-draws just the units
+        /// Re-draws just playfield  units
         /// </summary>
         /// <param name="toDisplay"></param>
         public void DisplayUnits(Playfield toDisplay)
@@ -183,6 +244,10 @@ namespace forest
             }
         }
 
+        /// <summary>
+        /// Re-draws just playfield items
+        /// </summary>
+        /// <param name="toDisplay"></param>
         public void DisplayItems(Playfield toDisplay)
         {
             ClearMonoBehaviourList(itemTracking);

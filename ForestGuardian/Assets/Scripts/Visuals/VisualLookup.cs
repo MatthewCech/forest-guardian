@@ -14,10 +14,13 @@ namespace forest
     {
         public float interactionZPriority = 0.5f; // Used as -z in practice to move towards camera
         public float unitZPriority = 0.2f; // Used as -z in practice to move towards camera
-        
+
+        [Header("Indicators")]
         public Indicator movePreviewTemplate;
         public Indicator moveInteractionTemplate;
+        public Indicator attackPreview;
 
+        [Header("Various Templates")]
         public List<TileInfo> tileTemplates;
         public List<UnitInfo> unitTemplates;
         public List<ItemInfo> itemTemplates;

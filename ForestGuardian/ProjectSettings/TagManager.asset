@@ -44,6 +44,6 @@ TagManager:
   - name: UnitIcon
     uniqueID: 672056711
     locked: 0
-  - name: MoveIndicators
+  - name: Indicator
     uniqueID: 1249695165
     locked: 0

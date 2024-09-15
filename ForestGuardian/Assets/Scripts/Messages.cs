@@ -24,7 +24,6 @@ namespace forest
         public Item collectable;
     }
 
-
     [MessageMetadata(
     friendlyName: "Tile Primary Action",
     description: "A secondary action, such as a right-click, was performed over a playfield tile",
@@ -36,12 +35,23 @@ namespace forest
     }
 
     [MessageMetadata(
-    friendlyName: "Tile  Secondary Action",
+    friendlyName: "Tile Secondary Action",
     description: "A secondary action, such as a right-click, was performed over a playfield tile",
     isVisible: true)]
     public class MsgTileSecondaryAction : Loam.Message
     {
         public Tile tileTweaked;
         public Vector2Int tilePosition;
+    }
+
+    [MessageMetadata(
+    friendlyName: "Unit Segment Destroyed",
+    description: "A segment of a unit was destroyed",
+    isVisible: true)]
+    public class MsgUnitSegmentDestroyed : Loam.Message
+    {
+        public int attackingUnitID = Playfield.NO_ID;
+        public int defendingUnitID = Playfield.NO_ID;
+        public Vector2Int destroyedPosition;
     }
 }

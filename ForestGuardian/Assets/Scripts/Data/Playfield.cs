@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
+using static UnityEditor.Progress;
 
 namespace forest
 {
@@ -21,13 +23,17 @@ namespace forest
             nextID = 1;
         }
 
+        /// <summary>
+        /// Provide a playfield-unique ID for use when creating a new item within the playfield.
+        /// </summary>
+        /// <returns>an unused integer to be used as an ID when identifying things in the playfield.</returns>
         public int GetNextID()
         {
             return nextID++;
         }
 
         /// <summary>
-        /// Returns the first Unit with the specified ID, or null if no unit was found.
+        /// Returns the first unit with the specified ID, or null if no unit was found.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -40,6 +46,32 @@ namespace forest
                 {
                     unit = cur;
                     return true;
+                }
+            }
+
+            unit = null;
+            return false;
+        }
+
+        /// <summary>
+        /// Try and find the unit at the specified location if one is present.
+        /// </summary>
+        /// <param name="location">The location to check.</param>
+        /// <param name="unit">The unit, if found. If not found, null is assigned.</param>
+        /// <returns>Whether or not a unit was found at the specified location.</returns>
+        public bool TryGetUnitAt(Vector2Int location, out PlayfieldUnit unit)
+        {
+            for (int i = 0; i < units.Count; ++i)
+            {
+                PlayfieldUnit current = units[i];
+                for(int locs = 0; locs < current.locations.Count; ++locs)
+                {
+                    Vector2Int curLoc = current.locations[locs];
+                    if (curLoc == location)
+                    {
+                        unit = current;
+                        return true;
+                    }
                 }
             }
 
@@ -69,6 +101,10 @@ namespace forest
             return false;
         }
 
+        /// <summary>
+        /// Removes any item found at the specified location.
+        /// </summary>
+        /// <param name="pos">X,Y world location to try and remove tiles at.</param>
         public void RemoveItemAt(Vector2Int pos)
         {
             for(int i = items.Count - 1; i >= 0; --i)
@@ -76,18 +112,16 @@ namespace forest
                 if (items[i].location == pos)
                 {
                     items.RemoveAt(i);
-                    break;
                 }
             }
         }
 
-        public PlayfieldUnit GetUnit(int id)
-        {
-            bool didFind = TryGetUnit(id, out PlayfieldUnit unit);
-            UnityEngine.Assertions.Assert.IsTrue(didFind, "A unit is expected.");
-            return unit;
-        }
-
+        /// <summary>
+        /// Attempt to retrieve the location of the tile with the specified ID.
+        /// </summary>
+        /// <param name="id">The id of the tile to look up.</param>
+        /// <param name="loc">The position of the specified tile if found, zero otherwise.</param>
+        /// <returns>If a tile was successfully found.</returns>
         public bool TryGetTileXY(int id, out Vector2Int loc)
         {
             int w = world.GetWidth();

@@ -5,6 +5,7 @@ using UnityEditor.Search;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Loam;
+using static UnityEngine.UI.CanvasScaler;
 
 namespace forest
 {
@@ -26,7 +27,7 @@ namespace forest
         void Start()
         {
             Postmaster.Instance.Configure(PostmasterConfig.Default());
-            
+
             playfield = PlayfieldUtils.BuildPlayfield(levelData.text);
             visualizerPlayfield.Initialize(lookup);
             visualizerPlayfield.DisplayAll(playfield);
@@ -50,9 +51,19 @@ namespace forest
             PlayerMove,
 
             /// <summary>
+            /// Player-controlled attacking input
+            /// </summary>
+            PlayerAttack,
+
+            /// <summary>
             /// Computer play turn.
             /// </summary>
             OpponentMove,
+
+            /// <summary>
+            /// Computer attach turn.
+            /// </summary>
+            OpponentAttack,
 
             /// <summary>
             /// Did someone win? Someone lose? something go on that needs correcting?
@@ -89,8 +100,7 @@ namespace forest
 
         public void ProcessState(TurnState state)
         {
-
-            switch(state)
+            switch (state)
             {
                 case TurnState.Startup:
                     StartCoroutine(Startup());
@@ -123,15 +133,16 @@ namespace forest
 
                 case TurnState.Defeat:
                     StartCoroutine(Defeat());
-                    executeState = false; 
+                    executeState = false;
                     break;
 
                 case TurnState.Shutdown:
                     StartCoroutine(Shutdown());
-                    executeState = false; 
+                    executeState = false;
                     break;
             }
         }
+
         private void SetState(TurnState newState)
         {
             turnState = newState;
@@ -147,7 +158,7 @@ namespace forest
 
         private IEnumerator PrepareTurn()
         {
-            for(int i = 0; i < playfield.units.Count; i++)
+            for (int i = 0; i < playfield.units.Count; i++)
             {
                 PlayfieldUnit cur = playfield.units[i];
                 Unit template = lookup.GetUnityByTag(cur.tag).unitTemplate;
@@ -167,9 +178,10 @@ namespace forest
 
         private IEnumerator OpponentMove()
         {
-            const float visualDisplayDelay = 0.5f;
+            const float visualDisplayDelay = .3f;
+            const float visualMoveDelay = .1f;
 
-            if(!TryGetOpponentsTarget(out PlayfieldUnit targeted))
+            if (!TryGetOpponentsTarget(out PlayfieldUnit targeted))
             {
                 // If we're here, we're not gonna get anything done
                 // since there are no players yet.
@@ -178,45 +190,107 @@ namespace forest
             }
 
             yield return null;
-            for (int i = 0; i < playfield.units.Count; ++i)
+            for (int unitIndex = 0; unitIndex < playfield.units.Count; ++unitIndex)
             {
-                PlayfieldUnit curOpponentToMove = playfield.units[i];
+                PlayfieldUnit curOpponentToMove = playfield.units[unitIndex];
                 if (curOpponentToMove.team != Team.Opponent)
                 {
                     continue;
                 }
 
-                visualizerPlayfield.DisplayMovePreview(curOpponentToMove, playfield);
+                visualizerPlayfield.DisplayIndicatorMovePreview(curOpponentToMove, playfield);
+
                 yield return new WaitForSeconds(visualDisplayDelay);
 
-                Vector2Int curHead = curOpponentToMove.locations[PlayfieldUnit.HEAD_INDEX];
-                Vector2Int targetHead = targeted.locations[PlayfieldUnit.HEAD_INDEX];
-
-                int xDif = curHead.x - targetHead.x;
-                int yDif = curHead.y - targetHead.y;
-
-                // Recall that upper-left is 0, 0
-                Vector2Int yDir = Vector2Int.zero;
-                Vector2Int xDir = Vector2Int.zero;
-
-                if (yDif > 0) { yDir = Vector2Int.down; }
-                else if (yDif < 0) { yDir = Vector2Int.up; }
-
-                if (xDif > 0) { xDir = Vector2Int.left; }
-                else if (xDif < 0) { xDir = Vector2Int.right; }
-
-                Vector2Int toUse = Mathf.Abs(yDif) > Mathf.Abs(xDif) ? yDir : xDir;
-                Debug.Log($"yDiff{yDir}, xDiff{xDif}");
-                Vector2Int targetPos = curHead + toUse;
-                if (Utils.CanUnitMoveTo(playfield, curOpponentToMove, targetPos))
+                while (curOpponentToMove.curMovementBudget > 0)
                 {
-                    TryMoveUnitToLocation(curOpponentToMove, targetPos);
+                    if(!TryStepOnceTowardsPlayerUnit(targeted, curOpponentToMove))
+                    {
+                        break;
+                    }
+
+
+                    yield return new WaitForSeconds(visualMoveDelay);
                 }
+
+                visualizerPlayfield.DisplayIndicatorAttackPreview(curOpponentToMove, playfield);
+
+                yield return new WaitForSeconds(visualDisplayDelay);
+
+                Vector2Int head = curOpponentToMove.locations[PlayfieldUnit.HEAD_INDEX];
+                Vector2Int closest = GetClosestOpponentPosition(curOpponentToMove);
+
+                if (head.GridDistance(closest) <= curOpponentToMove.curAttackRange)
+                {
+                    if (playfield.TryGetUnitAt(closest, out PlayfieldUnit targetPlayerUnit))
+                    {
+                        visualizerPlayfield.DamageUnit(curOpponentToMove, targetPlayerUnit, playfield);
+                    }
+                }
+
+                visualizerPlayfield.HideIndicators();
+
 
                 yield return new WaitForSeconds(visualDisplayDelay);
             }
 
             SetState(TurnState.EvaluateTurn);
+        }
+
+        private Vector2Int GetClosestOpponentPosition(PlayfieldUnit curOpponent)
+        {
+            Vector2Int closestPos = new Vector2Int(-short.MaxValue, -short.MaxValue); // A wild distance
+            Vector2Int head = curOpponent.locations[PlayfieldUnit.HEAD_INDEX];
+
+            for (int i = 0; i < playfield.units.Count; ++i)
+            {
+                PlayfieldUnit unit = playfield.units[i];
+                if(unit.team == Team.Player)
+                {
+                    for(int loc = 0; loc < unit.locations.Count; ++loc)
+                    {
+                        Vector2Int curLoc = unit.locations[loc];
+                        if(head.GridDistance(curLoc) < head.GridDistance(closestPos))
+                        {
+                            closestPos = curLoc;
+                        }
+                    }
+                }
+            }
+
+            return closestPos;
+        }
+
+        private bool TryStepOnceTowardsPlayerUnit(PlayfieldUnit targeted, PlayfieldUnit curOpponentToMove)
+        {
+            Vector2Int curHead = curOpponentToMove.locations[PlayfieldUnit.HEAD_INDEX];
+            Vector2Int targetHead = targeted.locations[PlayfieldUnit.HEAD_INDEX];
+
+            int xDif = curHead.x - targetHead.x;
+            int yDif = curHead.y - targetHead.y;
+
+            // Recall that upper-left is 0, 0
+            Vector2Int yDir = Vector2Int.zero;
+            Vector2Int xDir = Vector2Int.zero;
+
+            if (yDif > 0) { yDir = Vector2Int.down; }
+            else if (yDif < 0) { yDir = Vector2Int.up; }
+
+            if (xDif > 0) { xDir = Vector2Int.left; }
+            else if (xDif < 0) { xDir = Vector2Int.right; }
+
+            Vector2Int toUse = Mathf.Abs(yDif) > Mathf.Abs(xDif) ? yDir : xDir;
+
+            Vector2Int targetPos = curHead + toUse;
+            if (Utils.CanUnitMoveTo(playfield, curOpponentToMove, targetPos))
+            {
+                MoveUnitToLocation(curOpponentToMove, targetPos);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         private bool TryGetOpponentsTarget(out PlayfieldUnit targeted)
@@ -237,10 +311,10 @@ namespace forest
 
         private bool HasEnemies()
         {
-            for(int i = 0; i < playfield.units.Count; ++i)
+            for (int i = 0; i < playfield.units.Count; ++i)
             {
                 PlayfieldUnit current = playfield.units[i];
-                if(current.team != Team.Player)
+                if (current.team != Team.Player)
                 {
                     return true;
                 }
@@ -300,7 +374,7 @@ namespace forest
                 sub = Postmaster.Instance.Subscribe<MsgIndicatorClicked>(PlayerMove_MsgMoveTileClicked);
                 // NOTE: Currently hardcoded. Need to select players piece by piece in the future.
                 PlayfieldUnit playerTmp = playfield.units[0];
-                visualizerPlayfield.DisplayMovePreview(playerTmp, playfield);
+                visualizerPlayfield.DisplayIndicatorMovePreview(playerTmp, playfield);
                 playerStateStartup = false;
                 exitPlayerState = false;
             }
@@ -335,17 +409,17 @@ namespace forest
             for (int i = 0; i < keyList.Length; i++)
             {
                 KeyCode keyCode = keyList[i];
-                if(Input.GetKeyDown(keyCode))
+                if (Input.GetKeyDown(keyCode))
                 {
                     relevantKeyDown = true;
                 }
             }
 
-            if(relevantKeyDown)
+            if (relevantKeyDown)
             {
                 if (Utils.CanUnitMoveTo(playfield, controlledUnit, target))
                 {
-                    TryMoveUnitToLocation(controlledUnit, target);
+                    MoveUnitToLocation(controlledUnit, target);
                 }
             }
         }
@@ -361,18 +435,36 @@ namespace forest
         void PlayerMove_MsgMoveTileClicked(Message raw)
         {
             MsgIndicatorClicked msg = raw as MsgIndicatorClicked;
-
-            if (msg.indicator.type != IndicatorType.ImmediateMove)
-            {
-                return;
-            }
-
             PlayfieldUnit unit = msg.indicator.ownerUnit;
             Vector2Int target = msg.indicator.overlaidPosition;
-            TryMoveUnitToLocation(unit, target);
+
+            if (msg.indicator.type == IndicatorType.ImmediateMove)
+            {
+                MoveUnitToLocation(unit, target);
+                if (unit.curMovementBudget == 0)
+                {
+                    visualizerPlayfield.DisplayIndicatorAttackPreview(unit, playfield);
+                }
+            }
+
+            if (msg.indicator.type == IndicatorType.Attack)
+            {
+                PlayfieldTile clickedTile = playfield.world.Get(target);
+                if (playfield.TryGetUnit(clickedTile.associatedUnitID, out PlayfieldUnit targetUnit))
+                {
+                    visualizerPlayfield.DamageUnit(unit, targetUnit, playfield);
+                    exitPlayerState = true;
+                }
+                else
+                {
+                    exitPlayerState = true;
+                }
+
+                visualizerPlayfield.HideIndicators();
+            }
         }
 
-        private void TryMoveUnitToLocation(PlayfieldUnit unit, Vector2Int target)
+        private void MoveUnitToLocation(PlayfieldUnit unit, Vector2Int target)
         {
             // Step the unit to the new place. Ensure this happens before visualizer update.
             Utils.StepUnitTo(unit, playfield, target, moveCost: 1);
@@ -384,14 +476,7 @@ namespace forest
 
             visualizerPlayfield.DisplayUnits(playfield);
             visualizerPlayfield.DisplayItems(playfield);
-            visualizerPlayfield.DisplayMovePreview(unit, playfield);
-
-            // NOTE: Check for going to next friendly movable target or just leave if no moves are allowed.
-            // For now, if no moves, we're done.
-            if (unit.curMovementBudget <= 0)
-            {
-                exitPlayerState = true;
-            }
+            visualizerPlayfield.DisplayIndicatorMovePreview(unit, playfield);
         }
     }
 }

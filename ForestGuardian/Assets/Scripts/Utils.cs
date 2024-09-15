@@ -54,15 +54,30 @@ namespace forest
             // Trim end if it's too long
             if (unitToMove.locations.Count > unitToMove.curMaxSize)
             {
-                int index = unitToMove.locations.Count - 1;
-                Vector2Int tileToUpdatePos = unitToMove.locations[index];
-                PlayfieldTile tileToUpdate = playfield.world.Get(tileToUpdatePos);
-                tileToUpdate.associatedUnitID = Playfield.NO_ID;
-                unitToMove.locations.RemoveAt(unitToMove.locations.Count - 1);
+                ShortenUnitTailByOne(unitToMove, playfield);
             }
 
             // Charge 'em!
             unitToMove.curMovementBudget -= moveCost;
+        }
+
+        public static void ShortenUnitTailByOne(PlayfieldUnit unitToShorten, Playfield playfield)
+        {
+            int index = unitToShorten.locations.Count - 1;
+            Vector2Int tileToUpdatePos = unitToShorten.locations[index];
+            PlayfieldTile tileToUpdate = playfield.world.Get(tileToUpdatePos);
+            tileToUpdate.associatedUnitID = Playfield.NO_ID;
+            unitToShorten.locations.RemoveAt(unitToShorten.locations.Count - 1);
+
+            // Suggest deletion if there are no location left
+            if(unitToShorten.locations.Count == 0)
+            {
+                playfield.units.Remove(unitToShorten);
+
+                unitToShorten.id = Playfield.NO_ID;
+                unitToShorten.locations = null;
+                unitToShorten.team = Team.DEFAULT;
+            }
         }
 
         /// <summary>

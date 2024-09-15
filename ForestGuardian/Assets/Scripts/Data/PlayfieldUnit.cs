@@ -26,10 +26,13 @@ namespace forest
         // information that all units have, and you should be able to interact with between units but it
         // also could be argued that it's only related to the specific visual+controller implementation.
         public int curMovementBudget = 0;
-
+        
         // Like this one for example. You'd expect it to be serialized, but it's entirely reasonable to
         // buffer or tweak the max length based on various gameplay elements. 
         public int curMaxSize = 1;
+
+        // This is basically the same move situation, but rehashed.
+        public int curAttackRange = 1;
     }
 }
 

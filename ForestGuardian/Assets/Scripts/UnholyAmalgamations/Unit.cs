@@ -11,6 +11,9 @@ namespace forest
         public int moveSpeed = 2;
         public int attackRange = 2;
 
+        // ALSO TODO: collect this kinda stuff into objects for multi-attack
+        public int attackDamage = 2;
+
         [Header("General Visuals")]
         [SerializeField] private GameObject head = null;
 

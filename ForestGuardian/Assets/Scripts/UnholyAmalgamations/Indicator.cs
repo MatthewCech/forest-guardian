@@ -19,7 +19,12 @@ namespace forest
         /// <summary>
         /// Expected to be clicked by the user, and represents a very narrow movement option set in the 4 cardinal directions
         /// </summary>
-        ImmediateMove = 2
+        ImmediateMove = 2,
+
+        /// <summary>
+        /// A preview for attacking range, any of which can be interacted with to imply an attack
+        /// </summary>
+        Attack = 3
     }
 
     public class Indicator : MonoBehaviour
