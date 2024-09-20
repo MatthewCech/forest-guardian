@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,16 +34,12 @@ namespace forest
         /// <returns></returns>
         public UnitInfo GetUnityByTag(string tag)
         {
-            for (int i = 0; i < unitTemplates.Count; ++i)
+            bool FindTag(UnitInfo info)
             {
-                UnitInfo cur = unitTemplates[i];
-                if (cur.unitTemplate.name.Equals(tag, System.StringComparison.InvariantCultureIgnoreCase))
-                {
-                    return cur;
-                }
+                return info.unitTemplate.name.Equals(tag, System.StringComparison.InvariantCultureIgnoreCase);
             }
 
-            return null;
+            return unitTemplates.Find(FindTag);
         }
 
         /// <summary>
@@ -53,16 +50,12 @@ namespace forest
         /// <returns></returns>
         public ItemInfo GetItemByTag(string tag)
         {
-            for (int i = 0; i < itemTemplates.Count; ++i)
+            bool FindInfo(ItemInfo info)
             {
-                ItemInfo cur = itemTemplates[i];
-                if (cur.itemTemplate.name.Equals(tag, System.StringComparison.InvariantCultureIgnoreCase))
-                {
-                    return cur;
-                }
+                return info.itemTemplate.name.Equals(tag, System.StringComparison.InvariantCultureIgnoreCase);
             }
 
-            return null;
+            return itemTemplates.Find(FindInfo);
         }
 
         /// <summary>
@@ -72,18 +65,13 @@ namespace forest
         /// <returns></returns>
         public TileInfo GetTileByType(TileType type)
         {
-            for (int i = 0; i < tileTemplates.Count; ++i)
+            bool GetTile(TileInfo info)
             {
-                TileInfo cur = tileTemplates[i];
-                if (cur.tileType == type)
-                {
-                    return cur;
-                }
+                return info.tileType == type;
             }
 
-            return null;
+            return tileTemplates.Find(GetTile);
         }
-
 
         [System.Serializable]
         public class TileInfo
