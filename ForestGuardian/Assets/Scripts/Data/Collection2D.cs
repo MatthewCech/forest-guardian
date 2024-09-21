@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,19 +6,13 @@ using UnityEngine;
 namespace forest
 {
     [System.Serializable]
+    [JsonObject(MemberSerialization.OptIn)]
     public class Collection2D<T>
     {
-        protected int width;
-        protected int height;
-
         // Internal access only.
-        protected T[,] data;
+        [JsonProperty] protected T[,] data;
 
-        /// <summary>
-        /// Hey future self: I really don't recommend using this, but you
-        /// may have to for a private constructor.
-        /// </summary>
-        protected Collection2D() { }
+        public Collection2D(){ }
 
         /// <summary>
         /// 2D Collection with a few guards in place for easier looping access or similar.
@@ -32,11 +27,11 @@ namespace forest
                 throw new System.ArgumentOutOfRangeException($"You cannot use a negative width or negative height in {this.GetType().Name}!");
             }
 
-            this.width = width;
-            this.height = height;
-
             data = new T[width, height];
         }
+
+        private int width => data.GetLength(0);
+        private int height => data.GetLength(1);
 
         /// <summary>
         /// Retrieve data at a given position from within the structure.

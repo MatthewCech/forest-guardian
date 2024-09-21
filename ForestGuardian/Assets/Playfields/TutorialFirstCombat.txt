@@ -11,3 +11,98 @@
 13322221
 11322211
 11122211
+
+
+{
+  "units": [],
+  "world": {
+    "data": [
+      [
+        {
+          "tileType": 3
+        },
+        {
+          "tileType": 3
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        }
+      ],
+      [
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        }
+      ],
+      [
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        }
+      ],
+      [
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        }
+      ],
+      [
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        }
+      ]
+    ]
+  },
+  "items": []
+}

@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -36,11 +37,13 @@ namespace forest
     }
 
     [System.Serializable]
+    [JsonObject(MemberSerialization.OptIn)]
     public class PlayfieldTile
     {
-        public TileType tileType = TileType.DEFAULT;
+        // TODO: Swap out for tag below, and serialize that
+        [JsonProperty] public TileType tileType = TileType.DEFAULT;
+        [JsonProperty] public string tag;
 
-        public int id = Playfield.NO_ID;                // The ID for this. 0 means no ID has been assigned.
-        public int associatedUnitID = Playfield.NO_ID;  // 0 means no ID association with anything
+        [JsonProperty] public int id = Playfield.NO_ID; // The playfield-unique ID for this. 0 means no ID has been assigned.
     }
 }

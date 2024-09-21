@@ -211,7 +211,7 @@ namespace forest
             // Confirm if immediate move is possible if that's the indicator type.
             if (indicatorTemplate.type == IndicatorType.ImmediateMove || indicatorTemplate.type == IndicatorType.Preview)
             {
-                if (!Utils.CanUnitMoveTo(unitDisplayingIndicatorFor, toOverlay))
+                if (!Utils.CanMovePlayfieldUnitTo(playfield, unitDisplayingIndicatorFor, new Vector2Int(x, y)))
                 {
                     return;
                 }

@@ -25,9 +25,6 @@ namespace forest
 
             PlayfieldTile targetTile = playfield.world.Get(pos.x, pos.y);
 
-            // Associate new tile.
-            targetTile.associatedUnitID = unitToMove.id;
-
             // See if we're going to be stepping on ourselves.
             bool isSteppingOnSelf = false;
             int indexBeingSteppedOn = -1;
@@ -66,7 +63,6 @@ namespace forest
             int index = unitToShorten.locations.Count - 1;
             Vector2Int tileToUpdatePos = unitToShorten.locations[index];
             PlayfieldTile tileToUpdate = playfield.world.Get(tileToUpdatePos);
-            tileToUpdate.associatedUnitID = Playfield.NO_ID;
             unitToShorten.locations.RemoveAt(unitToShorten.locations.Count - 1);
 
             // Suggest deletion if there are no location left
@@ -84,28 +80,28 @@ namespace forest
         /// Determine if you can move to a specified tile
         /// </summary>
         /// <param name="unitTryingToMove"></param>
-        /// <param name="tile"></param>
+        /// <param name="targetTile"></param>
         /// <returns></returns>
-        public static bool CanUnitMoveTo(PlayfieldUnit unitTryingToMove, PlayfieldTile tile)
+        public static bool CanMovePlayfieldUnitTo(Playfield playfield, PlayfieldUnit unitTryingToMove, Vector2Int targetLocation)
         {
+            PlayfieldTile targetTile = playfield.world.Get(targetLocation);
+
             // No impassable tiles, do it as a permitted list so you can't go by default.
-            if (tile.tileType != TileType.Basic)
+            if (targetTile.tileType != TileType.Basic)
             {
                 return false;
             }
 
-            // No non-self units at tiles!
-            if (tile.associatedUnitID > 0 && tile.associatedUnitID != unitTryingToMove.id)
+            // If there is a unit and it's not us, no-go.
+            if(playfield.TryGetUnitAt(targetLocation, out PlayfieldUnit atTile))
             {
-                return false;
+                if(atTile.id != unitTryingToMove.id)
+                {
+                    return false;
+                }
             }
 
             return true;
-        }
-        public static bool CanUnitMoveTo(Playfield playfield, PlayfieldUnit unitTryingToMove, Vector2Int location)
-        {
-            PlayfieldTile tile = playfield.world.Get(location);
-            return CanUnitMoveTo(unitTryingToMove, tile);
         }
     }
 }

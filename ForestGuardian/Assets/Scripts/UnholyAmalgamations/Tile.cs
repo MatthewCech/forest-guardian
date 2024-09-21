@@ -26,15 +26,13 @@ namespace forest
                 MsgTilePrimaryAction msg = new MsgTilePrimaryAction();
                 msg.tilePosition = associatedPos;
                 msg.tileTweaked = this;
-
                 Postmaster.Instance.Send(msg);
             }
             else if (Input.GetMouseButtonDown(1)) // right
             {
                 MsgTileSecondaryAction msg = new MsgTileSecondaryAction();
-                msg.tilePosition = associatedPos;
-                msg.tileTweaked = this;
-
+                msg.position = associatedPos;
+                msg.tile = this;
                 Postmaster.Instance.Send(msg);
             }
         }

@@ -1,27 +1,24 @@
+using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
-using static UnityEditor.Progress;
+using System.IO;
 
 namespace forest
 {
+    [System.Serializable]
+    [JsonObject(MemberSerialization.OptIn)]
     public class Playfield
     {
         public const int NO_ID = -1;
 
-        public List<PlayfieldUnit> units;
-        public Collection2D<PlayfieldTile> world;
-        public List<PlayfieldItem> items;
+        [JsonProperty] public List<PlayfieldUnit> units;
+        [JsonProperty] public Collection2D<PlayfieldTile> world;
+        [JsonProperty] public List<PlayfieldItem> items;
 
         // Internal tracking for playfield.
         // This is not unique across the game, just the specific playfield.
-        private int nextID;
-
-        public Playfield()
-        {
-            nextID = 1;
-        }
+        [JsonProperty] private int nextID = 1;
 
         /// <summary>
         /// Provide a playfield-unique ID for use when creating a new item within the playfield.
@@ -149,19 +146,8 @@ namespace forest
     {
         public static Playfield BuildPlayfield(string toParse)
         {
-            Playfield toBuild = new Playfield();
-
-            string[] splitOnmap = toParse.Split("[map]");
-            string mixedMapEntities = splitOnmap[0];
-            string mapRaw = splitOnmap[1];
-
-            toBuild.world = Parse2DCollection(toBuild, mapRaw);
-            toBuild.units = ParseUnitList(toBuild, mixedMapEntities);
-            toBuild.items = ParseItemList(toBuild, mixedMapEntities);
-
-            AssignUnits(toBuild.world, toBuild.units);
-
-            return toBuild;
+            Playfield parsed = JsonConvert.DeserializeObject<Playfield>(toParse);
+            return parsed;
         }
 
 
@@ -288,19 +274,6 @@ namespace forest
             }
 
             return toFill;
-        }
-
-        private static void AssignUnits(Collection2D<PlayfieldTile> toCorrect, List<PlayfieldUnit> units)
-        {
-            for(int unit = 0; unit < units.Count; ++unit)
-            {
-                PlayfieldUnit cur = units[unit];
-                for (int j = 0; j < cur.locations.Count; ++j)
-                {
-                    Vector2Int curLocation = cur.locations[j];
-                    toCorrect.Get(curLocation.x, curLocation.y).associatedUnitID = cur.id;
-                }
-            }
         }
     }
 }

@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace forest
 {
+    [System.Serializable]
     public class PlayfieldItem
     {
         public string tag = null;        // Unique tag for template

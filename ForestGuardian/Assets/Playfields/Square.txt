@@ -1,0 +1,171 @@
+{
+  "units": [
+    {
+      "tag": "Guardian",
+      "id": 26,
+      "team": 1,
+      "locations": [
+        {
+          "x": 1,
+          "y": 3,
+          "magnitude": 3.1622777,
+          "sqrMagnitude": 10
+        }
+      ]
+    },
+    {
+      "tag": "Ivy",
+      "id": 27,
+      "team": 2,
+      "locations": [
+        {
+          "x": 3,
+          "y": 1,
+          "magnitude": 3.1622777,
+          "sqrMagnitude": 10
+        }
+      ]
+    }
+  ],
+  "world": {
+    "data": [
+      [
+        {
+          "tileType": 1,
+          "tag": null,
+          "id": 1
+        },
+        {
+          "tileType": 1,
+          "tag": null,
+          "id": 2
+        },
+        {
+          "tileType": 1,
+          "tag": null,
+          "id": 3
+        },
+        {
+          "tileType": 2,
+          "tag": null,
+          "id": 4
+        },
+        {
+          "tileType": 2,
+          "tag": null,
+          "id": 5
+        }
+      ],
+      [
+        {
+          "tileType": 1,
+          "tag": null,
+          "id": 6
+        },
+        {
+          "tileType": 2,
+          "tag": null,
+          "id": 7
+        },
+        {
+          "tileType": 2,
+          "tag": null,
+          "id": 8
+        },
+        {
+          "tileType": 2,
+          "tag": null,
+          "id": 9
+        },
+        {
+          "tileType": 2,
+          "tag": null,
+          "id": 10
+        }
+      ],
+      [
+        {
+          "tileType": 2,
+          "tag": null,
+          "id": 11
+        },
+        {
+          "tileType": 2,
+          "tag": null,
+          "id": 12
+        },
+        {
+          "tileType": 2,
+          "tag": null,
+          "id": 13
+        },
+        {
+          "tileType": 3,
+          "tag": null,
+          "id": 14
+        },
+        {
+          "tileType": 3,
+          "tag": null,
+          "id": 15
+        }
+      ],
+      [
+        {
+          "tileType": 2,
+          "tag": null,
+          "id": 16
+        },
+        {
+          "tileType": 2,
+          "tag": null,
+          "id": 17
+        },
+        {
+          "tileType": 3,
+          "tag": null,
+          "id": 18
+        },
+        {
+          "tileType": 3,
+          "tag": null,
+          "id": 19
+        },
+        {
+          "tileType": 1,
+          "tag": null,
+          "id": 20
+        }
+      ],
+      [
+        {
+          "tileType": 2,
+          "tag": null,
+          "id": 21
+        },
+        {
+          "tileType": 2,
+          "tag": null,
+          "id": 22
+        },
+        {
+          "tileType": 1,
+          "tag": null,
+          "id": 23
+        },
+        {
+          "tileType": 1,
+          "tag": null,
+          "id": 24
+        },
+        {
+          "tileType": 1,
+          "tag": null,
+          "id": 25
+        }
+      ]
+    ]
+  },
+  "items": [],
+  "nextID": 28
+}

@@ -170,12 +170,6 @@ namespace forest
             SetState(TurnState.PlayerMove);
         }
 
-        /// <summary>
-        /// Want to see PlayerMove? Scroll down for the real one, it's horrid lol
-        /// </summary>
-        /// <returns></returns>
-        private IEnumerator PlayerMoveStub() { yield return null; }
-
         private IEnumerator OpponentMove()
         {
             const float visualDisplayDelay = .3f;
@@ -192,6 +186,7 @@ namespace forest
             yield return null;
             for (int unitIndex = 0; unitIndex < playfield.units.Count; ++unitIndex)
             {
+                // Select and display the move for an opponent
                 PlayfieldUnit curOpponentToMove = playfield.units[unitIndex];
                 if (curOpponentToMove.team != Team.Opponent)
                 {
@@ -199,9 +194,9 @@ namespace forest
                 }
 
                 visualizerPlayfield.DisplayIndicatorMovePreview(curOpponentToMove, playfield);
-
                 yield return new WaitForSeconds(visualDisplayDelay);
 
+                // 'Walk' towards the player based on available moves
                 while (curOpponentToMove.curMovementBudget > 0)
                 {
                     if(!TryStepOnceTowardsPlayerUnit(targeted, curOpponentToMove))
@@ -209,14 +204,14 @@ namespace forest
                         break;
                     }
 
-
                     yield return new WaitForSeconds(visualMoveDelay);
                 }
 
+                // Show attack visuals, and let them linger for a second before attacking.
                 visualizerPlayfield.DisplayIndicatorAttackPreview(curOpponentToMove, playfield);
-
                 yield return new WaitForSeconds(visualDisplayDelay);
 
+                // Apply damage
                 Vector2Int head = curOpponentToMove.locations[PlayfieldUnit.HEAD_INDEX];
                 Vector2Int closest = GetClosestOpponentPosition(curOpponentToMove);
 
@@ -229,8 +224,6 @@ namespace forest
                 }
 
                 visualizerPlayfield.HideIndicators();
-
-
                 yield return new WaitForSeconds(visualDisplayDelay);
             }
 
@@ -282,7 +275,7 @@ namespace forest
             Vector2Int toUse = Mathf.Abs(yDif) > Mathf.Abs(xDif) ? yDir : xDir;
 
             Vector2Int targetPos = curHead + toUse;
-            if (Utils.CanUnitMoveTo(playfield, curOpponentToMove, targetPos))
+            if (Utils.CanMovePlayfieldUnitTo(playfield, curOpponentToMove, targetPos))
             {
                 MoveUnitToLocation(curOpponentToMove, targetPos);
                 return true;
@@ -417,7 +410,7 @@ namespace forest
 
             if (relevantKeyDown)
             {
-                if (Utils.CanUnitMoveTo(playfield, controlledUnit, target))
+                if (Utils.CanMovePlayfieldUnitTo(playfield, controlledUnit, target))
                 {
                     MoveUnitToLocation(controlledUnit, target);
                 }
@@ -449,8 +442,7 @@ namespace forest
 
             if (msg.indicator.type == IndicatorType.Attack)
             {
-                PlayfieldTile clickedTile = playfield.world.Get(target);
-                if (playfield.TryGetUnit(clickedTile.associatedUnitID, out PlayfieldUnit targetUnit))
+                if (playfield.TryGetUnitAt(target, out PlayfieldUnit targetUnit))
                 {
                     visualizerPlayfield.DamageUnit(unit, targetUnit, playfield);
                     exitPlayerState = true;

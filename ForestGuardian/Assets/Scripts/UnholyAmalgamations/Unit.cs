@@ -1,3 +1,4 @@
+using Loam;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,6 +22,30 @@ namespace forest
         [Header("Runtime Association")]
         public PlayfieldUnit associatedData;
         public Vector2Int gridPos;
+
+
+        private void OnMouseOver()
+        {
+            if (Input.GetMouseButtonDown(0)) // left 
+            {
+                MsgUnitPrimaryAction msg = new MsgUnitPrimaryAction();
+                msg.position = gridPos;
+                msg.unit = this;
+                Postmaster.Instance.Send(msg);
+            }
+            else if (Input.GetMouseButtonDown(1)) // right
+            {
+                MsgUnitSecondaryAction msg = new MsgUnitSecondaryAction();
+                msg.position = gridPos;
+                msg.unit = this;
+                Postmaster.Instance.Send(msg);
+            }
+        }
+
+        public void SetBodyVisibility(bool visible)
+        {
+            head.SetActive(visible);
+        }
 
 #if UNITY_EDITOR
         private void OnDrawGizmos()
@@ -58,10 +83,5 @@ namespace forest
             }
         }
 #endif 
-
-        public void SetBodyVisibility(bool visible)
-        {
-            head.SetActive(visible);
-        }
     }
 }

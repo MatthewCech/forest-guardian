@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Newtonsoft.Json;
 
 namespace forest
 {
@@ -11,14 +12,17 @@ namespace forest
         Opponent = 2,
     }
 
+    [System.Serializable]
+    [JsonObject(MemberSerialization.OptIn)]
     public class PlayfieldUnit
     {
-        public string tag = null;
-        public int id = Playfield.NO_ID; // PLAYFIELD-SPECIFIC id.
-        public Team team = Team.DEFAULT;
+
+        [JsonProperty] public string tag = null;
+        [JsonProperty] public int id = Playfield.NO_ID; // PLAYFIELD-SPECIFIC id.
+        [JsonProperty] public Team team = Team.DEFAULT;
 
         public const int HEAD_INDEX = 0;
-        public List<Vector2Int> locations = new List<Vector2Int>();
+        [JsonProperty] public List<Vector2Int> locations = new List<Vector2Int>();
 
         // Per-turn variables... These don't need serialization in practice,
         // and aren't related to data representation meaningfully. Curious philosophical coding question,

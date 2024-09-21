@@ -1,15 +1,410 @@
-1,guardian,3,7
-i,acorn,7,1
-[map]
-1122222221
-2222332211
-1112222211
-1222222222
-1223222211
-2223222111
-1122233211
-1122233222
-1222222232
-1222211112
-2222111222
-3211111122
+{
+  "units": [
+    {
+      "tag": "guardian",
+      "id": 121,
+      "team": 1,
+      "locations": [
+        {
+          "x": 3,
+          "y": 7
+        }
+      ]
+    }
+  ],
+  "world": {
+    "data": [
+      [
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 3
+        }
+      ],
+      [
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 3
+        }
+      ],
+      [
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 3
+        },
+        {
+          "tileType": 3
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        }
+      ],
+      [
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 3
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 1
+        }
+      ],
+      [
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 3
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        }
+      ],
+      [
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        }
+      ],
+      [
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 3
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 3
+        },
+        {
+          "tileType": 3
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 2
+        }
+      ],
+      [
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 3
+        },
+        {
+          "tileType": 3
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 3
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        }
+      ],
+      [
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 3
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        }
+      ],
+      [
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 3
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 1
+        },
+        {
+          "tileType": 3
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        },
+        {
+          "tileType": 2
+        }
+      ]
+    ]
+  },
+  "items": [
+    {
+      "tag": "acorn",
+      "id": 122,
+      "team": 1,
+      "location": {
+        "x": 7,
+        "y": 1
+      }
+    }
+  ]
+}

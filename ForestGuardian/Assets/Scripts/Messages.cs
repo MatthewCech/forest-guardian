@@ -40,8 +40,28 @@ namespace forest
     isVisible: true)]
     public class MsgTileSecondaryAction : Loam.Message
     {
-        public Tile tileTweaked;
-        public Vector2Int tilePosition;
+        public Tile tile;
+        public Vector2Int position;
+    }
+
+    [MessageMetadata(
+    friendlyName: "Unit Primary Action",
+    description: "A primary action, such as a left-click, was performed over a playfield unit. This takes precedence over a playfield tile.",
+    isVisible: true)]
+    public class MsgUnitPrimaryAction : Loam.Message
+    {
+        public Unit unit;
+        public Vector2Int position;
+    }
+
+    [MessageMetadata(
+    friendlyName: "Unit Secondary Action",
+    description: "A secondary action, such as a right-click, was performed over a playfield unit. This takes precedence over a playfield tile.",
+    isVisible: true)]
+    public class MsgUnitSecondaryAction : Loam.Message
+    {
+        public Unit unit;
+        public Vector2Int position;
     }
 
     [MessageMetadata(
