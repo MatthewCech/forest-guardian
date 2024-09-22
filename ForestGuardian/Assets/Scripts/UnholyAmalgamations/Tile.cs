@@ -20,16 +20,14 @@ namespace forest
 
         private void OnDrawGizmos()
         {
-            int id = -1;
-            int movCost = -1;
-            bool isImpass = false;
-
-            if (associatedData != null)
+            if (associatedData == null)
             {
-                id = associatedData.id;
-                movCost = associatedData.curMoveDifficulty;
-                isImpass = associatedData.curIsImpassable;
+                return;
             }
+
+            int id = associatedData.id;
+            int movCost = associatedData.curMoveDifficulty;
+            bool isImpass = associatedData.curIsImpassable;
 
             GUIStyle style = new GUIStyle();
             style.normal.textColor = Color.green;

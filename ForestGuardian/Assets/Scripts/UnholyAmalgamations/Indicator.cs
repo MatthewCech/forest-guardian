@@ -52,11 +52,11 @@ namespace forest
                 return;
             }
 
+            int id = associatedTile.id;
+
             GUIStyle style = new GUIStyle();
             style.normal.textColor = type == IndicatorType.Attack ? Color.red : Color.cyan;
             style.alignment = TextAnchor.MiddleLeft;
-
-            int id = associatedTile.id;
 
             float lOffset = 0.05f;
             float vSpace = -0.15f;
