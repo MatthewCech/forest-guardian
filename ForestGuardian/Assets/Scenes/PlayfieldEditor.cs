@@ -108,6 +108,20 @@ namespace forest
             return -1;
         }
 
+        public int GetTileTempalteIndex(PlayfieldTile tileData)
+        {
+            for(int i = 0; i < lookup.tileTemplates.Count; ++i)
+            {
+                Tile template = lookup.tileTemplates[i].tileTemplate;
+                if (template.name.Equals(tileData.tag, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
         /// <summary>
         /// Processes an action that 
         /// </summary>
@@ -127,16 +141,18 @@ namespace forest
             }
             else
             {
+                // No longer using enums, we now follow the pattern of units by cycling through available tiles by tag
                 PlayfieldTile tile = workingPlayfield.world.Get(msg.tilePosition);
+                int index = GetTileTempalteIndex(tile);
 
-                // We're making an assumption that values here are sequential and spaced by 1.
-                ++tile.tileType;
-                if (tile.tileType >= TileType.COUNT)
+                index++;
+                if (index >= lookup.tileTemplates.Count)
                 {
-                    tile.tileType = TileType.DEFAULT + 1;
+                    index = 0;
                 }
 
-                workingPlayfield.world.Set(msg.tilePosition, tile);
+                string newTag = lookup.unitTemplates[index].unitTemplate.name;
+                tile.tag = newTag;
             }
 
             visuals.DisplayAll(workingPlayfield);
@@ -152,13 +168,17 @@ namespace forest
             MsgTileSecondaryAction msg = raw as MsgTileSecondaryAction;
             PlayfieldTile tile = workingPlayfield.world.Get(msg.position);
 
-            --tile.tileType;
-            if (tile.tileType <= TileType.DEFAULT)
+            int index = GetTileTempalteIndex(tile);
+
+            index--;
+            if (index < 0)
             {
-                tile.tileType = TileType.COUNT - 1;
+                index = lookup.tileTemplates.Count - 1;
             }
 
-            workingPlayfield.world.Set(msg.position, tile);
+            string newTag = lookup.unitTemplates[index].unitTemplate.name;
+            tile.tag = newTag;
+
             visuals.DisplayAll(workingPlayfield);
         }
 
@@ -182,7 +202,7 @@ namespace forest
                 for (int y = 0; y < newHeight; ++y)
                 {
                     PlayfieldTile tile = new PlayfieldTile();
-                    tile.tileType = TileType.Nothing;
+                    tile.tag = lookup.defaultTileTemplate.name;
                     tile.id = newPlayfield.GetNextID();
                     newPlayfield.world.Set(x, y, tile);
                 }

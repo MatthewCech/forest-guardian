@@ -28,7 +28,7 @@ namespace forest
         {
             Postmaster.Instance.Configure(PostmasterConfig.Default());
 
-            playfield = PlayfieldUtils.BuildPlayfield(levelData.text);
+            playfield = Playfield.BuildPlayfield(levelData.text);
             visualizerPlayfield.Initialize(lookup);
             visualizerPlayfield.DisplayAll(playfield);
 
@@ -158,12 +158,19 @@ namespace forest
 
         private IEnumerator PrepareTurn()
         {
-            for (int i = 0; i < playfield.units.Count; i++)
+            foreach(PlayfieldUnit unit in playfield.units)
             {
-                PlayfieldUnit cur = playfield.units[i];
-                Unit template = lookup.GetUnityByTag(cur.tag).unitTemplate;
-                cur.curMovementBudget = template.moveSpeed;
-                cur.curMaxSize = template.maxSize;
+                Unit template = lookup.GetUnityByTag(unit.tag).unitTemplate;
+                unit.curMovementBudget = template.moveSpeed;
+                unit.curMaxSize = template.maxSize;
+                unit.curAttackRange = template.attackRange;
+            }
+
+            foreach(PlayfieldTile tile in playfield.world)
+            {
+                Tile template = lookup.GetTileByTag(tile.tag).tileTemplate;
+                tile.curIsImpassable = template.isImpassable;
+                tile.curMoveDifficulty = template.moveDifficulty;
             }
 
             yield return null;

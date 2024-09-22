@@ -87,7 +87,7 @@ namespace forest
             PlayfieldTile targetTile = playfield.world.Get(targetLocation);
 
             // No impassable tiles, do it as a permitted list so you can't go by default.
-            if (targetTile.tileType != TileType.Basic)
+            if (targetTile.curIsImpassable)
             {
                 return false;
             }

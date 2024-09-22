@@ -10,6 +10,10 @@ namespace forest
 {
     public class Tile : MonoBehaviour
     {
+        // TODO: Extract this data to make it visual agnostic
+        public bool isImpassable = false;
+        public int moveDifficulty = 1;
+
         [Header("Runtime Visual Association")]
         public int associatedDataID;
         public Vector2Int associatedPos;

@@ -140,140 +140,15 @@ namespace forest
             loc = Vector2Int.zero;
             return false;
         }
-    }
 
-    public class PlayfieldUtils
-    {
+        /// <summary>
+        /// Given a raw string in the supported format, parses out a playfield
+        /// </summary>
+        /// <returns>A new playfield object representing the serialized data provided</returns>
         public static Playfield BuildPlayfield(string toParse)
         {
             Playfield parsed = JsonConvert.DeserializeObject<Playfield>(toParse);
             return parsed;
-        }
-
-
-        /// <summary>
-        /// Takes input of a list of newline separated 
-        /// unit indicators and allows 
-        /// 
-        /// delimiters
-        ///  |    | |
-        /// 1,tree,4,2     (SAMPLE LINE)
-        /// ^   ^  ^
-        /// ^   ^  ^ x,y pos from lower left
-        /// ^   ^unit tag
-        /// ^team 1
-        ///
-
-        /// </summary>
-        /// <param name="units"></param>
-        /// <returns></returns>
-        private static List<PlayfieldUnit> ParseUnitList(Playfield playfield, string unitSection)
-        {
-            string[] rows = unitSection.Trim().Split('\n');
-
-            List<PlayfieldUnit> toFill = new List<PlayfieldUnit>();
-
-            for(int i = 0; i < rows.Length; ++i)
-            {
-                // Current operating string. See if we need to leave early.
-                string row = rows[i];
-                if(row[0] == 'i')
-                {
-                    continue;
-                }
-
-                PlayfieldUnit toAdd = new PlayfieldUnit();
-
-                // Split, left to right.
-                string[] split = row.Split(',');
-
-                // Team info
-                Team team = (Team)int.Parse(split[0]);
-
-                // Icon info
-                string tag = split[1];
-
-                // Starting location
-                int x = int.Parse(split[2]);
-                int y = int.Parse(split[3]);
-
-                // Apply information
-                toAdd.tag = tag;
-                toAdd.id = playfield.GetNextID();
-                toAdd.team = team;
-                toAdd.locations = new List<Vector2Int>
-                {
-                    new Vector2Int(x, y)
-                };
-
-                toFill.Add(toAdd);
-            }
-
-            return toFill;
-        }
-
-        // This is super duped code. Convert input type to something like JSON or similar to reduce this noise.
-        private static List<PlayfieldItem> ParseItemList(Playfield playfield, string unitSection)
-        {
-            string[] rows = unitSection.Trim().Split('\n');
-
-            List<PlayfieldItem> toFill = new List<PlayfieldItem>();
-
-            for (int i = 0; i < rows.Length; ++i)
-            {
-                string row = rows[i];
-                if (row[0] != 'i')
-                {
-                    continue;
-                }
-
-                PlayfieldItem toAdd = new PlayfieldItem();
-
-                string[] split = row.Split(',');
-                string tag = split[1];
-
-                int x = int.Parse(split[2]);
-                int y = int.Parse(split[3]);
-
-                toAdd.id = playfield.GetNextID();
-                toAdd.tag = tag;
-                toAdd.location = new Vector2Int(x, y);
-
-                toFill.Add(toAdd);
-            }
-
-            return toFill;
-        }
-
-
-        /// <summary>
-        /// Assumes inpute 
-        /// </summary>
-        /// <param name="mapSection"></param>
-        /// <returns></returns>
-        private static Collection2D<PlayfieldTile> Parse2DCollection(Playfield playfield, string mapSection)
-        {
-            string[] rows = mapSection.Trim().Split('\n');
-            int width = rows[0].Trim().Length;
-            int height = rows.Length;
-
-            Collection2D<PlayfieldTile> toFill = new Collection2D<PlayfieldTile>(width, height);
-
-            for (int y = 0; y < height; ++y)
-            {
-                string row = rows[y].Trim();
-                for (int x = 0; x < width; ++x)
-                {
-                    char cur = row[x];
-                    int num = cur - '0';
-                    PlayfieldTile newTile = new PlayfieldTile();
-                    newTile.tileType = (TileType)num;
-                    newTile.id = playfield.GetNextID();
-                    toFill.Set(x, y, newTile);
-                }
-            }
-
-            return toFill;
         }
     }
 }

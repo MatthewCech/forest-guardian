@@ -17,13 +17,11 @@ MonoBehaviour:
   movePreviewTemplate: {fileID: 4283725978537098870, guid: 891fe58b212c85e4d9a238b3989b473c, type: 3}
   moveInteractionTemplate: {fileID: 4283725978537098870, guid: d1e3d839f15a27c4e93e9ec46cc56418, type: 3}
   attackPreview: {fileID: 4283725978537098870, guid: 322632842acbdbf49b46ae23382a5103, type: 3}
+  defaultTileTemplate: {fileID: 1420120552449842933, guid: 2504cac9ccd300644a23d29d20a99a29, type: 3}
   tileTemplates:
   - tileTemplate: {fileID: 1420120552449842933, guid: 2504cac9ccd300644a23d29d20a99a29, type: 3}
-    tileType: 1
   - tileTemplate: {fileID: 6887906279899011010, guid: ce3a358c169b13b48876961cb0e80d8f, type: 3}
-    tileType: 2
   - tileTemplate: {fileID: 5563321889563251933, guid: 3b1cd29dffbdfc1459ad7afc13d90885, type: 3}
-    tileType: 3
   unitTemplates:
   - unitTemplate: {fileID: -8435911677690845889, guid: f0535de490cedc949b962a5d60bb9372, type: 3}
   - unitTemplate: {fileID: -8435911677690845889, guid: 758399eb882b43f4785c56cec129a8ed, type: 3}

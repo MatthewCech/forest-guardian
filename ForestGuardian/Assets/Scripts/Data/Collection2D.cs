@@ -2,12 +2,13 @@ using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace forest
 {
     [System.Serializable]
     [JsonObject(MemberSerialization.OptIn)]
-    public class Collection2D<T>
+    public class Collection2D<T> : IEnumerable<T>
     {
         // Internal access only.
         [JsonProperty] protected T[,] data;
@@ -94,6 +95,22 @@ namespace forest
                     data[x, y] = target.data[x, y];
                 }
             }
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            for (int x = 0; x < width && x < width; ++x)
+            {
+                for (int y = 0; y < height && y < height; ++y)
+                {
+                    yield return data[x, y];
+                }
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
         }
     }
 }

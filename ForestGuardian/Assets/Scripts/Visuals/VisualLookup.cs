@@ -22,6 +22,7 @@ namespace forest
         public Indicator attackPreview;
 
         [Header("Various Templates")]
+        public Tile defaultTileTemplate;
         public List<TileInfo> tileTemplates;
         public List<UnitInfo> unitTemplates;
         public List<ItemInfo> itemTemplates;
@@ -36,7 +37,7 @@ namespace forest
         {
             bool FindTag(UnitInfo info)
             {
-                return info.unitTemplate.name.Equals(tag, System.StringComparison.InvariantCultureIgnoreCase);
+                return info.unitTemplate.name.Equals(tag, StringComparison.InvariantCultureIgnoreCase);
             }
 
             return unitTemplates.Find(FindTag);
@@ -52,7 +53,7 @@ namespace forest
         {
             bool FindInfo(ItemInfo info)
             {
-                return info.itemTemplate.name.Equals(tag, System.StringComparison.InvariantCultureIgnoreCase);
+                return info.itemTemplate.name.Equals(tag, StringComparison.InvariantCultureIgnoreCase);
             }
 
             return itemTemplates.Find(FindInfo);
@@ -63,21 +64,20 @@ namespace forest
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public TileInfo GetTileByType(TileType type)
+        public TileInfo GetTileByTag(string tag)
         {
-            bool GetTile(TileInfo info)
+            bool FindTile(TileInfo info)
             {
-                return info.tileType == type;
+                return info.tileTemplate.name.Equals(tag, StringComparison.InvariantCultureIgnoreCase);
             }
 
-            return tileTemplates.Find(GetTile);
+            return tileTemplates.Find(FindTile);
         }
 
         [System.Serializable]
         public class TileInfo
         {
             public Tile tileTemplate;
-            public TileType tileType;
         }
 
         [System.Serializable]

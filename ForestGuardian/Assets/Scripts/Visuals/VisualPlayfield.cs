@@ -205,9 +205,6 @@ namespace forest
 
             PlayfieldTile toOverlay = playfield.world.Get(x, y);
 
-            // Explode on DEFAULT case. That's a bad tile, and it should be known about!
-            UnityEngine.Assertions.Assert.IsFalse(toOverlay.tileType == TileType.DEFAULT, "Default tiles are an invalid type of tile, and are not allowed for gameplay. Ensure all tiles are properly initialized.");
-
             // Confirm if immediate move is possible if that's the indicator type.
             if (indicatorTemplate.type == IndicatorType.ImmediateMove || indicatorTemplate.type == IndicatorType.Preview)
             {
@@ -303,8 +300,7 @@ namespace forest
         {
             EnsureParentObjectExists();
 
-            Tile template = lookup.GetTileByType(data.tileType).tileTemplate;
-
+            Tile template = lookup.GetTileByTag(data.tag).tileTemplate;
             Tile instance = GameObject.Instantiate(template, spawnParent);
 
             float xPos = Offset(x);
