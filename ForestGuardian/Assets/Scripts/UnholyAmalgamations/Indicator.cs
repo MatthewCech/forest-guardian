@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using Loam;
+using UnityEngine.UIElements;
 
 namespace forest
 {
@@ -42,17 +43,26 @@ namespace forest
             MsgIndicatorClicked msg = new MsgIndicatorClicked();
             msg.indicator = this;
             Postmaster.Instance.Send(msg);
-            /*
-            if (associatedTile != null)
-            {
-                Debug.Log("Tile " + associatedTile.id + ", unit ID: " + associatedTile.associatedUnitID);
-            }
-            */
         }
 
         private void OnDrawGizmos()
         {
-            Handles.Label(transform.position + Vector3.left * .35f + Vector3.down * .2f, "id->" + associatedTile.id);
+            if(associatedTile == null)
+            {
+                return;
+            }
+
+            GUIStyle style = new GUIStyle();
+            style.normal.textColor = type == IndicatorType.Attack ? Color.red : Color.cyan;
+            style.alignment = TextAnchor.MiddleLeft;
+
+            int id = associatedTile.id;
+
+            float lOffset = 0.05f;
+            float vSpace = -0.15f;
+            float vOffset = -0.1f;
+
+            Handles.Label(transform.position + Vector3.left * lOffset + Vector3.up * (vOffset), "id@>" + id, style);
         }
     }
 }

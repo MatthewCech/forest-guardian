@@ -307,7 +307,7 @@ namespace forest
             float yPos = Offset(y);
 
             instance.transform.position = new Vector3(xPos, -yPos, 0);
-            instance.associatedDataID = data.id;
+            instance.associatedData = data;
             instance.associatedPos = new Vector2Int(x, y);
 
             tileTracking.Add(instance);
