@@ -48,7 +48,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isImpassable: 1
   moveDifficulty: 1
-  associatedDataID: 0
+  associatedData:
+    tag: 
+    id: -1
+    curIsImpassable: 0
+    curMoveDifficulty: 1
   associatedPos: {x: 0, y: 0}
 --- !u!212 &1136117854463149887
 SpriteRenderer:
@@ -145,5 +149,5 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.984375, y: 0.984375}
+  m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0

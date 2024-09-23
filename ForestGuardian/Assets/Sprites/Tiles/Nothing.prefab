@@ -48,7 +48,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isImpassable: 1
   moveDifficulty: 1
-  associatedDataID: 0
+  associatedData:
+    tag: 
+    id: -1
+    curIsImpassable: 0
+    curMoveDifficulty: 1
   associatedPos: {x: 0, y: 0}
 --- !u!212 &2898962497425273798
 SpriteRenderer:

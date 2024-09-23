@@ -1,13 +1,15 @@
 {
   "units": [
     {
-      "tag": "guardian",
-      "id": 121,
+      "tag": "Guardian",
+      "id": 94,
       "team": 1,
       "locations": [
         {
           "x": 3,
-          "y": 7
+          "y": 5,
+          "magnitude": 5.83095169,
+          "sqrMagnitude": 34
         }
       ]
     }
@@ -16,395 +18,397 @@
     "data": [
       [
         {
-          "tileType": 1
+          "tag": "Nothing",
+          "id": 1
         },
         {
-          "tileType": 1
+          "tag": "Nothing",
+          "id": 2
         },
         {
-          "tileType": 1
+          "tag": "Nothing",
+          "id": 3
         },
         {
-          "tileType": 1
+          "tag": "Nothing",
+          "id": 4
         },
         {
-          "tileType": 1
+          "tag": "Wall",
+          "id": 5
         },
         {
-          "tileType": 2
+          "tag": "Wall",
+          "id": 6
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 7
         },
         {
-          "tileType": 1
+          "tag": "Nothing",
+          "id": 8
         },
         {
-          "tileType": 1
-        },
-        {
-          "tileType": 1
-        },
-        {
-          "tileType": 2
-        },
-        {
-          "tileType": 3
+          "tag": "Nothing",
+          "id": 9
         }
       ],
       [
         {
-          "tileType": 1
+          "tag": "Nothing",
+          "id": 6
         },
         {
-          "tileType": 1
+          "tag": "Nothing",
+          "id": 7
         },
         {
-          "tileType": 1
+          "tag": "Nothing",
+          "id": 8
         },
         {
-          "tileType": 1
+          "tag": "Wall",
+          "id": 9
         },
         {
-          "tileType": 2
+          "tag": "Wall",
+          "id": 10
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 14
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 15
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 16
         },
         {
-          "tileType": 1
-        },
-        {
-          "tileType": 2
-        },
-        {
-          "tileType": 2
-        },
-        {
-          "tileType": 3
+          "tag": "Nothing",
+          "id": 18
         }
       ],
       [
         {
-          "tileType": 1
+          "tag": "Nothing",
+          "id": 11
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 12
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 13
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 14
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 15
         },
         {
-          "tileType": 3
+          "tag": "Basic",
+          "id": 22
         },
         {
-          "tileType": 3
+          "tag": "Basic",
+          "id": 23
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 24
         },
         {
-          "tileType": 2
-        },
-        {
-          "tileType": 2
-        },
-        {
-          "tileType": 2
-        },
-        {
-          "tileType": 2
+          "tag": "Wall",
+          "id": 27
         }
       ],
       [
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 16
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 17
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 18
         },
         {
-          "tileType": 3
+          "tag": "Basic",
+          "id": 19
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 20
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 30
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 31
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 32
         },
         {
-          "tileType": 2
-        },
-        {
-          "tileType": 2
-        },
-        {
-          "tileType": 2
-        },
-        {
-          "tileType": 1
+          "tag": "Wall",
+          "id": 36
         }
       ],
       [
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 21
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 22
         },
         {
-          "tileType": 2
+          "tag": "Wall",
+          "id": 23
         },
         {
-          "tileType": 3
+          "tag": "Wall",
+          "id": 24
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 25
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 38
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 39
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 40
         },
         {
-          "tileType": 2
-        },
-        {
-          "tileType": 2
-        },
-        {
-          "tileType": 1
-        },
-        {
-          "tileType": 1
+          "tag": "Basic",
+          "id": 45
         }
       ],
       [
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 41
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 42
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 43
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 44
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 45
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 46
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 47
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 48
         },
         {
-          "tileType": 2
-        },
-        {
-          "tileType": 1
-        },
-        {
-          "tileType": 1
-        },
-        {
-          "tileType": 1
+          "tag": "Nothing",
+          "id": 54
         }
       ],
       [
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 49
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 50
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 51
         },
         {
-          "tileType": 2
+          "tag": "Wall",
+          "id": 52
         },
         {
-          "tileType": 2
+          "tag": "Wall",
+          "id": 53
         },
         {
-          "tileType": 3
+          "tag": "Basic",
+          "id": 54
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 55
         },
         {
-          "tileType": 2
+          "tag": "Nothing",
+          "id": 56
         },
         {
-          "tileType": 3
-        },
-        {
-          "tileType": 3
-        },
-        {
-          "tileType": 1
-        },
-        {
-          "tileType": 2
+          "tag": "Nothing",
+          "id": 63
         }
       ],
       [
         {
-          "tileType": 1
+          "tag": "Basic",
+          "id": 64
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 65
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 66
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 67
         },
         {
-          "tileType": 3
+          "tag": "Wall",
+          "id": 68
         },
         {
-          "tileType": 3
+          "tag": "Wall",
+          "id": 69
         },
         {
-          "tileType": 1
+          "tag": "Basic",
+          "id": 70
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 71
         },
         {
-          "tileType": 2
-        },
-        {
-          "tileType": 3
-        },
-        {
-          "tileType": 2
-        },
-        {
-          "tileType": 2
+          "tag": "Nothing",
+          "id": 72
         }
       ],
       [
         {
-          "tileType": 1
+          "tag": "Wall",
+          "id": 73
         },
         {
-          "tileType": 1
+          "tag": "Wall",
+          "id": 74
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 75
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 76
         },
         {
-          "tileType": 3
+          "tag": "Wall",
+          "id": 77
         },
         {
-          "tileType": 1
+          "tag": "Wall",
+          "id": 78
         },
         {
-          "tileType": 1
+          "tag": "Basic",
+          "id": 79
         },
         {
-          "tileType": 2
+          "tag": "Basic",
+          "id": 80
         },
         {
-          "tileType": 2
-        },
-        {
-          "tileType": 2
-        },
-        {
-          "tileType": 2
-        },
-        {
-          "tileType": 2
+          "tag": "Nothing",
+          "id": 81
         }
       ],
       [
         {
-          "tileType": 1
+          "tag": "Nothing",
+          "id": 82
         },
         {
-          "tileType": 1
+          "tag": "Wall",
+          "id": 83
         },
         {
-          "tileType": 1
+          "tag": "Wall",
+          "id": 84
         },
         {
-          "tileType": 3
+          "tag": "Basic",
+          "id": 85
         },
         {
-          "tileType": 1
+          "tag": "Nothing",
+          "id": 86
         },
         {
-          "tileType": 1
+          "tag": "Wall",
+          "id": 87
         },
         {
-          "tileType": 1
+          "tag": "Wall",
+          "id": 88
         },
         {
-          "tileType": 3
+          "tag": "Nothing",
+          "id": 89
         },
         {
-          "tileType": 2
-        },
-        {
-          "tileType": 2
-        },
-        {
-          "tileType": 2
-        },
-        {
-          "tileType": 2
+          "tag": "Nothing",
+          "id": 90
         }
       ]
     ]
   },
   "items": [
     {
-      "tag": "acorn",
-      "id": 122,
-      "team": 1,
+      "tag": "Acorn",
+      "id": 93,
       "location": {
-        "x": 7,
-        "y": 1
+        "x": 6,
+        "y": 1,
+        "magnitude": 6.08276272,
+        "sqrMagnitude": 37
       }
     }
-  ]
+  ],
+  "nextID": 95
 }

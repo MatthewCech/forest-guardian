@@ -13,7 +13,7 @@ namespace forest
     [CreateAssetMenu(fileName = "Lookup Data", menuName = "ScriptableObjects/Lookup Data", order = 1)]
     public class VisualLookup : ScriptableObject
     {
-        public float interactionZPriority = 0.5f; // Used as -z in practice to move towards camera
+        public float interactionZPriority = 0.4f; // Used as -z in practice to move towards camera
         public float unitZPriority = 0.2f; // Used as -z in practice to move towards camera
 
         [Header("Indicators")]
@@ -23,9 +23,9 @@ namespace forest
 
         [Header("Various Templates")]
         public Tile defaultTileTemplate;
-        public List<TileInfo> tileTemplates;
-        public List<UnitInfo> unitTemplates;
-        public List<ItemInfo> itemTemplates;
+        public List<Tile> tileTemplates;
+        public List<Unit> unitTemplates;
+        public List<Item> itemTemplates;
 
         /// <summary>
         /// Access to the unit that's associated with with the specified tag.
@@ -33,11 +33,11 @@ namespace forest
         /// </summary>
         /// <param name="tag"></param>
         /// <returns></returns>
-        public UnitInfo GetUnityByTag(string tag)
+        public Unit GetUnityByTag(string tag)
         {
-            bool FindTag(UnitInfo info)
+            bool FindTag(Unit info)
             {
-                return info.unitTemplate.name.Equals(tag, StringComparison.InvariantCultureIgnoreCase);
+                return info.name.Equals(tag, StringComparison.InvariantCultureIgnoreCase);
             }
 
             return unitTemplates.Find(FindTag);
@@ -49,11 +49,11 @@ namespace forest
         /// </summary>
         /// <param name="tag"></param>
         /// <returns></returns>
-        public ItemInfo GetItemByTag(string tag)
+        public Item GetItemByTag(string tag)
         {
-            bool FindInfo(ItemInfo info)
+            bool FindInfo(Item info)
             {
-                return info.itemTemplate.name.Equals(tag, StringComparison.InvariantCultureIgnoreCase);
+                return info.name.Equals(tag, StringComparison.InvariantCultureIgnoreCase);
             }
 
             return itemTemplates.Find(FindInfo);
@@ -64,32 +64,14 @@ namespace forest
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public TileInfo GetTileByTag(string tag)
+        public Tile GetTileByTag(string tag)
         {
-            bool FindTile(TileInfo info)
+            bool FindTile(Tile info)
             {
-                return info.tileTemplate.name.Equals(tag, StringComparison.InvariantCultureIgnoreCase);
+                return info.name.Equals(tag, StringComparison.InvariantCultureIgnoreCase);
             }
 
             return tileTemplates.Find(FindTile);
-        }
-
-        [System.Serializable]
-        public class TileInfo
-        {
-            public Tile tileTemplate;
-        }
-
-        [System.Serializable]
-        public class UnitInfo
-        {
-            public Unit unitTemplate;
-        }
-
-        [System.Serializable]
-        public class ItemInfo
-        {
-            public Item itemTemplate;
         }
     }
 }

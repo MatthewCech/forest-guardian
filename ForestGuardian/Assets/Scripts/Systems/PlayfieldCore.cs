@@ -160,7 +160,9 @@ namespace forest
         {
             foreach(PlayfieldUnit unit in playfield.units)
             {
-                Unit template = lookup.GetUnityByTag(unit.tag).unitTemplate;
+                UnityEngine.Assertions.Assert.IsFalse(unit.team == Team.DEFAULT);
+
+                Unit template = lookup.GetUnityByTag(unit.tag);
                 unit.curMovementBudget = template.moveSpeed;
                 unit.curMaxSize = template.maxSize;
                 unit.curAttackRange = template.attackRange;
@@ -168,7 +170,7 @@ namespace forest
 
             foreach(PlayfieldTile tile in playfield.world)
             {
-                Tile template = lookup.GetTileByTag(tile.tag).tileTemplate;
+                Tile template = lookup.GetTileByTag(tile.tag);
                 tile.curIsImpassable = template.isImpassable;
                 tile.curMoveDifficulty = template.moveDifficulty;
             }
@@ -184,9 +186,12 @@ namespace forest
 
             if (!TryGetOpponentsTarget(out PlayfieldUnit targeted))
             {
+                yield return null;
+
                 // If we're here, we're not gonna get anything done
                 // since there are no players yet.
                 SetState(TurnState.EvaluateTurn);
+
                 yield break;
             }
 
@@ -330,10 +335,12 @@ namespace forest
             // Win value, in this case I've hardcoded to be "No items left"
             if (playfield.items.Count == 0 && !HasEnemies())
             {
+                yield return null;
                 SetState(TurnState.Victory);
             }
             else
             {
+                yield return null;
                 SetState(TurnState.PrepareTurn);
             }
         }

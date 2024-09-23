@@ -300,7 +300,7 @@ namespace forest
         {
             EnsureParentObjectExists();
 
-            Tile template = lookup.GetTileByTag(data.tag).tileTemplate;
+            Tile template = lookup.GetTileByTag(data.tag);
             Tile instance = GameObject.Instantiate(template, spawnParent);
 
             float xPos = Offset(x);
@@ -320,7 +320,7 @@ namespace forest
         {
             EnsureParentObjectExists();
 
-            Unit template = lookup.GetUnityByTag(data.tag).unitTemplate;
+            Unit template = lookup.GetUnityByTag(data.tag);
 
             for (int i = 0; i < data.locations.Count; ++i)
             {
@@ -347,9 +347,14 @@ namespace forest
         {
             EnsureParentObjectExists();
 
-            Item template = lookup.GetItemByTag(data.tag).itemTemplate;
-            Item instance = GameObject.Instantiate(template, spawnParent);
             Vector2Int curLocation = data.location;
+
+            Item template = lookup.GetItemByTag(data.tag);
+            Item instance = GameObject.Instantiate(template, spawnParent);
+
+            instance.associatedData = data;
+            instance.gridPos = curLocation;
+
             float x = Offset(curLocation.x);
             float y = Offset(curLocation.y);
 

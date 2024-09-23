@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 767282238228079397}
   - component: {fileID: 4408976066660474407}
-  - component: {fileID: 5838401722071854688}
+  - component: {fileID: 6610517320859681914}
   m_Layer: 0
   m_Name: Acorn
   m_TagString: Untagged
@@ -48,7 +48,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18571bdde2fce6b439772eecddd54dd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!61 &5838401722071854688
+  associatedData:
+    tag: 
+    id: -1
+    location: {x: 0, y: 0}
+  gridPos: {x: 0, y: 0}
+--- !u!61 &6610517320859681914
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -80,7 +85,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.025}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -91,7 +96,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.9, y: 1}
+  m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
 --- !u!1 &2292777031837101931
 GameObject:

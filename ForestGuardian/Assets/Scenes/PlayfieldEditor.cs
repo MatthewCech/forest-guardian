@@ -11,10 +11,15 @@ namespace forest
 {
     public class PlayfieldEditor : MonoBehaviour
     {
-        public VisualLookup lookup;
-        public UIDocument document;
-        public VisualPlayfield visuals;
-        public Camera displayingCamera;
+        [Header("Editor Settings")]
+        [SerializeField] private KeyCode mainModifier = KeyCode.LeftShift;
+        [SerializeField] private KeyCode extraModifier = KeyCode.LeftControl;
+
+        [Header("Required Links")]
+        [SerializeField] private VisualLookup lookup;
+        [SerializeField] private UIDocument document;
+        [SerializeField] private VisualPlayfield visuals;
+        [SerializeField] private Camera displayingCamera;
 
         private Playfield workingPlayfield;
 
@@ -36,29 +41,108 @@ namespace forest
             Postmaster.Instance.Subscribe<MsgTileSecondaryAction>(TileSecondaryAction);
             Postmaster.Instance.Subscribe<MsgUnitPrimaryAction>(UnitPrimaryAction);
             Postmaster.Instance.Subscribe<MsgUnitSecondaryAction>(UnitSecondaryAction);
+            Postmaster.Instance.Subscribe<MsgItemPrimaryAction>(ItemPrimaryAction);
+            Postmaster.Instance.Subscribe<MsgItemSecondaryAction>(ItemSecondaryAction);
         }
 
+        private void Update()
+        {
+            string status = "Placing Tile";
+            if (Input.GetKey(mainModifier))
+            {
+                status = "Placing Unit";
+            }
+            else if (Input.GetKey(extraModifier))
+            {
+                status = "Placing Item";
+            }
+
+            document.rootVisualElement.Q<Label>("editorStatus").text = status;
+        }
+
+        /// <summary>
+        /// Processes an action that 
+        /// </summary>
+        /// <param name="raw"></param>
+        private void TilePrimaryAction(Message raw)
+        {
+            MsgTilePrimaryAction msg = raw as MsgTilePrimaryAction;
+
+            if (IsMainInputModifierDown())
+            {
+                PlayfieldUnit unit = new PlayfieldUnit();
+                unit.tag = lookup.unitTemplates[0].name;
+                unit.id = workingPlayfield.GetNextID();
+                unit.locations.Add(msg.tilePosition);
+
+                workingPlayfield.units.Add(unit);
+            }
+            else if (IsExtraInputModifierDown())
+            {
+                PlayfieldItem item = new PlayfieldItem();
+                item.tag = lookup.itemTemplates[0].name;
+                item.id = workingPlayfield.GetNextID();
+                item.location = msg.tilePosition;
+
+                workingPlayfield.items.Add(item);
+            }
+            else
+            {
+                // No longer using enums, we now follow the pattern of units by cycling through available tiles by tag
+                PlayfieldTile tile = workingPlayfield.world.Get(msg.tilePosition);
+                int index = GetTemplateIndex(lookup.tileTemplates, tile.tag);
+
+                index++;
+                if (index >= lookup.tileTemplates.Count)
+                {
+                    index = 0;
+                }
+
+                string newTag = lookup.tileTemplates[index].name;
+                tile.tag = newTag;
+            }
+
+            visuals.DisplayAll(workingPlayfield);
+        }
+        private void TileSecondaryAction(Message raw)
+        {
+            MsgTileSecondaryAction msg = raw as MsgTileSecondaryAction;
+            PlayfieldTile tile = workingPlayfield.world.Get(msg.position);
+
+            int index = GetTemplateIndex(lookup.tileTemplates, tile.tag);
+
+            index--;
+            if (index < 0)
+            {
+                index = lookup.tileTemplates.Count - 1;
+            }
+
+            string newTag = lookup.tileTemplates[index].name;
+            tile.tag = newTag;
+
+            visuals.DisplayAll(workingPlayfield);
+        }
 
         private void UnitPrimaryAction(Message raw)
         {
             MsgUnitPrimaryAction msg = raw as MsgUnitPrimaryAction;
             PlayfieldUnit data = msg.unit.associatedData;
 
-            if (IsInputModifierDown())
+            if (IsMainInputModifierDown())
             {
                 workingPlayfield.units.Remove(data);
             }
             else
             {
                 // display the next unit template, looping back if needed.
-                int index = GetUnitTemplateIndex(data);
+                int index = GetTemplateIndex(lookup.unitTemplates, data.tag);
                 index++;
                 if (index >= lookup.unitTemplates.Count)
                 {
                     index = 0;
                 }
 
-                string newTag = lookup.unitTemplates[index].unitTemplate.name;
+                string newTag = lookup.unitTemplates[index].name;
                 data.tag = newTag;
             }
 
@@ -70,21 +154,73 @@ namespace forest
             MsgUnitSecondaryAction msg = raw as MsgUnitSecondaryAction;
             PlayfieldUnit data = msg.unit.associatedData;
 
-            if (IsInputModifierDown())
+            if (IsMainInputModifierDown())
             {
                 workingPlayfield.units.Remove(data);
             }
             else
             {
                 // display previous unit template, looping back if needed.
-                int index = GetUnitTemplateIndex(data);
+                int index = GetTemplateIndex(lookup.unitTemplates, data.tag);
                 index--;
                 if (index < 0)
                 {
                     index = lookup.unitTemplates.Count - 1;
                 }
 
-                string newTag = lookup.unitTemplates[index].unitTemplate.name;
+                string newTag = lookup.unitTemplates[index].name;
+                data.tag = newTag;
+            }
+
+            visuals.DisplayAll(workingPlayfield);
+        }
+
+        private void ItemPrimaryAction(Message raw)
+        {
+            MsgItemPrimaryAction msg = raw as MsgItemPrimaryAction;
+            PlayfieldItem data = msg.item.associatedData;
+
+            if (IsExtraInputModifierDown())
+            {
+                workingPlayfield.items.Remove(data);
+            }
+            else
+            {
+                // display the next unit template, looping back if needed.
+                int index = GetTemplateIndex(lookup.itemTemplates, data.tag);
+                index++;
+                if (index >= lookup.itemTemplates.Count)
+                {
+                    index = 0;
+                }
+
+                string newTag = lookup.itemTemplates[index].name;
+                data.tag = newTag;
+            }
+
+            visuals.DisplayAll(workingPlayfield);
+        }
+
+        private void ItemSecondaryAction(Message raw)
+        {
+            MsgItemSecondaryAction msg = raw as MsgItemSecondaryAction;
+            PlayfieldItem data = msg.item.associatedData;
+
+            if (IsExtraInputModifierDown())
+            {
+                workingPlayfield.items.Remove(data);
+            }
+            else
+            {
+                // display previous unit template, looping back if needed.
+                int index = GetTemplateIndex(lookup.itemTemplates, data.tag);
+                index--;
+                if (index < 0)
+                {
+                    index = lookup.itemTemplates.Count - 1;
+                }
+
+                string newTag = lookup.itemTemplates[index].name;
                 data.tag = newTag;
             }
 
@@ -92,14 +228,14 @@ namespace forest
         }
 
         /// <summary>
-        /// Get index of existing unit on square in unit template lookup
+        /// Get index of existing element by name/tag within the lookup list
         /// </summary>
-        private int GetUnitTemplateIndex(PlayfieldUnit data)
+        private int GetTemplateIndex<T>(List<T> tempaltes, string nameToFind) where T : MonoBehaviour
         {
-            for (int i = 0; i < lookup.unitTemplates.Count; ++i)
+            for (int i = 0; i < tempaltes.Count; ++i)
             {
-                Unit template = lookup.unitTemplates[i].unitTemplate;
-                if (template.name.Equals(data.tag, StringComparison.InvariantCultureIgnoreCase))
+                MonoBehaviour template = tempaltes[i];
+                if (template.name.Equals(nameToFind, StringComparison.InvariantCultureIgnoreCase))
                 {
                     return i;
                 }
@@ -108,79 +244,16 @@ namespace forest
             return -1;
         }
 
-        public int GetTileTempalteIndex(PlayfieldTile tileData)
+        private bool IsMainInputModifierDown()
         {
-            for(int i = 0; i < lookup.tileTemplates.Count; ++i)
-            {
-                Tile template = lookup.tileTemplates[i].tileTemplate;
-                if (template.name.Equals(tileData.tag, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    return i;
-                }
-            }
-
-            return -1;
+            return Input.GetKey(mainModifier);
         }
 
-        /// <summary>
-        /// Processes an action that 
-        /// </summary>
-        /// <param name="raw"></param>
-        private void TilePrimaryAction(Message raw)
+        private bool IsExtraInputModifierDown()
         {
-            MsgTilePrimaryAction msg = raw as MsgTilePrimaryAction;
-
-            if (IsInputModifierDown())
-            {
-                PlayfieldUnit unit = new PlayfieldUnit();
-                unit.tag = lookup.unitTemplates[0].unitTemplate.name;
-                unit.id = workingPlayfield.GetNextID();
-                unit.locations.Add(msg.tilePosition);
-
-                workingPlayfield.units.Add(unit);
-            }
-            else
-            {
-                // No longer using enums, we now follow the pattern of units by cycling through available tiles by tag
-                PlayfieldTile tile = workingPlayfield.world.Get(msg.tilePosition);
-                int index = GetTileTempalteIndex(tile);
-
-                index++;
-                if (index >= lookup.tileTemplates.Count)
-                {
-                    index = 0;
-                }
-
-                string newTag = lookup.unitTemplates[index].unitTemplate.name;
-                tile.tag = newTag;
-            }
-
-            visuals.DisplayAll(workingPlayfield);
+            return Input.GetKey(extraModifier);
         }
 
-        private bool IsInputModifierDown()
-        {
-            return Input.GetKey(KeyCode.LeftShift);
-        }
-
-        private void TileSecondaryAction(Message raw)
-        {
-            MsgTileSecondaryAction msg = raw as MsgTileSecondaryAction;
-            PlayfieldTile tile = workingPlayfield.world.Get(msg.position);
-
-            int index = GetTileTempalteIndex(tile);
-
-            index--;
-            if (index < 0)
-            {
-                index = lookup.tileTemplates.Count - 1;
-            }
-
-            string newTag = lookup.unitTemplates[index].unitTemplate.name;
-            tile.tag = newTag;
-
-            visuals.DisplayAll(workingPlayfield);
-        }
 
         private Playfield CreatePlayfield(Playfield existing = null)
         {

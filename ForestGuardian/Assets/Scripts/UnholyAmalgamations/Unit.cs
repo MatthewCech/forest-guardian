@@ -10,7 +10,7 @@ namespace forest
         // TODO: Extract this data to make it visual agnostic
         public int maxSize = 3;
         public int moveSpeed = 2;
-        public int attackRange = 2;
+        public int attackRange = 1;
 
         // ALSO TODO: collect this kinda stuff into objects for multi-attack
         public int attackDamage = 2;
@@ -20,7 +20,7 @@ namespace forest
 
         // CONSIDER: Replace with int ID if the reference creates issues.
         [Header("Runtime Association")]
-        public PlayfieldUnit associatedData;
+        public PlayfieldUnit associatedData; // Note: Could be replaced w/ ID later if needed
         public Vector2Int gridPos;
 
 

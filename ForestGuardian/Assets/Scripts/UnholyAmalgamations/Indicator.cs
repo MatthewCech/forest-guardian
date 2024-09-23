@@ -34,8 +34,8 @@ namespace forest
         public IndicatorType type = IndicatorType.DEFAULT;
 
         [Header("Runtime Visual Association")]
-        public PlayfieldTile associatedTile = null; // Also could be ID?
-        public PlayfieldUnit ownerUnit = null; // Eh? ID?
+        public PlayfieldTile associatedTile = null;           // Note: Can be replaced w/ ID later if needed
+        public PlayfieldUnit ownerUnit = null;                // Note: Can also be replaced w/ ID later if needed
         public Vector2Int overlaidPosition = Vector2Int.zero; // The location we're targeting
 
         private void OnMouseDown()
@@ -59,7 +59,7 @@ namespace forest
             style.alignment = TextAnchor.MiddleLeft;
 
             float lOffset = 0.05f;
-            float vSpace = -0.15f;
+            //float vSpace = -0.15f;
             float vOffset = -0.1f;
 
             Handles.Label(transform.position + Vector3.left * lOffset + Vector3.up * (vOffset), "id@>" + id, style);

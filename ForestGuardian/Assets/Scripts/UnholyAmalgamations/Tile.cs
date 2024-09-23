@@ -15,7 +15,7 @@ namespace forest
         public int moveDifficulty = 1;
 
         [Header("Runtime Visual Association")]
-        public PlayfieldTile associatedData;
+        public PlayfieldTile associatedData; // Note: Could be replaced w/ ID later if needed
         public Vector2Int associatedPos;
 
         private void OnDrawGizmos()

@@ -25,6 +25,22 @@ namespace forest
     }
 
     [MessageMetadata(
+    friendlyName: "Unit Segment Destroyed",
+    description: "A segment of a unit was destroyed",
+    isVisible: true)]
+        public class MsgUnitSegmentDestroyed : Loam.Message
+        {
+            public int attackingUnitID = Playfield.NO_ID;
+            public int defendingUnitID = Playfield.NO_ID;
+            public Vector2Int destroyedPosition;
+        }
+
+
+
+    // Direct input style interactions with playfield stuff
+    // -------------------------------------------------------------------------------------------------------------
+
+    [MessageMetadata(
     friendlyName: "Tile Primary Action",
     description: "A secondary action, such as a right-click, was performed over a playfield tile",
     isVisible: true)]
@@ -65,13 +81,22 @@ namespace forest
     }
 
     [MessageMetadata(
-    friendlyName: "Unit Segment Destroyed",
-    description: "A segment of a unit was destroyed",
+    friendlyName: "Item Primary Action",
+    description: "A primary action, such as a left-click, was performed over a playfield item. This takes precedence over a playfield tile.",
     isVisible: true)]
-    public class MsgUnitSegmentDestroyed : Loam.Message
+    public class MsgItemPrimaryAction : Loam.Message
     {
-        public int attackingUnitID = Playfield.NO_ID;
-        public int defendingUnitID = Playfield.NO_ID;
-        public Vector2Int destroyedPosition;
+        public Item item;
+        public Vector2Int position;
+    }
+
+    [MessageMetadata(
+    friendlyName: "Item Secondary Action",
+    description: "A secondary action, such as a right-click, was performed over a playfield item. This takes precedence over a playfield tile.",
+    isVisible: true)]
+    public class MsgItemSecondaryAction : Loam.Message
+    {
+        public Item item;
+        public Vector2Int position;
     }
 }
