@@ -328,7 +328,7 @@ namespace forest
                 Unit instance = GameObject.Instantiate(template, spawnParent);
                 instance.associatedData = data;
                 instance.gridPos = curLocation;
-
+                
                 instance.SetBodyVisibility(i == PlayfieldUnit.HEAD_INDEX);
 
                 float x = Offset(curLocation.x);

@@ -72,6 +72,7 @@ namespace forest
             {
                 PlayfieldUnit unit = new PlayfieldUnit();
                 unit.tag = lookup.unitTemplates[0].name;
+                unit.team = lookup.unitTemplates[0].defaultTeam;
                 unit.id = workingPlayfield.GetNextID();
                 unit.locations.Add(msg.tilePosition);
 
@@ -143,7 +144,9 @@ namespace forest
                 }
 
                 string newTag = lookup.unitTemplates[index].name;
+                Team newTeam = lookup.unitTemplates[index].defaultTeam;
                 data.tag = newTag;
+                data.team = newTeam;
             }
 
             visuals.DisplayAll(workingPlayfield);
@@ -169,7 +172,9 @@ namespace forest
                 }
 
                 string newTag = lookup.unitTemplates[index].name;
+                Team newTeam = lookup.unitTemplates[index].defaultTeam;
                 data.tag = newTag;
+                data.team = newTeam;
             }
 
             visuals.DisplayAll(workingPlayfield);

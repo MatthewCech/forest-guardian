@@ -1,0 +1,490 @@
+{
+  "units": [
+    {
+      "tag": "Ivy",
+      "id": 94,
+      "team": 2,
+      "locations": [
+        {
+          "x": 5,
+          "y": 2,
+          "magnitude": 5.38516474,
+          "sqrMagnitude": 29
+        }
+      ]
+    },
+    {
+      "tag": "Guardian",
+      "id": 95,
+      "team": 1,
+      "locations": [
+        {
+          "x": 7,
+          "y": 6,
+          "magnitude": 9.219544,
+          "sqrMagnitude": 85
+        }
+      ]
+    },
+    {
+      "tag": "Ivy",
+      "id": 97,
+      "team": 2,
+      "locations": [
+        {
+          "x": 4,
+          "y": 3,
+          "magnitude": 5.0,
+          "sqrMagnitude": 25
+        }
+      ]
+    }
+  ],
+  "world": {
+    "data": [
+      [
+        {
+          "tag": "Nothing",
+          "id": 1
+        },
+        {
+          "tag": "Nothing",
+          "id": 2
+        },
+        {
+          "tag": "Nothing",
+          "id": 3
+        },
+        {
+          "tag": "Nothing",
+          "id": 4
+        },
+        {
+          "tag": "Nothing",
+          "id": 5
+        },
+        {
+          "tag": "Nothing",
+          "id": 6
+        },
+        {
+          "tag": "Nothing",
+          "id": 7
+        },
+        {
+          "tag": "Nothing",
+          "id": 8
+        },
+        {
+          "tag": "Nothing",
+          "id": 9
+        },
+        {
+          "tag": "Nothing",
+          "id": 10
+        }
+      ],
+      [
+        {
+          "tag": "Nothing",
+          "id": 6
+        },
+        {
+          "tag": "Basic",
+          "id": 7
+        },
+        {
+          "tag": "Wall",
+          "id": 8
+        },
+        {
+          "tag": "Wall",
+          "id": 9
+        },
+        {
+          "tag": "Nothing",
+          "id": 10
+        },
+        {
+          "tag": "Nothing",
+          "id": 12
+        },
+        {
+          "tag": "Wall",
+          "id": 14
+        },
+        {
+          "tag": "Wall",
+          "id": 17
+        },
+        {
+          "tag": "Nothing",
+          "id": 18
+        },
+        {
+          "tag": "Nothing",
+          "id": 20
+        }
+      ],
+      [
+        {
+          "tag": "Basic",
+          "id": 11
+        },
+        {
+          "tag": "Basic",
+          "id": 12
+        },
+        {
+          "tag": "Basic",
+          "id": 13
+        },
+        {
+          "tag": "Wall",
+          "id": 14
+        },
+        {
+          "tag": "Wall",
+          "id": 15
+        },
+        {
+          "tag": "Nothing",
+          "id": 18
+        },
+        {
+          "tag": "Nothing",
+          "id": 21
+        },
+        {
+          "tag": "Wall",
+          "id": 26
+        },
+        {
+          "tag": "Wall",
+          "id": 27
+        },
+        {
+          "tag": "Nothing",
+          "id": 30
+        }
+      ],
+      [
+        {
+          "tag": "Basic",
+          "id": 16
+        },
+        {
+          "tag": "Basic",
+          "id": 17
+        },
+        {
+          "tag": "Basic",
+          "id": 18
+        },
+        {
+          "tag": "Wall",
+          "id": 19
+        },
+        {
+          "tag": "Wall",
+          "id": 20
+        },
+        {
+          "tag": "Wall",
+          "id": 24
+        },
+        {
+          "tag": "Nothing",
+          "id": 28
+        },
+        {
+          "tag": "Nothing",
+          "id": 35
+        },
+        {
+          "tag": "Nothing",
+          "id": 36
+        },
+        {
+          "tag": "Nothing",
+          "id": 40
+        }
+      ],
+      [
+        {
+          "tag": "Nothing",
+          "id": 21
+        },
+        {
+          "tag": "Basic",
+          "id": 22
+        },
+        {
+          "tag": "Basic",
+          "id": 23
+        },
+        {
+          "tag": "Basic",
+          "id": 24
+        },
+        {
+          "tag": "Wall",
+          "id": 25
+        },
+        {
+          "tag": "Wall",
+          "id": 30
+        },
+        {
+          "tag": "Wall",
+          "id": 35
+        },
+        {
+          "tag": "Nothing",
+          "id": 44
+        },
+        {
+          "tag": "Wall",
+          "id": 45
+        },
+        {
+          "tag": "Wall",
+          "id": 50
+        }
+      ],
+      [
+        {
+          "tag": "Nothing",
+          "id": 36
+        },
+        {
+          "tag": "Basic",
+          "id": 37
+        },
+        {
+          "tag": "Basic",
+          "id": 38
+        },
+        {
+          "tag": "Basic",
+          "id": 39
+        },
+        {
+          "tag": "Basic",
+          "id": 40
+        },
+        {
+          "tag": "Basic",
+          "id": 41
+        },
+        {
+          "tag": "Wall",
+          "id": 42
+        },
+        {
+          "tag": "Wall",
+          "id": 53
+        },
+        {
+          "tag": "Basic",
+          "id": 54
+        },
+        {
+          "tag": "Basic",
+          "id": 60
+        }
+      ],
+      [
+        {
+          "tag": "Nothing",
+          "id": 43
+        },
+        {
+          "tag": "Nothing",
+          "id": 44
+        },
+        {
+          "tag": "Basic",
+          "id": 45
+        },
+        {
+          "tag": "Basic",
+          "id": 46
+        },
+        {
+          "tag": "Basic",
+          "id": 47
+        },
+        {
+          "tag": "Basic",
+          "id": 48
+        },
+        {
+          "tag": "Basic",
+          "id": 49
+        },
+        {
+          "tag": "Basic",
+          "id": 62
+        },
+        {
+          "tag": "Basic",
+          "id": 63
+        },
+        {
+          "tag": "Basic",
+          "id": 70
+        }
+      ],
+      [
+        {
+          "tag": "Wall",
+          "id": 50
+        },
+        {
+          "tag": "Nothing",
+          "id": 51
+        },
+        {
+          "tag": "Basic",
+          "id": 52
+        },
+        {
+          "tag": "Basic",
+          "id": 53
+        },
+        {
+          "tag": "Basic",
+          "id": 54
+        },
+        {
+          "tag": "Basic",
+          "id": 55
+        },
+        {
+          "tag": "Basic",
+          "id": 56
+        },
+        {
+          "tag": "Basic",
+          "id": 71
+        },
+        {
+          "tag": "Basic",
+          "id": 72
+        },
+        {
+          "tag": "Wall",
+          "id": 80
+        }
+      ],
+      [
+        {
+          "tag": "Wall",
+          "id": 57
+        },
+        {
+          "tag": "Nothing",
+          "id": 58
+        },
+        {
+          "tag": "Nothing",
+          "id": 59
+        },
+        {
+          "tag": "Nothing",
+          "id": 60
+        },
+        {
+          "tag": "Basic",
+          "id": 61
+        },
+        {
+          "tag": "Basic",
+          "id": 62
+        },
+        {
+          "tag": "Basic",
+          "id": 63
+        },
+        {
+          "tag": "Basic",
+          "id": 80
+        },
+        {
+          "tag": "Wall",
+          "id": 81
+        },
+        {
+          "tag": "Nothing",
+          "id": 90
+        }
+      ],
+      [
+        {
+          "tag": "Nothing",
+          "id": 64
+        },
+        {
+          "tag": "Nothing",
+          "id": 65
+        },
+        {
+          "tag": "Nothing",
+          "id": 66
+        },
+        {
+          "tag": "Nothing",
+          "id": 67
+        },
+        {
+          "tag": "Nothing",
+          "id": 68
+        },
+        {
+          "tag": "Nothing",
+          "id": 69
+        },
+        {
+          "tag": "Nothing",
+          "id": 70
+        },
+        {
+          "tag": "Nothing",
+          "id": 89
+        },
+        {
+          "tag": "Nothing",
+          "id": 90
+        },
+        {
+          "tag": "Nothing",
+          "id": 100
+        }
+      ]
+    ]
+  },
+  "items": [
+    {
+      "tag": "Acorn",
+      "id": 91,
+      "location": {
+        "x": 3,
+        "y": 1,
+        "magnitude": 3.1622777,
+        "sqrMagnitude": 10
+      }
+    },
+    {
+      "tag": "Acorn",
+      "id": 98,
+      "location": {
+        "x": 6,
+        "y": 8,
+        "magnitude": 10.0,
+        "sqrMagnitude": 100
+      }
+    }
+  ],
+  "nextID": 101
+}

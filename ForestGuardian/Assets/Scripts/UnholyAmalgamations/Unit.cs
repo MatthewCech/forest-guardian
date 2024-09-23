@@ -11,6 +11,7 @@ namespace forest
         public int maxSize = 3;
         public int moveSpeed = 2;
         public int attackRange = 1;
+        public Team defaultTeam = Team.DEFAULT;
 
         // ALSO TODO: collect this kinda stuff into objects for multi-attack
         public int attackDamage = 2;

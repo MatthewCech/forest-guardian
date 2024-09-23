@@ -656,6 +656,7 @@ MonoBehaviour:
   maxSize: 3
   moveSpeed: 2
   attackRange: 2
+  defaultTeam: 1
   attackDamage: 2
   head: {fileID: 334675950987140449}
   associatedData:
