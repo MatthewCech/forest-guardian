@@ -97,6 +97,39 @@ namespace forest
             }
         }
 
+        public bool TryFindLocationOf(T toFind, out Vector2Int pos)
+        {
+            for (int x = 0; x < width && x < width; ++x)
+            {
+                for (int y = 0; y < height && y < height; ++y)
+                {
+                    if(data[x, y].Equals(toFind))
+                    {
+                        pos = new Vector2Int(x, y);
+                        return true;
+                    }
+                }
+            }
+
+            pos = Vector2Int.zero;
+            return false;
+        }
+
+        public bool IsPosInGrid(Vector2Int pos)
+        {
+            if(pos.x < 0 || pos.y < 0)
+            {
+                return false;
+            }
+
+            if(pos.x >= width || pos.y >= height)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public IEnumerator<T> GetEnumerator()
         {
             for (int x = 0; x < width && x < width; ++x)

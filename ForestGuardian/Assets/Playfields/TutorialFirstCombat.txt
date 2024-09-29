@@ -1,9 +1,22 @@
 {
   "units": [
     {
+      "tag": "Guardian",
+      "id": 77,
+      "team": 1,
+      "locations": [
+        {
+          "x": 3,
+          "y": 6,
+          "magnitude": 6.708204,
+          "sqrMagnitude": 45
+        }
+      ]
+    },
+    {
       "tag": "Ivy",
       "id": 74,
-      "team": 1,
+      "team": 2,
       "locations": [
         {
           "x": 7,
@@ -23,19 +36,6 @@
           "y": 1,
           "magnitude": 4.12310553,
           "sqrMagnitude": 17
-        }
-      ]
-    },
-    {
-      "tag": "Guardian",
-      "id": 77,
-      "team": 2,
-      "locations": [
-        {
-          "x": 3,
-          "y": 6,
-          "magnitude": 6.708204,
-          "sqrMagnitude": 45
         }
       ]
     }
