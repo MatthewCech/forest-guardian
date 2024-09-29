@@ -167,7 +167,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemTemplate: {fileID: 1380836268}
-  stepTimeMS: 120
+  stepTimeMS: 40
   terrain: {fileID: 1014771258}
 --- !u!1 &990700893
 GameObject:
@@ -417,7 +417,7 @@ MonoBehaviour:
     isTarget: 0
   - pos: {x: 6, y: 7}
     cost: 10
-    isWall: 1
+    isWall: 0
     isStart: 0
     isTarget: 0
   - pos: {x: 10, y: 9}
@@ -629,7 +629,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemTemplate: {fileID: 1380836268}
-  stepTimeMS: 20
+  stepTimeMS: 15
   terrain: {fileID: 1014771258}
 --- !u!1 &1612308255
 GameObject:
