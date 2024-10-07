@@ -9,31 +9,29 @@ namespace forest
 {
     public class TestStuff : BaseStuff
     {
-        protected override IEnumerator DoSearch(Action<TestGridItem> onComplete)
+        protected override IEnumerator DoSearch(Action<SearchNode<TestGridItem>> onComplete)
         {
             pending.Clear();
-            didCheck.Clear();
-            foreach(TestGridItem item in items)
-            {
-                item.costCur = item.cost;
-            }
+            visited.Clear();
 
             TestGridItem start = GetStart();
             TestGridItem target = GetTarget();
-            pending.Add(start);
+            pending.Add(new SearchNode<TestGridItem>(start, start.cost));
 
             while (pending.Count > 0)
             {
-                TestGridItem item = pending[0];
+                SearchNode<TestGridItem> item = pending[0];
                 pending.RemoveAt(0);
 
-                if (item == target)
+                if (item.data == target)
                 {
+                    onComplete?.Invoke(item);
                     break;
                 }
 
-                --item.costCur;
-                if (item.costCur > 0)
+                --item.curNodeCost;
+                item.data.DEBUG_primaryDisplayNum = item.curNodeCost;
+                if (item.curNodeCost > 0)
                 {
                     pending.Add(item);
                     UpdateVisuals();
@@ -42,8 +40,8 @@ namespace forest
                 }
 
 
-                didCheck.Add(item);
-                if (!items.TryFindLocationOf(item, out Vector2Int pos))
+                visited.Add(item);
+                if (!items.TryFindLocationOf(item.data, out Vector2Int pos))
                 {
                     continue;
                 }
@@ -56,18 +54,16 @@ namespace forest
                 UpdateVisuals();
                 yield return new WaitForSeconds(stepTimeMS / 1000.0f);
             }
-
-            onComplete?.Invoke(target);
         }
 
-        private void TryAdd(TestGridItem parent, Vector2Int pos, Vector2Int offset)
+        private void TryAdd(SearchNode<TestGridItem> parent, Vector2Int pos, Vector2Int offset)
         {
             Vector2Int target = pos + offset;
 
             if (items.IsPosInGrid(target))
             {
                 TestGridItem toAdd = items.Get(target);
-                if (didCheck.Contains(toAdd))
+                if (VisitedContains(toAdd))
                 {
                     return;
                 }
@@ -77,10 +73,12 @@ namespace forest
                     return;
                 }
 
-                if (!pending.Contains(toAdd))
+                if (!PendingContains(toAdd))
                 {
-                    toAdd.parentItem = parent;
-                    pending.Add(toAdd);
+                    SearchNode<TestGridItem> node = new SearchNode<TestGridItem>(toAdd, toAdd.cost);
+                    node.parent = parent;
+
+                    pending.Add(node);
                 }
             }
         }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static forest.BaseStuff;
 
 namespace forest
 {
@@ -14,14 +15,12 @@ namespace forest
         public bool isStart = false;
         public bool isWall = false;
 
-        public int costCur = -1;
-        public int heuristicCost = int.MaxValue;
-        public TestGridItem parentItem = null;
+        public int DEBUG_primaryDisplayNum = 0;
 
         private void Update()
         {
             displayTextSmall.text = cost.ToString();
-            displayText.text = costCur.ToString();
+            displayText.text = DEBUG_primaryDisplayNum.ToString();
         }
 
         public void SetColor(Color color)

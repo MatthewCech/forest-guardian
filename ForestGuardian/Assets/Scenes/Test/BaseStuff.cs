@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Timeline.Actions;
 using UnityEngine;
+using static forest.BaseStuff;
 using static UnityEngine.GraphicsBuffer;
 
 namespace forest
@@ -62,17 +63,17 @@ namespace forest
             }
         }
 
-        protected void OnComplete(TestGridItem end)
+        protected void OnComplete(SearchNode<TestGridItem> end)
         {
             StartCoroutine(Completed(end));
         }
 
-        protected IEnumerator Completed(TestGridItem end)
+        protected IEnumerator Completed(SearchNode<TestGridItem> node)
         {
-            while (end != null)
+            while (node != null)
             {
-                end.SetColor(Color.magenta);
-                end = end.parentItem;
+                node.data.SetColor(Color.magenta);
+                node = node.parent;
                 yield return new WaitForSeconds(stepTimeMS / 1000.0f);
             }
 
@@ -105,6 +106,32 @@ namespace forest
             throw new System.Exception("No start found");
         }
 
+        protected bool PendingContains(TestGridItem item)
+        { 
+            foreach(SearchNode<TestGridItem> pendingItem in pending)
+            {
+                if(pendingItem.data == item)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        protected bool VisitedContains(TestGridItem item)
+        {
+            foreach (SearchNode<TestGridItem> visited in visited)
+            {
+                if (visited.data == item)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         protected void UpdateVisuals()
         {
             foreach (TestGridItem item in items)
@@ -126,11 +153,11 @@ namespace forest
                 {
                     item.SetColor(Color.black);
                 }
-                else if (pending.Contains(item))
+                else if (PendingContains(item))
                 {
                     item.SetColor(new Color(1f, .8f, .5f));
                 }
-                else if (didCheck.Contains(item))
+                else if (VisitedContains(item))
                 {
                     item.SetColor(new Color(1f, .2f, .5f));
                 }
@@ -142,10 +169,25 @@ namespace forest
         }
 
 
-        protected List<TestGridItem> pending = new List<TestGridItem>();
-        protected List<TestGridItem> didCheck = new List<TestGridItem>();
+        public class SearchNode<T> where T : class
+        {
+            public T data = null;
 
-        protected virtual IEnumerator DoSearch(Action<TestGridItem> onComplete) { yield return null; }
+            public SearchNode<T> parent = null;
+            public int heuristic = 0;
+            public int curNodeCost = 0;
+
+            public SearchNode(T data, int baseCost)
+            {
+                this.data = data;
+                this.curNodeCost = baseCost;
+            }
+        }
+
+        protected List<SearchNode<TestGridItem>> pending = new List<SearchNode<TestGridItem>>();
+        protected List<SearchNode<TestGridItem>> visited = new List<SearchNode<TestGridItem>>();
+
+        protected virtual IEnumerator DoSearch(Action<SearchNode<TestGridItem>> onComplete) { yield return null; }
     }
 
 }
