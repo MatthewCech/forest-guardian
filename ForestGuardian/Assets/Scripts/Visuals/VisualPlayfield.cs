@@ -102,7 +102,7 @@ namespace forest
             ClearMonoBehaviourList(indicatorTracking);
 
             Vector2Int headLocation = unit.locations[PlayfieldUnit.HEAD_INDEX];
-            MoveDiamondDisplay(unit, unit.curAttackRange, playfield, headLocation, lookup.attackPreview);
+            DisplayIndicatorDiamond(unit, unit.curAttackRange, playfield, headLocation, lookup.attackPreview);
         }
 
         private void MoveFlood(PlayfieldUnit unit, int range, Playfield playfield, Indicator indicator)
@@ -121,7 +121,7 @@ namespace forest
 
             bool PendingContains(Tile toFind)
             {
-                return visited.Find(f => f.data == toFind) != null;
+                return pending.Find(f => f.data == toFind) != null;
             }
 
             int DistanceFromHead(SearchNode<Tile> item)
@@ -136,13 +136,18 @@ namespace forest
                 return distance;
             }
 
-            void TryAdd(SearchNode<Tile> parent, Vector2Int pos, Vector2Int offset, int maxDistance)
+            void TryAdd(SearchNode<Tile> parent, Vector2Int offset, int maxDistance)
             {
-                Vector2Int target = pos + offset;
+                Vector2Int pos = parent.data.associatedPos;
+                Vector2Int targetPos = pos + offset;
 
-                if (playfield.world.IsPosInGrid(target))
+                if (playfield.world.IsPosInGrid(targetPos))
                 {
-                    Tile toAdd = FindTile(playfield.world.Get(target));
+                    // TODO: Looking this tile up doesn't necessarily get the right info?
+                    // Write tests for this - seems like 2,4 got 1,6 during screening.
+                    // playfield.world.Get(targetPos);
+
+                    Tile toAdd = FindTile(targetPos);
                     if (VisitedContains(toAdd))
                     {
                         return;
@@ -185,25 +190,17 @@ namespace forest
                     continue;
                 }
 
-
+                DisplayIndicator(item.data.associatedPos, playfield, unit, indicator);
                 visited.Add(item);
-                Vector2Int pos = item.data.associatedPos;
 
-                TryAdd(item, pos, Vector2Int.left, range);
-                TryAdd(item, pos, Vector2Int.right, range);
-                TryAdd(item, pos, Vector2Int.up, range);
-                TryAdd(item, pos, Vector2Int.down, range);
-            }
-
-            for(int i = 0; i < visited.Count; ++i)
-            {
-                SearchNode<Tile> cur = visited[i];
-                Vector2Int pos = cur.data.associatedPos;
-                DisplayIndicator(pos.x, pos.y, playfield, unit, indicator);
+                TryAdd(item, Vector2Int.left, range);
+                TryAdd(item, Vector2Int.right, range);
+                TryAdd(item, Vector2Int.up, range);
+                TryAdd(item, Vector2Int.down, range);
             }
         }
 
-        private void MoveDiamondDisplay(PlayfieldUnit unit, int range, Playfield playfield, Vector2Int headLocation, Indicator indicator)
+        private void DisplayIndicatorDiamond(PlayfieldUnit unit, int range, Playfield playfield, Vector2Int headLocation, Indicator indicator)
         {
             if(range == 0)
             {
@@ -248,10 +245,6 @@ namespace forest
             return unitTracking.Find((cur) => cur.associatedData.id == unit.id);
         }
 
-        private Tile FindTile(PlayfieldTile tile)
-        {
-            return tileTracking.Find((cur) => cur.associatedData.id == tile.id);
-        }
         private Tile FindTile(Vector2Int location)
         {
             return tileTracking.Find((cur) => cur.associatedPos == location);
@@ -295,6 +288,10 @@ namespace forest
             DisplayUnits(playfield);
         }
 
+        private void DisplayIndicator(Vector2Int pos, Playfield playfield, PlayfieldUnit unitDisplayingIndicatorFor, Indicator indicatorTemplate)
+        {
+            DisplayIndicator(pos.x, pos.y, playfield, unitDisplayingIndicatorFor, indicatorTemplate);
+        }
 
         private void DisplayIndicator(int x, int y, Playfield playfield, PlayfieldUnit unitDisplayingIndicatorFor, Indicator indicatorTemplate)
         {
