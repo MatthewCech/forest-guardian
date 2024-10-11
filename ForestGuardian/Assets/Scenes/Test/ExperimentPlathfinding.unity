@@ -581,7 +581,7 @@ MonoBehaviour:
   isTarget: 0
   isStart: 0
   isWall: 0
-  DEBUG_MAIN_NUM: 0
+  DEBUG_primaryDisplayNum: 0
 --- !u!1 &1526613519
 GameObject:
   m_ObjectHideFlags: 0
@@ -629,6 +629,7 @@ MonoBehaviour:
   itemTemplate: {fileID: 1380836268}
   stepTimeMS: 5
   terrain: {fileID: 1014771258}
+  MaxDistance: 15
 --- !u!1 &1612308255
 GameObject:
   m_ObjectHideFlags: 0

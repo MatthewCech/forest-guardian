@@ -9,6 +9,9 @@ namespace forest
 {
     public class TestStuff : BaseStuff
     {
+        [Space]
+        public int maxDistance = 12;
+
         protected override IEnumerator DoSearch(Action<SearchNode<TestGridItem>> onComplete)
         {
             pending.Clear();
@@ -46,17 +49,17 @@ namespace forest
                     continue;
                 }
 
-                TryAdd(item, pos, Vector2Int.left);
-                TryAdd(item, pos, Vector2Int.right);
-                TryAdd(item, pos, Vector2Int.up);
-                TryAdd(item, pos, Vector2Int.down);
+                TryAdd(item, pos, Vector2Int.left, maxDistance);
+                TryAdd(item, pos, Vector2Int.right, maxDistance);
+                TryAdd(item, pos, Vector2Int.up, maxDistance);
+                TryAdd(item, pos, Vector2Int.down, maxDistance);
 
                 UpdateVisuals();
                 yield return new WaitForSeconds(stepTimeMS / 1000.0f);
             }
         }
 
-        private void TryAdd(SearchNode<TestGridItem> parent, Vector2Int pos, Vector2Int offset)
+        private void TryAdd(SearchNode<TestGridItem> parent, Vector2Int pos, Vector2Int offset, int maxDistance)
         {
             Vector2Int target = pos + offset;
 
@@ -78,9 +81,27 @@ namespace forest
                     SearchNode<TestGridItem> node = new SearchNode<TestGridItem>(toAdd, toAdd.cost);
                     node.parent = parent;
 
+                    int dist = GetDistance(node);
+                    if(dist > maxDistance)
+                    {
+                        return;
+                    }
+
                     pending.Add(node);
                 }
             }
+        }
+
+        private int GetDistance(SearchNode<TestGridItem> item)
+        {
+            int distance = 0;
+            while(item.parent != null)
+            {
+                distance += item.StartingCost;
+                item = item.parent;
+            }
+
+            return distance;
         }
     }
 }

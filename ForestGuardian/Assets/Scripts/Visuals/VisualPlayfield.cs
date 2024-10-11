@@ -4,6 +4,8 @@ using Unity.VisualScripting;
 using UnityEditor.UIElements;
 using UnityEngine;
 using Loam;
+using static UnityEditor.Progress;
+using static UnityEngine.UI.CanvasScaler;
 
 namespace forest
 {
@@ -80,7 +82,9 @@ namespace forest
                 return;
             }
 
-            DisplayIndicatorPreviewDiamond(unit, unit.curMovementBudget, playfield, headLocation, lookup.movePreviewTemplate);
+            //MoveDiamondDisplay(unit, unit.curMovementBudget, playfield, headLocation, lookup.movePreviewTemplate);
+            MoveFlood(unit, unit.curMovementBudget, playfield, lookup.movePreviewTemplate);
+
 
             DisplayIndicator(headLocation.x - 1, headLocation.y, playfield, unit, lookup.moveInteractionTemplate);
             DisplayIndicator(headLocation.x + 1, headLocation.y, playfield, unit, lookup.moveInteractionTemplate);
@@ -98,10 +102,108 @@ namespace forest
             ClearMonoBehaviourList(indicatorTracking);
 
             Vector2Int headLocation = unit.locations[PlayfieldUnit.HEAD_INDEX];
-            DisplayIndicatorPreviewDiamond(unit, unit.curAttackRange, playfield, headLocation, lookup.attackPreview);
+            MoveDiamondDisplay(unit, unit.curAttackRange, playfield, headLocation, lookup.attackPreview);
         }
 
-        private void DisplayIndicatorPreviewDiamond(PlayfieldUnit unit, int range, Playfield playfield, Vector2Int headLocation, Indicator indicator)
+        private void MoveFlood(PlayfieldUnit unit, int range, Playfield playfield, Indicator indicator)
+        {
+            List<SearchNode<Tile>> pending = new List<SearchNode<Tile>>();
+            List<SearchNode<Tile>> visited = new List<SearchNode<Tile>>();
+
+            // Not required but explicit future guard
+            pending.Clear();
+            visited.Clear();
+
+            bool VisitedContains(Tile toFind)
+            {
+                return visited.Find(f => f.data == toFind) != null;
+            }
+
+            bool PendingContains(Tile toFind)
+            {
+                return visited.Find(f => f.data == toFind) != null;
+            }
+
+            int DistanceFromHead(SearchNode<Tile> item)
+            {
+                int distance = 0;
+                while (item.parent != null)
+                {
+                    distance += item.StartingCost;
+                    item = item.parent;
+                }
+
+                return distance;
+            }
+
+            void TryAdd(SearchNode<Tile> parent, Vector2Int pos, Vector2Int offset, int maxDistance)
+            {
+                Vector2Int target = pos + offset;
+
+                if (playfield.world.IsPosInGrid(target))
+                {
+                    Tile toAdd = FindTile(playfield.world.Get(target));
+                    if (VisitedContains(toAdd))
+                    {
+                        return;
+                    }
+
+                    if (toAdd.isImpassable)
+                    {
+                        return;
+                    }
+
+                    if (!PendingContains(toAdd))
+                    {
+                        SearchNode<Tile> node = new SearchNode<Tile>(toAdd, toAdd.moveDifficulty);
+                        node.parent = parent;
+
+                        int dist = DistanceFromHead(node);
+                        if (dist > maxDistance)
+                        {
+                            return;
+                        }
+
+                        pending.Add(node);
+                    }
+                }
+            }
+
+            Vector2Int startPos = unit.locations[PlayfieldUnit.HEAD_INDEX];
+            Tile start = FindTile(startPos);
+            pending.Add(new SearchNode<Tile>(start, start.moveDifficulty));
+
+            while (pending.Count > 0)
+            {
+                SearchNode<Tile> item = pending[0];
+                pending.RemoveAt(0);
+
+                --item.curNodeCost;
+                if (item.curNodeCost > 0)
+                {
+                    pending.Add(item);
+                    continue;
+                }
+
+
+                visited.Add(item);
+                Vector2Int pos = item.data.associatedPos;
+
+                TryAdd(item, pos, Vector2Int.left, range);
+                TryAdd(item, pos, Vector2Int.right, range);
+                TryAdd(item, pos, Vector2Int.up, range);
+                TryAdd(item, pos, Vector2Int.down, range);
+            }
+
+            for(int i = 0; i < visited.Count; ++i)
+            {
+                SearchNode<Tile> cur = visited[i];
+                Vector2Int pos = cur.data.associatedPos;
+                DisplayIndicator(pos.x, pos.y, playfield, unit, indicator);
+            }
+        }
+
+        private void MoveDiamondDisplay(PlayfieldUnit unit, int range, Playfield playfield, Vector2Int headLocation, Indicator indicator)
         {
             if(range == 0)
             {
@@ -110,7 +212,7 @@ namespace forest
 
             Vector2Int moveSquareCorner = new Vector2Int(headLocation.x + range, headLocation.y + range);
 
-            int moveAreaWidth = range * 2 + 1; // Guarenteed to be odd
+            int moveAreaWidth = range * 2 + 1; // Guaranteed to be odd
             int halfWidth = moveAreaWidth / 2;
 
             for (int x = 0; x < moveAreaWidth; ++x)
@@ -141,18 +243,18 @@ namespace forest
             }
         }
 
-        private Unit GetUnit(PlayfieldUnit unit)
+        private Unit FindUnit(PlayfieldUnit unit)
         {
-            for(int i = 0; i < unitTracking.Count; ++i)
-            {
-                Unit cur = unitTracking[i];
-                if(cur.associatedData.id == unit.id)
-                {
-                    return cur;
-                }
-            }
+            return unitTracking.Find((cur) => cur.associatedData.id == unit.id);
+        }
 
-            return null;
+        private Tile FindTile(PlayfieldTile tile)
+        {
+            return tileTracking.Find((cur) => cur.associatedData.id == tile.id);
+        }
+        private Tile FindTile(Vector2Int location)
+        {
+            return tileTracking.Find((cur) => cur.associatedPos == location);
         }
 
         public void DamageUnit(PlayfieldUnit attackingUnit, PlayfieldUnit defendingUnit, Playfield playfield)
@@ -162,8 +264,8 @@ namespace forest
                 return;
             }
 
-            Unit attacking = GetUnit(attackingUnit);
-            Unit defending = GetUnit(defendingUnit);
+            Unit attacking = FindUnit(attackingUnit);
+            Unit defending = FindUnit(defendingUnit);
 
             int damage = attacking.attackDamage;
             if(damage <= 0)
