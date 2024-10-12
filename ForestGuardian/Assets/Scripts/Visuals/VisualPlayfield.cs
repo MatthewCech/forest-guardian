@@ -190,13 +190,17 @@ namespace forest
                     continue;
                 }
 
-                DisplayIndicator(item.data.associatedPos, playfield, unit, indicator);
                 visited.Add(item);
 
                 TryAdd(item, Vector2Int.left, range);
                 TryAdd(item, Vector2Int.right, range);
                 TryAdd(item, Vector2Int.up, range);
                 TryAdd(item, Vector2Int.down, range);
+            }
+
+            foreach(var tileNode in visited)
+            {
+                DisplayIndicator(tileNode.data.associatedPos, playfield, unit, indicator);
             }
         }
 
