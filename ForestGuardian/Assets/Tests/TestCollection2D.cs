@@ -12,7 +12,10 @@ namespace forest
         [Test]
         public void TestCollection2DSimplePasses()
         {
-            Collection2D<>
+            const int width = 20;
+            const int height = 10;
+            Collection2D<int> coll = new Collection2D<int>(width, height);
+
             // Use the Assert class to test conditions
         }
 
