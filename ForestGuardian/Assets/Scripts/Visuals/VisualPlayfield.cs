@@ -85,7 +85,6 @@ namespace forest
             //MoveDiamondDisplay(unit, unit.curMovementBudget, playfield, headLocation, lookup.movePreviewTemplate);
             MoveFlood(unit, unit.curMovementBudget, playfield, lookup.movePreviewTemplate);
 
-
             DisplayIndicator(headLocation.x - 1, headLocation.y, playfield, unit, lookup.moveInteractionTemplate);
             DisplayIndicator(headLocation.x + 1, headLocation.y, playfield, unit, lookup.moveInteractionTemplate);
             DisplayIndicator(headLocation.x, headLocation.y - 1, playfield, unit, lookup.moveInteractionTemplate);
@@ -143,10 +142,6 @@ namespace forest
 
                 if (playfield.world.IsPosInGrid(targetPos))
                 {
-                    // TODO: Looking this tile up doesn't necessarily get the right info?
-                    // Write tests for this - seems like 2,4 got 1,6 during screening.
-                    // playfield.world.Get(targetPos);
-
                     Tile toAdd = FindTile(targetPos);
                     if (VisitedContains(toAdd))
                     {
@@ -244,12 +239,12 @@ namespace forest
             }
         }
 
-        private Unit FindUnit(PlayfieldUnit unit)
+        public Unit FindUnit(PlayfieldUnit unit)
         {
             return unitTracking.Find((cur) => cur.associatedData.id == unit.id);
         }
 
-        private Tile FindTile(Vector2Int location)
+        public Tile FindTile(Vector2Int location)
         {
             return tileTracking.Find((cur) => cur.associatedPos == location);
         }
@@ -290,6 +285,15 @@ namespace forest
             }
             
             DisplayUnits(playfield);
+        }
+
+
+        public void ShowMovePath(Playfield playfield, PlayfieldUnit unit, List<Tile> steps)
+        {
+            foreach(Tile tile in steps)
+            {
+                DisplayIndicator(tile.associatedPos, playfield, unit, lookup.movePreviewTemplate);
+            }
         }
 
         private void DisplayIndicator(Vector2Int pos, Playfield playfield, PlayfieldUnit unitDisplayingIndicatorFor, Indicator indicatorTemplate)
@@ -489,7 +493,7 @@ namespace forest
         }
 
         /// <summary>
-        /// Clear out a list of monobehaviors and clears the list in place. All elements cleared after a Destroy call.
+        /// Clear out a list of monobehaviours and clears the list in place. All elements cleared after a Destroy call.
         /// </summary>
         /// <param name="target">The list to operate on.</param>
         private void ClearMonoBehaviourList<T>(List<T> target) where T: MonoBehaviour

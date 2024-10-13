@@ -13,7 +13,7 @@ namespace forest
         }
 
         /// <summary>
-        /// This forcebly moves you to a new location, but does not restrict unexpected movements.
+        /// This forcibly moves you to a new location, but does not restrict unexpected movements.
         /// </summary>
         /// <param name="unitToMove"></param>
         /// <param name="playfield"></param>

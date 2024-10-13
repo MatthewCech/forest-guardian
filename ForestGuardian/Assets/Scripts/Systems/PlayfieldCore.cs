@@ -209,14 +209,26 @@ namespace forest
                 yield return new WaitForSeconds(visualDisplayDelay);
 
                 // 'Walk' towards the player based on available moves
-                while (curOpponentToMove.curMovementBudget > 0)
+                if (BuildPlayerStepPath(playfield, targeted, curOpponentToMove, out List<Tile> steps))
                 {
-                    if(!TryStepOnceTowardsPlayerUnit(targeted, curOpponentToMove))
-                    {
-                        break;
-                    }
-
+                    visualizerPlayfield.ShowMovePath(playfield, curOpponentToMove, steps);
                     yield return new WaitForSeconds(visualMoveDelay);
+                    yield return new WaitForSeconds(visualMoveDelay);
+
+                    foreach (Tile step in steps)
+                    {
+                        int budget = curOpponentToMove.curMovementBudget;
+                        int cost = step.moveDifficulty;
+                        if(budget >= cost)
+                        {
+                            MoveUnitToLocation(curOpponentToMove, step.associatedPos);
+                            yield return new WaitForSeconds(visualMoveDelay);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
                 }
 
                 // Show attack visuals, and let them linger for a second before attacking.
@@ -266,36 +278,113 @@ namespace forest
             return closestPos;
         }
 
-        private bool TryStepOnceTowardsPlayerUnit(PlayfieldUnit targeted, PlayfieldUnit curOpponentToMove)
+        private Tile FindTile(Vector2Int toFind)
         {
-            Vector2Int curHead = curOpponentToMove.locations[PlayfieldUnit.HEAD_INDEX];
-            Vector2Int targetHead = targeted.locations[PlayfieldUnit.HEAD_INDEX];
+            return visualizerPlayfield.FindTile(toFind);
+        }
 
-            int xDif = curHead.x - targetHead.x;
-            int yDif = curHead.y - targetHead.y;
+        /// <summary>
+        /// Uses DFS with heuristic (greedy and frankly slightly drunk) to move towards the player.
+        /// Note: Not entirely sure if this should be visual or not, but it is largely a visual operation
+        /// since it's based on the existing tiles and data that's accessed through it.
+        /// </summary>
+        /// <param name="playfield"></param>
+        /// <param name="targeted"></param>
+        /// <param name="curOpponentToMove"></param>
+        /// <param name="steps"></param>
+        /// <returns></returns>
+        private bool BuildPlayerStepPath(Playfield playfield, PlayfieldUnit targeted, PlayfieldUnit curOpponentToMove, out List<Tile> steps)
+        {
+            List<SearchNode<Tile>> pending = new List<SearchNode<Tile>>();
+            List<SearchNode<Tile>> visited = new List<SearchNode<Tile>>();
 
-            // Recall that upper-left is 0, 0
-            Vector2Int yDir = Vector2Int.zero;
-            Vector2Int xDir = Vector2Int.zero;
+            steps = null;
+            pending.Clear();
+            visited.Clear();
 
-            if (yDif > 0) { yDir = Vector2Int.down; }
-            else if (yDif < 0) { yDir = Vector2Int.up; }
+            // Done as head indexes
+            Vector2Int startPos = curOpponentToMove.locations[PlayfieldUnit.HEAD_INDEX];
+            Vector2Int goalPos = targeted.locations[PlayfieldUnit.HEAD_INDEX];
 
-            if (xDif > 0) { xDir = Vector2Int.left; }
-            else if (xDif < 0) { xDir = Vector2Int.right; }
+            Tile startTile = FindTile(startPos);
+            Tile goalTile = FindTile(goalPos);
 
-            Vector2Int toUse = Mathf.Abs(yDif) > Mathf.Abs(xDif) ? yDir : xDir;
 
-            Vector2Int targetPos = curHead + toUse;
-            if (Utils.CanMovePlayfieldUnitTo(playfield, curOpponentToMove, targetPos))
+            pending.Add(new SearchNode<Tile>(startTile, startTile.moveDifficulty));
+
+            bool VisitedContains(Tile toFind)
             {
-                MoveUnitToLocation(curOpponentToMove, targetPos);
-                return true;
+                return visited.Find(f => f.data == toFind) != null;
             }
-            else
+
+            void AddToList(SearchNode<Tile> parent, Vector2Int pos, Vector2Int offset)
+            {
+                Vector2Int curPos = pos + offset;
+                if (playfield.world.IsPosInGrid(curPos))
+                {
+                    Tile newItem = FindTile(curPos);
+                    if (VisitedContains(newItem))
+                    {
+                        return;
+                    }
+
+                    if (newItem.isImpassable)
+                    {
+                        return;
+                    }
+
+                    SearchNode<Tile> node = new SearchNode<Tile>(newItem, newItem.moveDifficulty);
+                    node.curNodeCost = int.MaxValue;
+
+                    int xDif = Mathf.Abs(goalPos.x - curPos.x);
+                    int yDif = Mathf.Abs(goalPos.y - curPos.y);
+                    int distTar = xDif + yDif + Mathf.Abs(xDif - yDif);
+
+                    node.heuristic = newItem.moveDifficulty + distTar;
+                    node.parent = parent;
+
+                    pending.Add(node);
+                }
+            }
+
+            bool foundTarget = false;
+            while (pending.Count > 0)
+            {
+                SearchNode<Tile> item = pending[0];
+                pending.RemoveAt(0);
+
+                if (item.data == goalTile)
+                {
+                    foundTarget = true;
+                    break;
+                }
+
+                visited.Add(item);
+                Vector2Int pos = item.data.associatedPos;
+
+                AddToList(item, pos, Vector2Int.left);
+                AddToList(item, pos, Vector2Int.right);
+                AddToList(item, pos, Vector2Int.up);
+                AddToList(item, pos, Vector2Int.down);
+
+                pending.Sort((a, b) => a.heuristic - b.heuristic);
+            }
+
+            if(!foundTarget)
             {
                 return false;
             }
+
+            steps = new List<Tile>();
+            SearchNode<Tile> toWalk = visited[visited.Count - 1];
+            while(toWalk.parent != null)
+            {
+                steps.Add(toWalk.data);
+                toWalk = toWalk.parent;
+            }
+            steps.Reverse();
+
+            return true;
         }
 
         private bool TryGetOpponentsTarget(out PlayfieldUnit targeted)
@@ -332,7 +421,7 @@ namespace forest
         {
             yield return new WaitForSeconds(artificalTurnDelay);
 
-            // Win value, in this case I've hardcoded to be "No items left"
+            // Win value, in this case I've hard-coded to be "No items left"
             if (playfield.items.Count == 0 && !HasEnemies())
             {
                 yield return null;
