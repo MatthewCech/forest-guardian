@@ -217,6 +217,12 @@ namespace forest
 
                     foreach (Tile step in steps)
                     {
+                        bool canTakeStep = Utils.CanMovePlayfieldUnitTo(playfield, curOpponentToMove, step.associatedPos);
+                        if(!canTakeStep)
+                        {
+                            break;
+                        }
+
                         int budget = curOpponentToMove.curMovementBudget;
                         int cost = step.moveDifficulty;
                         if(budget >= cost)
