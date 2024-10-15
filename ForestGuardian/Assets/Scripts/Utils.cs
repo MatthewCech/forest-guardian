@@ -103,5 +103,20 @@ namespace forest
 
             return true;
         }
+
+        public static void MoveUnitToLocation(Playfield playfield, VisualPlayfield visualizerPlayfield, PlayfieldUnit unit, Vector2Int target)
+        {
+            // Step the unit to the new place. Ensure this happens before visualizer update.
+            Utils.StepUnitTo(unit, playfield, target, moveCost: 1);
+
+            if (playfield.TryGetItemAt(target, out PlayfieldItem item))
+            {
+                playfield.RemoveItemAt(target);
+            }
+
+            visualizerPlayfield.DisplayUnits(playfield);
+            visualizerPlayfield.DisplayItems(playfield);
+            visualizerPlayfield.DisplayIndicatorMovePreview(unit, playfield);
+        }
     }
 }

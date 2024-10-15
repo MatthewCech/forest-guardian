@@ -11,19 +11,33 @@ namespace forest
 {
     public class PlayfieldCore : MonoBehaviour
     {
+        // Inspector
+        [Header("General Links")]
         [SerializeField] private TextAsset levelData;
-        [SerializeField] private VisualLookup lookup;
-        [SerializeField] private Playfield playfield;
-        [SerializeField] private VisualPlayfield visualizerPlayfield;
         [SerializeField] private Camera mainCam;
         [SerializeField] private UIDocument ui;
 
-        // Internal
-        private TurnState turnState = TurnState.Startup;
-        private bool executeState = false;
-        private float artificalTurnDelay = 0.2f; // seconds
-        private float winLoseScreenShowTime = 3f; // seconds
+        [Header("Links for States")]
+        [SerializeField] private VisualLookup lookup;
+        [SerializeField] private Playfield playfield;
+        [SerializeField] private VisualPlayfield visualizerPlayfield;      
 
+        // Various delays to space out the feel of the game, all in seconds
+        [Header("Artificial Delays")] 
+        public float turnDelay = 0.2f;        
+        public float resultScreenTime = 3.0f;
+
+        // Singleton/global access equivalent, exposing these to various states.
+        public VisualPlayfield VisualPlayfield { get; private set; }
+        public Playfield Playfield { get; private set; }
+        public VisualLookup Lookup { get; private set; }
+
+        // Internal
+        private CombatState current = null;
+
+        /// <summary>
+        /// Perform initial startup and core setup for systems
+        /// </summary>
         void Start()
         {
             Postmaster.Instance.Configure(PostmasterConfig.Default());
@@ -33,551 +47,47 @@ namespace forest
             visualizerPlayfield.DisplayAll(playfield);
 
             Utils.CenterCamera(mainCam, visualizerPlayfield);
-            SetState(TurnState.Startup);
+
+            ConfigureInitialState();
         }
 
-        public enum TurnState
+        /// <summary>
+        /// Set properties and configure state for playing
+        /// </summary>
+        private void ConfigureInitialState()
         {
-            Startup,
+            // Internal links
+            Playfield = playfield;
+            VisualPlayfield = visualizerPlayfield;
+            Lookup = lookup;
 
-            /// <summary>
-            /// Get everything ready for a turn
-            /// </summary>
-            PrepareTurn,
+            // Pre-poke coroutine singleton by just doing some guaranteed function to force init.
+            Loam.CoroutineObject.Instance.name.ToString();
 
-            /// <summary>
-            /// Player-controlled input! Yay!
-            /// </summary>
-            PlayerMove,
-
-            /// <summary>
-            /// Player-controlled attacking input
-            /// </summary>
-            PlayerAttack,
-
-            /// <summary>
-            /// Computer play turn.
-            /// </summary>
-            OpponentMove,
-
-            /// <summary>
-            /// Computer attach turn.
-            /// </summary>
-            OpponentAttack,
-
-            /// <summary>
-            /// Did someone win? Someone lose? something go on that needs correcting?
-            /// Some sort of end-of-turn logic? This is the place!
-            /// </summary>
-            EvaluateTurn,
-
-            /// <summary>
-            /// If the player won
-            /// </summary>
-            Victory,
-
-            /// <summary>
-            /// If the player lost
-            /// </summary>
-            Defeat,
-
-            /// <summary>
-            /// Clean up, we're done. Shut the scene down, recording and tucking
-            /// anything we need to away.
-            /// </summary>
-            Shutdown
+            // State config
+            SetState<Combat01Startup>();
         }
 
+        /// <summary>
+        /// Perform general tick-over of various systems, from current state to postmaster and onward.
+        /// </summary>
         private void Update()
         {
-            if (executeState)
-            {
-                ProcessState(turnState);
-            }
-
+            current?.Update();
             Postmaster.Instance.Upkeep();
         }
 
-        public void ProcessState(TurnState state)
-        {
-            switch (state)
-            {
-                case TurnState.Startup:
-                    StartCoroutine(Startup());
-                    executeState = false;
-                    break;
-
-                case TurnState.PrepareTurn:
-                    StartCoroutine(PrepareTurn());
-                    executeState = false;
-                    break;
-
-                case TurnState.PlayerMove:
-                    PlayerMove();
-                    break;
-
-                case TurnState.OpponentMove:
-                    StartCoroutine(OpponentMove());
-                    executeState = false;
-                    break;
-
-                case TurnState.EvaluateTurn:
-                    StartCoroutine(EvaluateTurn());
-                    executeState = false;
-                    break;
-
-                case TurnState.Victory:
-                    StartCoroutine(Victory());
-                    executeState = false;
-                    break;
-
-                case TurnState.Defeat:
-                    StartCoroutine(Defeat());
-                    executeState = false;
-                    break;
-
-                case TurnState.Shutdown:
-                    StartCoroutine(Shutdown());
-                    executeState = false;
-                    break;
-            }
-        }
-
-        private void SetState(TurnState newState)
-        {
-            turnState = newState;
-            ui.rootVisualElement.Q<Label>("bannerLabel").text = turnState.ToString();
-            executeState = true;
-        }
-
-        private IEnumerator Startup()
-        {
-            yield return new WaitForSeconds(artificalTurnDelay);
-            SetState(TurnState.PrepareTurn);
-        }
-
-        private IEnumerator PrepareTurn()
-        {
-            foreach(PlayfieldUnit unit in playfield.units)
-            {
-                UnityEngine.Assertions.Assert.IsFalse(unit.team == Team.DEFAULT);
-
-                Unit template = lookup.GetUnityByTag(unit.tag);
-                unit.curMovementBudget = template.moveSpeed;
-                unit.curMaxSize = template.maxSize;
-                unit.curAttackRange = template.attackRange;
-            }
-
-            foreach(PlayfieldTile tile in playfield.world)
-            {
-                Tile template = lookup.GetTileByTag(tile.tag);
-                tile.curIsImpassable = template.isImpassable;
-                tile.curMoveDifficulty = template.moveDifficulty;
-            }
-
-            yield return null;
-            SetState(TurnState.PlayerMove);
-        }
-
-        private IEnumerator OpponentMove()
-        {
-            const float visualDisplayDelay = .3f;
-            const float visualMoveDelay = .1f;
-
-            if (!TryGetOpponentsTarget(out PlayfieldUnit targeted))
-            {
-                yield return null;
-
-                // If we're here, we're not gonna get anything done
-                // since there are no players yet.
-                SetState(TurnState.EvaluateTurn);
-
-                yield break;
-            }
-
-            yield return null;
-            for (int unitIndex = 0; unitIndex < playfield.units.Count; ++unitIndex)
-            {
-                // Select and display the move for an opponent
-                PlayfieldUnit curOpponentToMove = playfield.units[unitIndex];
-                if (curOpponentToMove.team != Team.Opponent)
-                {
-                    continue;
-                }
-
-                visualizerPlayfield.DisplayIndicatorMovePreview(curOpponentToMove, playfield);
-                yield return new WaitForSeconds(visualDisplayDelay);
-
-                // 'Walk' towards the player based on available moves
-                if (BuildPlayerStepPath(playfield, targeted, curOpponentToMove, out List<Tile> steps))
-                {
-                    visualizerPlayfield.ShowMovePath(playfield, curOpponentToMove, steps);
-                    yield return new WaitForSeconds(visualMoveDelay);
-                    yield return new WaitForSeconds(visualMoveDelay);
-
-                    foreach (Tile step in steps)
-                    {
-                        bool canTakeStep = Utils.CanMovePlayfieldUnitTo(playfield, curOpponentToMove, step.associatedPos);
-                        if(!canTakeStep)
-                        {
-                            break;
-                        }
-
-                        int budget = curOpponentToMove.curMovementBudget;
-                        int cost = step.moveDifficulty;
-                        if(budget >= cost)
-                        {
-                            MoveUnitToLocation(curOpponentToMove, step.associatedPos);
-                            yield return new WaitForSeconds(visualMoveDelay);
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
-
-                // Show attack visuals, and let them linger for a second before attacking.
-                visualizerPlayfield.DisplayIndicatorAttackPreview(curOpponentToMove, playfield);
-                yield return new WaitForSeconds(visualDisplayDelay);
-
-                // Apply damage
-                Vector2Int head = curOpponentToMove.locations[PlayfieldUnit.HEAD_INDEX];
-                Vector2Int closest = GetClosestOpponentPosition(curOpponentToMove);
-
-                if (head.GridDistance(closest) <= curOpponentToMove.curAttackRange)
-                {
-                    if (playfield.TryGetUnitAt(closest, out PlayfieldUnit targetPlayerUnit))
-                    {
-                        visualizerPlayfield.DamageUnit(curOpponentToMove, targetPlayerUnit, playfield);
-                    }
-                }
-
-                visualizerPlayfield.HideIndicators();
-                yield return new WaitForSeconds(visualDisplayDelay);
-            }
-
-            SetState(TurnState.EvaluateTurn);
-        }
-
-        private Vector2Int GetClosestOpponentPosition(PlayfieldUnit curOpponent)
-        {
-            Vector2Int closestPos = new Vector2Int(-short.MaxValue, -short.MaxValue); // A wild distance
-            Vector2Int head = curOpponent.locations[PlayfieldUnit.HEAD_INDEX];
-
-            for (int i = 0; i < playfield.units.Count; ++i)
-            {
-                PlayfieldUnit unit = playfield.units[i];
-                if(unit.team == Team.Player)
-                {
-                    for(int loc = 0; loc < unit.locations.Count; ++loc)
-                    {
-                        Vector2Int curLoc = unit.locations[loc];
-                        if(head.GridDistance(curLoc) < head.GridDistance(closestPos))
-                        {
-                            closestPos = curLoc;
-                        }
-                    }
-                }
-            }
-
-            return closestPos;
-        }
-
-        private Tile FindTile(Vector2Int toFind)
-        {
-            return visualizerPlayfield.FindTile(toFind);
-        }
-
         /// <summary>
-        /// Uses DFS with heuristic (greedy and frankly slightly drunk) to move towards the player.
-        /// Note: Not entirely sure if this should be visual or not, but it is largely a visual operation
-        /// since it's based on the existing tiles and data that's accessed through it.
+        /// When states are pushed, the starting of the new state occurs before the 
         /// </summary>
-        /// <param name="playfield"></param>
-        /// <param name="targeted"></param>
-        /// <param name="curOpponentToMove"></param>
-        /// <param name="steps"></param>
-        /// <returns></returns>
-        private bool BuildPlayerStepPath(Playfield playfield, PlayfieldUnit targeted, PlayfieldUnit curOpponentToMove, out List<Tile> steps)
+        /// <typeparam name="T"></typeparam>
+        public void SetState<T>() where T : CombatState
         {
-            List<SearchNode<Tile>> pending = new List<SearchNode<Tile>>();
-            List<SearchNode<Tile>> visited = new List<SearchNode<Tile>>();
-
-            steps = null;
-            pending.Clear();
-            visited.Clear();
-
-            // Done as head indexes
-            Vector2Int startPos = curOpponentToMove.locations[PlayfieldUnit.HEAD_INDEX];
-            Vector2Int goalPos = targeted.locations[PlayfieldUnit.HEAD_INDEX];
-
-            Tile startTile = FindTile(startPos);
-            Tile goalTile = FindTile(goalPos);
-
-
-            pending.Add(new SearchNode<Tile>(startTile, startTile.moveDifficulty));
-
-            bool VisitedContains(Tile toFind)
-            {
-                return visited.Find(f => f.data == toFind) != null;
-            }
-
-            void AddToList(SearchNode<Tile> parent, Vector2Int pos, Vector2Int offset)
-            {
-                Vector2Int curPos = pos + offset;
-                if (playfield.world.IsPosInGrid(curPos))
-                {
-                    Tile newItem = FindTile(curPos);
-                    if (VisitedContains(newItem))
-                    {
-                        return;
-                    }
-
-                    if (newItem.isImpassable)
-                    {
-                        return;
-                    }
-
-                    SearchNode<Tile> node = new SearchNode<Tile>(newItem, newItem.moveDifficulty);
-                    node.curNodeCost = int.MaxValue;
-
-                    int xDif = Mathf.Abs(goalPos.x - curPos.x);
-                    int yDif = Mathf.Abs(goalPos.y - curPos.y);
-                    int distTar = xDif + yDif + Mathf.Abs(xDif - yDif);
-
-                    node.heuristic = newItem.moveDifficulty + distTar;
-                    node.parent = parent;
-
-                    pending.Add(node);
-                }
-            }
-
-            bool foundTarget = false;
-            while (pending.Count > 0)
-            {
-                SearchNode<Tile> item = pending[0];
-                pending.RemoveAt(0);
-
-                if (item.data == goalTile)
-                {
-                    foundTarget = true;
-                    break;
-                }
-
-                visited.Add(item);
-                Vector2Int pos = item.data.associatedPos;
-
-                AddToList(item, pos, Vector2Int.left);
-                AddToList(item, pos, Vector2Int.right);
-                AddToList(item, pos, Vector2Int.up);
-                AddToList(item, pos, Vector2Int.down);
-
-                pending.Sort((a, b) => a.heuristic - b.heuristic);
-            }
-
-            if(!foundTarget)
-            {
-                return false;
-            }
-
-            steps = new List<Tile>();
-            SearchNode<Tile> toWalk = visited[visited.Count - 1];
-            while(toWalk.parent != null)
-            {
-                steps.Add(toWalk.data);
-                toWalk = toWalk.parent;
-            }
-            steps.Reverse();
-
-            return true;
-        }
-
-        private bool TryGetOpponentsTarget(out PlayfieldUnit targeted)
-        {
-            for (int i = 0; i < playfield.units.Count; ++i)
-            {
-                PlayfieldUnit cur = playfield.units[i];
-                if (cur.team == Team.Player)
-                {
-                    targeted = playfield.units[i];
-                    return true;
-                }
-            }
-
-            targeted = null;
-            return false;
-        }
-
-        private bool HasEnemies()
-        {
-            for (int i = 0; i < playfield.units.Count; ++i)
-            {
-                PlayfieldUnit current = playfield.units[i];
-                if (current.team != Team.Player)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private IEnumerator EvaluateTurn()
-        {
-            yield return new WaitForSeconds(artificalTurnDelay);
-
-            // Win value, in this case I've hard-coded to be "No items left"
-            if (playfield.items.Count == 0 && !HasEnemies())
-            {
-                yield return null;
-                SetState(TurnState.Victory);
-            }
-            else
-            {
-                yield return null;
-                SetState(TurnState.PrepareTurn);
-            }
-        }
-
-        private IEnumerator Victory()
-        {
-            yield return new WaitForSeconds(3);
-            SetState(TurnState.Shutdown);
-        }
-
-        private IEnumerator Defeat()
-        {
-            yield return new WaitForSeconds(3);
-            SetState(TurnState.Shutdown);
-        }
-
-        private IEnumerator Shutdown()
-        {
-            yield return new WaitForSeconds(artificalTurnDelay);
-            throw new System.Exception("Signal for scene unload or something");
-        }
-
-
-
-
-
-        // Lol, lmao even.
-        private bool exitPlayerState = false;
-        private bool playerStateStartup = true;
-        MessageSubscription sub = null;
-
-        private void PlayerMove()
-        {
-            // TODO: Ewwww make a proper class based state system and do this on state enter
-            // Not the highest priority but a real important thing long term for sanity.
-            if (playerStateStartup)
-            {
-                sub = Postmaster.Instance.Subscribe<MsgIndicatorClicked>(PlayerMove_MsgMoveTileClicked);
-                // NOTE: Currently hardcoded. Need to select players piece by piece in the future.
-                PlayfieldUnit playerTmp = playfield.units[0];
-                visualizerPlayfield.DisplayIndicatorMovePreview(playerTmp, playfield);
-                playerStateStartup = false;
-                exitPlayerState = false;
-            }
-
-            PlayfieldUnit toProcess = playfield.units[0];
-
-            ProcessKeyboardInput(toProcess);
-
-            // TODO: See above TODO on class-based state system. 
-            if (exitPlayerState)
-            {
-                sub.Dispose();
-                exitPlayerState = false;
-                playerStateStartup = true;
-                SetState(TurnState.OpponentMove);
-            }
-        }
-
-        /// <summary>
-        /// General catch all variadic function that, given a controlled unit, attempt to 
-        /// move it to the target if any of the following keys as parameters are met.
-        /// </summary>
-        /// <param name="controlledUnit">The unit that we're attempting to move.</param>
-        /// <param name="target">A target position to try and move to. This is absolute, not relative.</param>
-        /// <param name="keyList">Any number of keys to consider</param>
-        private void TryMoveOnKeyInput(PlayfieldUnit controlledUnit, Vector2Int target, params KeyCode[] keyList)
-        {
-            Vector2Int head = controlledUnit.locations[PlayfieldUnit.HEAD_INDEX];
-            Vector2Int newMovement = head + target;
-
-            bool relevantKeyDown = false;
-            for (int i = 0; i < keyList.Length; i++)
-            {
-                KeyCode keyCode = keyList[i];
-                if (Input.GetKeyDown(keyCode))
-                {
-                    relevantKeyDown = true;
-                }
-            }
-
-            if (relevantKeyDown)
-            {
-                if (Utils.CanMovePlayfieldUnitTo(playfield, controlledUnit, target))
-                {
-                    MoveUnitToLocation(controlledUnit, target);
-                }
-            }
-        }
-
-        private void ProcessKeyboardInput(PlayfieldUnit controlledUnit)
-        {
-            TryMoveOnKeyInput(controlledUnit, Vector2Int.down, KeyCode.W, KeyCode.UpArrow);
-            TryMoveOnKeyInput(controlledUnit, Vector2Int.up, KeyCode.S, KeyCode.DownArrow);
-            TryMoveOnKeyInput(controlledUnit, Vector2Int.left, KeyCode.A, KeyCode.LeftArrow);
-            TryMoveOnKeyInput(controlledUnit, Vector2Int.right, KeyCode.D, KeyCode.RightArrow);
-        }
-
-        void PlayerMove_MsgMoveTileClicked(Message raw)
-        {
-            MsgIndicatorClicked msg = raw as MsgIndicatorClicked;
-            PlayfieldUnit unit = msg.indicator.ownerUnit;
-            Vector2Int target = msg.indicator.overlaidPosition;
-
-            if (msg.indicator.type == IndicatorType.ImmediateMove)
-            {
-                MoveUnitToLocation(unit, target);
-                if (unit.curMovementBudget == 0)
-                {
-                    visualizerPlayfield.DisplayIndicatorAttackPreview(unit, playfield);
-                }
-            }
-
-            if (msg.indicator.type == IndicatorType.Attack)
-            {
-                if (playfield.TryGetUnitAt(target, out PlayfieldUnit targetUnit))
-                {
-                    visualizerPlayfield.DamageUnit(unit, targetUnit, playfield);
-                    exitPlayerState = true;
-                }
-                else
-                {
-                    exitPlayerState = true;
-                }
-
-                visualizerPlayfield.HideIndicators();
-            }
-        }
-
-        private void MoveUnitToLocation(PlayfieldUnit unit, Vector2Int target)
-        {
-            // Step the unit to the new place. Ensure this happens before visualizer update.
-            Utils.StepUnitTo(unit, playfield, target, moveCost: 1);
-
-            if (playfield.TryGetItemAt(target, out PlayfieldItem item))
-            {
-                playfield.RemoveItemAt(target);
-            }
-
-            visualizerPlayfield.DisplayUnits(playfield);
-            visualizerPlayfield.DisplayItems(playfield);
-            visualizerPlayfield.DisplayIndicatorMovePreview(unit, playfield);
+            T instance = (T)System.Activator.CreateInstance(typeof(T), args:this);
+            instance.Start();
+            current?.Shutdown();
+            ui.rootVisualElement.Q<Label>("bannerLabel").text = current?.GetType().Name;
+            current = instance;
         }
     }
 }
