@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Hardware;
 using UnityEngine;
+using static UnityEngine.UI.CanvasScaler;
 
 namespace forest
 {
@@ -88,9 +89,9 @@ namespace forest
 
             if (relevantKeyDown)
             {
-                if (Utils.CanMovePlayfieldUnitTo(StateMachine.Playfield, controlledUnit, target))
+                if (Utils.CanMovePlayfieldUnitTo(StateMachine.Playfield, controlledUnit, newMovement))
                 {
-                    Utils.MoveUnitToLocation(StateMachine.Playfield, StateMachine.VisualPlayfield, controlledUnit, target);
+                    Utils.MoveUnitToLocation(StateMachine.Playfield, StateMachine.VisualPlayfield, controlledUnit, newMovement);
                 }
             }
         }
@@ -101,10 +102,20 @@ namespace forest
         /// <param name="controlledUnit"></param>
         private void ProcessKeyboardInput(PlayfieldUnit controlledUnit)
         {
+            if (controlledUnit.curMovementBudget == 0)
+            {
+                return;
+            }
+
             TryMoveOnKeyInput(controlledUnit, Vector2Int.down, KeyCode.W, KeyCode.UpArrow);
             TryMoveOnKeyInput(controlledUnit, Vector2Int.up, KeyCode.S, KeyCode.DownArrow);
             TryMoveOnKeyInput(controlledUnit, Vector2Int.left, KeyCode.A, KeyCode.LeftArrow);
             TryMoveOnKeyInput(controlledUnit, Vector2Int.right, KeyCode.D, KeyCode.RightArrow);
+
+            if (controlledUnit.curMovementBudget == 0)
+            {
+                StateMachine.VisualPlayfield.DisplayIndicatorAttackPreview(controlledUnit, StateMachine.Playfield);
+            }
         }
     }
 }

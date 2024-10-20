@@ -52,8 +52,7 @@ namespace forest
                 if (BuildPlayerStepPath(StateMachine.Playfield, targeted, curOpponentToMove, out List<Tile> steps))
                 {
                     StateMachine.VisualPlayfield.ShowMovePath(StateMachine.Playfield, curOpponentToMove, steps);
-                    yield return new WaitForSeconds(visualMoveDelay);
-                    yield return new WaitForSeconds(visualMoveDelay);
+                    yield return new WaitForSeconds(visualMoveDelay * 3);
 
                     foreach (Tile step in steps)
                     {

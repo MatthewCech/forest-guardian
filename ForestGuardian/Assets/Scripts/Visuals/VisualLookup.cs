@@ -20,6 +20,7 @@ namespace forest
         public Indicator movePreviewTemplate;
         public Indicator moveInteractionTemplate;
         public Indicator attackPreview;
+        public Indicator movePathTemplate;
 
         [Header("Various Templates")]
         public Tile defaultTileTemplate;

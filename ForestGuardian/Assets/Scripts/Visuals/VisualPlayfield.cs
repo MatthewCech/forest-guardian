@@ -195,6 +195,12 @@ namespace forest
 
             foreach(var tileNode in visited)
             {
+                bool isHeadLocation = tileNode.parent == null;
+                if (isHeadLocation)
+                {
+                    continue;
+                }
+
                 DisplayIndicator(tileNode.data.associatedPos, playfield, unit, indicator);
             }
         }
@@ -226,6 +232,13 @@ namespace forest
 
                     // Prevent showing preview on head specifically.
                     if(modX == headLocation.x && modY == headLocation.y)
+                    {
+                        continue;
+                    }
+
+                    // If something doesn't exsit or does exist and is impassable, then no target can be on it so don't show.
+                    Tile curTarget = FindTile(new Vector2Int(modX, modY));
+                    if (curTarget == null || curTarget.isImpassable)
                     {
                         continue;
                     }
@@ -292,7 +305,7 @@ namespace forest
         {
             foreach(Tile tile in steps)
             {
-                DisplayIndicator(tile.associatedPos, playfield, unit, lookup.movePreviewTemplate);
+                DisplayIndicator(tile.associatedPos, playfield, unit, lookup.movePathTemplate);
             }
         }
 
@@ -428,21 +441,44 @@ namespace forest
             EnsureParentObjectExists();
 
             Unit template = lookup.GetUnityByTag(data.tag);
-
             for (int i = 0; i < data.locations.Count; ++i)
             {
                 Vector2Int curLocation = data.locations[i];
                 Unit instance = GameObject.Instantiate(template, spawnParent);
                 instance.associatedData = data;
                 instance.gridPos = curLocation;
-                
-                instance.SetBodyVisibility(i == PlayfieldUnit.HEAD_INDEX);
+
+                bool isHead = i == PlayfieldUnit.HEAD_INDEX;
+                instance.SetBodyVisibility(isHead);
 
                 float x = Offset(curLocation.x);
                 float y = Offset(curLocation.y);
                 instance.transform.position = new Vector3(x, -y, -lookup.unitZPriority);
 
                 unitTracking.Add(instance);
+
+                // Link up pending body locations using head's line drawing solution if there are multiple segments.
+                // Otherwise, hide the line.
+                if (isHead && data.locations.Count > 1)
+                {
+                    int segmentCount = data.locations.Count;
+                    Vector3[] positions = new Vector3[segmentCount];
+                    for (int lineIndex = 0; lineIndex < segmentCount; ++lineIndex)
+                    {
+                        Vector2Int cur = data.locations[lineIndex];
+                        float lineX = Offset(cur.x);
+                        float lineY = Offset(cur.y);
+                        positions[lineIndex] = new Vector3(lineX, -lineY, 0);
+                    }
+
+                    instance.segmentLink.enabled = true;
+                    instance.segmentLink.positionCount = segmentCount;
+                    instance.segmentLink.SetPositions(positions);
+                }
+                else
+                {
+                    instance.segmentLink.enabled = false;
+                }
             }
         }
 

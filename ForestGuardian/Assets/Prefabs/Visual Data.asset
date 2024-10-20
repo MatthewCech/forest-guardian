@@ -17,6 +17,7 @@ MonoBehaviour:
   movePreviewTemplate: {fileID: 4283725978537098870, guid: 891fe58b212c85e4d9a238b3989b473c, type: 3}
   moveInteractionTemplate: {fileID: 4283725978537098870, guid: d1e3d839f15a27c4e93e9ec46cc56418, type: 3}
   attackPreview: {fileID: 4283725978537098870, guid: 322632842acbdbf49b46ae23382a5103, type: 3}
+  movePathTemplate: {fileID: 4283725978537098870, guid: 4fca7b542ffa65342a9caf7058904b94, type: 3}
   defaultTileTemplate: {fileID: 1420120552449842933, guid: 2504cac9ccd300644a23d29d20a99a29, type: 3}
   tileTemplates:
   - {fileID: 1420120552449842933, guid: 2504cac9ccd300644a23d29d20a99a29, type: 3}

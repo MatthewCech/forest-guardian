@@ -18,12 +18,12 @@ namespace forest
 
         [Header("General Visuals")]
         [SerializeField] private GameObject head = null;
+        [SerializeField] public LineRenderer segmentLink = null;
 
         // CONSIDER: Replace with int ID if the reference creates issues.
         [Header("Runtime Association")]
         public PlayfieldUnit associatedData; // Note: Could be replaced w/ ID later if needed
         public Vector2Int gridPos;
-
 
         private void OnMouseOver()
         {
