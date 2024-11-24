@@ -35,19 +35,5 @@ namespace forest
                 StateMachine.SetState<Combat02PrepareTurn>();
             }
         }
-
-        private bool HasEnemies()
-        {
-            for (int i = 0; i < StateMachine.Playfield.units.Count; ++i)
-            {
-                PlayfieldUnit current = StateMachine.Playfield.units[i];
-                if (current.team != Team.Player)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
     }
 }

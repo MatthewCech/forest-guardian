@@ -17,5 +17,19 @@ namespace forest
         public virtual void Start() { }
         public virtual void Update() { }
         public virtual void Shutdown() { }
+
+        protected bool HasEnemies()
+        {
+            for (int i = 0; i < StateMachine.Playfield.units.Count; ++i)
+            {
+                PlayfieldUnit current = StateMachine.Playfield.units[i];
+                if (current.team != Team.Player)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

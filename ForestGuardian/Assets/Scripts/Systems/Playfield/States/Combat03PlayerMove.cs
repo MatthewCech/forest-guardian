@@ -2,24 +2,53 @@ using Loam;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Hardware;
+using UnityEditorInternal;
 using UnityEngine;
+using System.Linq;
 using static UnityEngine.UI.CanvasScaler;
 
 namespace forest
 {
     public class Combat03PlayerMove : CombatState
     {
-        private MessageSubscription sub = null;
+
+        private MessageSubscription subMoveTileClicked = null;
+        private MessageSubscription subPlayerClicked = null;
+
+        private List<PlayfieldUnit> pendingUnits = null;
+        private PlayfieldUnit currentUnit = null;
 
         public Combat03PlayerMove(PlayfieldCore stateMachine) : base(stateMachine) { }
 
+        public bool NextUnit()
+        {
+            if (pendingUnits == null || pendingUnits.Count == 0)
+            {
+                currentUnit = null;
+                return false;
+            }
+
+            currentUnit = pendingUnits[0];
+            pendingUnits.RemoveAt(0);
+            return true;
+        }
+
         public override void Start()
         {
-            sub = Postmaster.Instance.Subscribe<MsgIndicatorClicked>(PlayerMove_MsgMoveTileClicked);
+            subMoveTileClicked = Postmaster.Instance.Subscribe<MsgIndicatorClicked>(PlayerMove_MsgMoveTileClicked);
+            subPlayerClicked = Postmaster.Instance.Subscribe<MsgUnitPrimaryAction>(PlayerMove_MsgFriendlyUnitClicked);
+
+            // Collect player units
+            pendingUnits = StateMachine.Playfield.units.Where((unit) => unit.team == Team.Player).ToList();
+            if(!NextUnit())
+            {
+                Debug.LogError("No pending player units, we shouldn't be entering a player move phase with none available. Attempting to exit/shut down.");
+                StateMachine.SetState<Combat10Shutdown>();
+                return;
+            }
 
             // NOTE: Currently hard-coded. Need to select players piece by piece in the future.
-            PlayfieldUnit playerTmp = StateMachine.Playfield.units[0];
-            StateMachine.VisualPlayfield.DisplayIndicatorMovePreview(playerTmp, StateMachine.Playfield);
+            StateMachine.VisualPlayfield.DisplayIndicatorMovePreview(currentUnit, StateMachine.Playfield);
         }
 
         public override void Update()
@@ -30,7 +59,26 @@ namespace forest
 
         public override void Shutdown()
         {
-            sub?.Dispose();
+            subMoveTileClicked?.Dispose();
+            subPlayerClicked?.Dispose();
+        }
+
+        void PlayerMove_MsgFriendlyUnitClicked(Message raw)
+        {
+            MsgUnitPrimaryAction msg = raw as MsgUnitPrimaryAction;
+
+            PlayfieldUnit unit = msg.unit.associatedData;
+            Vector2Int gridPosClicked = msg.position;
+            Vector2Int clickedUnitHeadPos = msg.unit.associatedData.locations[PlayfieldUnit.HEAD_INDEX];
+
+            bool isHead = gridPosClicked == clickedUnitHeadPos;
+            if (isHead)
+            {
+                unit.curMovementBudget = 0;
+                StateMachine.VisualPlayfield.HideIndicators();
+                StateMachine.VisualPlayfield.DisplayIndicatorAttackPreview(unit, StateMachine.Playfield);
+                return;
+            }
         }
 
         /// <summary>
@@ -47,6 +95,7 @@ namespace forest
             if (msg.indicator.type == IndicatorType.ImmediateMove)
             {
                 Utils.MoveUnitToLocation(StateMachine.Playfield, StateMachine.VisualPlayfield, unit, target);
+                ShortCircuitVictoryIfNeeded();
                 if (unit.curMovementBudget == 0)
                 {
                     StateMachine.VisualPlayfield.DisplayIndicatorAttackPreview(unit, StateMachine.Playfield);
@@ -62,6 +111,7 @@ namespace forest
 
                 StateMachine.VisualPlayfield.HideIndicators();
                 StateMachine.SetState<Combat05OpponentMove>();
+                return;
             }
         }
 
@@ -92,6 +142,7 @@ namespace forest
                 if (Utils.CanMovePlayfieldUnitTo(StateMachine.Playfield, controlledUnit, newMovement))
                 {
                     Utils.MoveUnitToLocation(StateMachine.Playfield, StateMachine.VisualPlayfield, controlledUnit, newMovement);
+                    ShortCircuitVictoryIfNeeded();
                 }
             }
         }
@@ -115,6 +166,14 @@ namespace forest
             if (controlledUnit.curMovementBudget == 0)
             {
                 StateMachine.VisualPlayfield.DisplayIndicatorAttackPreview(controlledUnit, StateMachine.Playfield);
+            }
+        }
+
+        private void ShortCircuitVictoryIfNeeded()
+        {
+            if (StateMachine.Playfield.items.Count == 0 && !HasEnemies())
+            {
+                StateMachine.SetState<Combat08Victory>();
             }
         }
     }

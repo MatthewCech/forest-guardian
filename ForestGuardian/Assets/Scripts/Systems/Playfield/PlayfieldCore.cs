@@ -13,7 +13,8 @@ namespace forest
     {
         // Inspector
         [Header("General Links")]
-        [SerializeField] private TextAsset levelData;
+        [Tooltip("The text asset that'll be used to build out the playfield. If left empty/null, the game core is checked.")]
+        [SerializeField] private TextAsset levelOverride;
         [SerializeField] private Camera mainCam;
         [SerializeField] private UIDocument ui;
 
@@ -31,6 +32,7 @@ namespace forest
         public VisualPlayfield VisualPlayfield { get; private set; }
         public Playfield Playfield { get; private set; }
         public VisualLookup Lookup { get; private set; }
+        public UIDocument UI { get; private set; }
 
         // Internal
         private CombatState current = null;
@@ -42,13 +44,45 @@ namespace forest
         {
             Postmaster.Instance.Configure(PostmasterConfig.Default());
 
-            playfield = Playfield.BuildPlayfield(levelData.text);
+            if(!TrySelectLevel(out TextAsset toLoad))
+            {
+                Debug.LogError("No playfield specified! Attempting to exit.");
+                SetState<Combat10Shutdown>();
+                return;
+            }
+
+            playfield = Playfield.BuildPlayfield(toLoad.text);
             visualizerPlayfield.Initialize(lookup);
             visualizerPlayfield.DisplayAll(playfield);
 
             Utils.CenterCamera(mainCam, visualizerPlayfield);
 
             ConfigureInitialState();
+        }
+
+        private bool TrySelectLevel(out TextAsset selected)
+        {
+            selected = null;
+
+            // If we were given an override, just do that.
+            if (levelOverride != null)
+            {
+                selected = levelOverride;
+                return true;
+            }
+
+            // Try and collect level information from the game instance
+            TextAsset coreValue = Core.Instance.game.currentPlayfield;
+            if(coreValue != null) 
+            {
+                selected = coreValue;
+
+                // Note: Consume this data.
+                Core.Instance.game.currentPlayfield = null;
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -60,6 +94,7 @@ namespace forest
             Playfield = playfield;
             VisualPlayfield = visualizerPlayfield;
             Lookup = lookup;
+            UI = ui;
 
             // Pre-poke coroutine singleton by just doing some guaranteed function to force init.
             Loam.CoroutineObject.Instance.name.ToString();
