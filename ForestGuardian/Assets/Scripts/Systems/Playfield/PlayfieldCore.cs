@@ -96,11 +96,19 @@ namespace forest
             Lookup = lookup;
             UI = ui;
 
+            // Connect relevant UI.
+            ui.rootVisualElement.Q<Button>("buttonMap").clicked += Exit;
+
             // Pre-poke coroutine singleton by just doing some guaranteed function to force init.
             Loam.CoroutineObject.Instance.name.ToString();
 
             // State config
             SetState<Combat01Startup>();
+        }
+
+        private void Exit()
+        {
+            SetState<Combat10Shutdown>();
         }
 
         /// <summary>
