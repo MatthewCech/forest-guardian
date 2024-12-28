@@ -107,7 +107,8 @@ namespace forest
         public static void MoveUnitToLocation(Playfield playfield, VisualPlayfield visualizerPlayfield, PlayfieldUnit unit, Vector2Int target)
         {
             // Step the unit to the new place. Ensure this happens before visualizer update.
-            Utils.StepUnitTo(unit, playfield, target, moveCost: 1);
+            int moveCost = playfield.world.Get(target).curMoveDifficulty;
+            Utils.StepUnitTo(unit, playfield, target, moveCost);
 
             if (playfield.TryGetItemAt(target, out PlayfieldItem item))
             {

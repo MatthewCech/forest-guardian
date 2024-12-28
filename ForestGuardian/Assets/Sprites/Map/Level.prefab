@@ -360,7 +360,7 @@ GameObject:
   - component: {fileID: 4412628126819071539}
   - component: {fileID: 5474551186967786932}
   m_Layer: 0
-  m_Name: Square (1)
+  m_Name: Shadow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
