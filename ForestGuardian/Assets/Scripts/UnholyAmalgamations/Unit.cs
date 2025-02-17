@@ -57,7 +57,7 @@ namespace forest
             }
 
             int id = associatedData.id;
-            int moves = associatedData.curMovementBudget; ;
+            int moves = associatedData.curMovementBudget;
             int locIndex = -1;
 
             for (int i = 0; i < associatedData.locations.Count; ++i)

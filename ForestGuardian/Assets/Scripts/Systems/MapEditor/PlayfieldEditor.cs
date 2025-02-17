@@ -2,10 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
+//using UnityEngine.UIElements;
+using UnityEngine.UI;
 using Loam;
 using System.IO;
 using Newtonsoft.Json;
+using UnityEngine.Events;
 
 namespace forest
 {
@@ -17,21 +19,32 @@ namespace forest
 
         [Header("Required Links")]
         [SerializeField] private VisualLookup lookup;
-        [SerializeField] private UIDocument document;
         [SerializeField] private VisualPlayfield visuals;
         [SerializeField] private Camera displayingCamera;
 
+        [Header("Old UI Style links")]
+        [SerializeField] private Button uiSave;
+        [SerializeField] private Slider uiWidthSlider;
+        [SerializeField] private Slider uiHeightSlider;
+        [SerializeField] private TMPro.TMP_InputField uiWidthEntryField;
+        [SerializeField] private TMPro.TMP_InputField uiHeightEntryField;
+        [SerializeField] private TMPro.TextMeshProUGUI uiStatus;
+
+        // Internal
         private Playfield workingPlayfield;
+        
 
         public void Start()
         {
             visuals.Initialize(lookup);
-            document.rootVisualElement.Q<Button>("buttonSave").clicked += SaveCreatedPlayfield;
-            SliderInt width = document.rootVisualElement.Q<SliderInt>("sliderWidth");
-            SliderInt height = document.rootVisualElement.Q<SliderInt>("sliderHeight");
 
-            width.RegisterValueChangedCallback(SizeChange);
-            height.RegisterValueChangedCallback(SizeChange);
+            uiSave.onClick.AddListener(SaveCreatedPlayfield);
+
+            uiWidthSlider.onValueChanged.AddListener(SizeChange);
+            uiHeightSlider.onValueChanged.AddListener(SizeChange);
+
+            uiWidthEntryField.text = uiWidthSlider.value.ToString();
+            uiHeightEntryField.text = uiHeightSlider.value.ToString();
 
             workingPlayfield = CreatePlayfield();
             visuals.DisplayAll(workingPlayfield);
@@ -57,7 +70,7 @@ namespace forest
                 status = "Placing Item";
             }
 
-            document.rootVisualElement.Q<Label>("editorStatus").text = status;
+            uiStatus.text = status;
         }
 
         /// <summary>
@@ -263,11 +276,8 @@ namespace forest
         private Playfield CreatePlayfield(Playfield existing = null)
         {
             // Get world size
-            SliderInt width = document.rootVisualElement.Q<SliderInt>("sliderWidth");
-            SliderInt height = document.rootVisualElement.Q<SliderInt>("sliderHeight");
-
-            int newWidth = width.value;
-            int newHeight = height.value;
+            int newWidth = Mathf.RoundToInt(uiWidthSlider.value);
+            int newHeight = Mathf.RoundToInt(uiHeightSlider.value);
 
             // Create and configure blank playfield
             Playfield newPlayfield = new Playfield();
@@ -347,11 +357,15 @@ namespace forest
             newPlayfield.items = existing.items;
         }
 
-        private void SizeChange(ChangeEvent<int> e)
+        private void SizeChange(float e)
         {
             workingPlayfield = CreatePlayfield(workingPlayfield);
             visuals.DisplayAll(workingPlayfield);
             Utils.CenterCamera(displayingCamera, visuals);
+
+            // Readouts
+            uiWidthEntryField.text = uiWidthSlider.value.ToString();
+            uiHeightEntryField.text = uiHeightSlider.value.ToString();
         }
 
         private void SaveCreatedPlayfield()

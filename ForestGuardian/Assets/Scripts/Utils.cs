@@ -38,7 +38,7 @@ namespace forest
                 }
             }
 
-            // If we're stepping on ourselves, so we need need to move the position we know
+            // If we're stepping on ourselves, so we need to move the position we know
             // we already have to the head index - so we need to pull it out.
             if (isSteppingOnSelf)
             {
@@ -106,8 +106,9 @@ namespace forest
 
         public static void MoveUnitToLocation(Playfield playfield, VisualPlayfield visualizerPlayfield, PlayfieldUnit unit, Vector2Int target)
         {
-            // Step the unit to the new place. Ensure this happens before visualizer update.
             int moveCost = playfield.world.Get(target).curMoveDifficulty;
+
+            // Step the unit to the new place. Ensure this happens before visualizer update.
             Utils.StepUnitTo(unit, playfield, target, moveCost);
 
             if (playfield.TryGetItemAt(target, out PlayfieldItem item))
