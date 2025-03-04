@@ -30,12 +30,37 @@ namespace forest
         [SerializeField] private TMPro.TMP_InputField uiHeightEntryField;
         [SerializeField] private TMPro.TextMeshProUGUI uiStatus;
 
+        [Header("Selectables")]
+        [SerializeField] private PlayfieldEditorUISelectable tileEntryTemplate;
+        [SerializeField] private PlayfieldEditorUISelectable unitEntryTemplate;
+        [SerializeField] private PlayfieldEditorUISelectable itemEntryTemplate;
+        [SerializeField] private Transform previewTarget;
+
         // Internal
         private Playfield workingPlayfield;
-        
+        private Transform tileEntryParent;
+        private Transform unitEntryParent;
+        private Transform itemEntryParent;
+
+        private GameObject previewObject;
+        private string previewTag;
+        private SelectionType previewType;
 
         public void Start()
         {
+            previewObject = null;
+            previewTag = "";
+            previewType = SelectionType.NONE;
+
+            tileEntryParent = tileEntryTemplate.transform.parent;
+            tileEntryTemplate.gameObject.SetActive(false);
+
+            unitEntryParent = unitEntryTemplate.transform.parent;
+            unitEntryTemplate.gameObject.SetActive(false);
+
+            itemEntryParent = itemEntryTemplate.transform.parent;
+            itemEntryTemplate.gameObject.SetActive(false);
+
             visuals.Initialize(lookup);
 
             uiSave.onClick.AddListener(SaveCreatedPlayfield);
@@ -56,6 +81,41 @@ namespace forest
             Postmaster.Instance.Subscribe<MsgUnitSecondaryAction>(UnitSecondaryAction);
             Postmaster.Instance.Subscribe<MsgItemPrimaryAction>(ItemPrimaryAction);
             Postmaster.Instance.Subscribe<MsgItemSecondaryAction>(ItemSecondaryAction);
+
+            CreateSelectableButtons();
+
+            Tile tile = lookup.tileTemplates[0];
+            SetPreview(tile.gameObject, tile.name, SelectionType.Tile);
+        }
+
+        private void CreateSelectableButtons()
+        {
+            foreach(Tile tileToCreate in lookup.tileTemplates)
+            {
+                PlayfieldEditorUISelectable tile = GameObject.Instantiate(tileEntryTemplate, tileEntryParent);
+                tile.SetData(tileToCreate.gameObject, SelectionType.Tile, tileToCreate.name, ProcessTileClicked);
+                
+                tile.gameObject.SetActive(true);
+            }
+        }
+
+        private void ProcessTileClicked(PlayfieldEditorUISelectable previewClicked)
+        {
+            SetPreview(previewClicked.Visual, previewClicked.SelectableTag, previewClicked.SelectableType);
+        }
+
+        private void SetPreview(GameObject toPreview, string tag, SelectionType type)
+        {
+            previewTag = tag;
+            previewType = type;
+
+            if (previewObject != null)
+            {
+                DestroyImmediate(previewObject);
+            }
+
+            previewObject = GameObject.Instantiate(toPreview, previewTarget);
+            previewObject.gameObject.SetActive(true);
         }
 
         private void Update()
@@ -81,39 +141,10 @@ namespace forest
         {
             MsgTilePrimaryAction msg = raw as MsgTilePrimaryAction;
 
-            if (IsMainInputModifierDown())
+            if (previewType == SelectionType.Tile)
             {
-                PlayfieldUnit unit = new PlayfieldUnit();
-                unit.tag = lookup.unitTemplates[0].name;
-                unit.team = lookup.unitTemplates[0].defaultTeam;
-                unit.id = workingPlayfield.GetNextID();
-                unit.locations.Add(msg.tilePosition);
-
-                workingPlayfield.units.Add(unit);
-            }
-            else if (IsExtraInputModifierDown())
-            {
-                PlayfieldItem item = new PlayfieldItem();
-                item.tag = lookup.itemTemplates[0].name;
-                item.id = workingPlayfield.GetNextID();
-                item.location = msg.tilePosition;
-
-                workingPlayfield.items.Add(item);
-            }
-            else
-            {
-                // No longer using enums, we now follow the pattern of units by cycling through available tiles by tag
                 PlayfieldTile tile = workingPlayfield.world.Get(msg.tilePosition);
-                int index = GetTemplateIndex(lookup.tileTemplates, tile.tag);
-
-                index++;
-                if (index >= lookup.tileTemplates.Count)
-                {
-                    index = 0;
-                }
-
-                string newTag = lookup.tileTemplates[index].name;
-                tile.tag = newTag;
+                tile.tag = previewTag;
             }
 
             visuals.DisplayAll(workingPlayfield);
