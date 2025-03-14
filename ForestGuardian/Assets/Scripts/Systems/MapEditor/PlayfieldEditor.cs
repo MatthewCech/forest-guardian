@@ -37,6 +37,7 @@ namespace forest
         [SerializeField] private Transform previewTarget;
 
         // Internal
+        private string nothingTileTag;
         private Playfield workingPlayfield;
         private Transform tileEntryParent;
         private Transform unitEntryParent;
@@ -51,6 +52,7 @@ namespace forest
             previewObject = null;
             previewTag = "";
             previewType = SelectionType.NONE;
+            nothingTileTag = lookup.tileTemplates[0].name; // Set nothing tile tag
 
             tileEntryParent = tileEntryTemplate.transform.parent;
             tileEntryTemplate.gameObject.SetActive(false);
@@ -84,22 +86,54 @@ namespace forest
 
             CreateSelectableButtons();
 
-            Tile tile = lookup.tileTemplates[0];
+            // Basic tile
+            Tile tile = lookup.tileTemplates[1];
             SetPreview(tile.gameObject, tile.name, SelectionType.Tile);
         }
 
+        private void TilePrimaryAction(Message raw) { ProcessPrimaryAction((raw as MsgTilePrimaryAction).tilePosition); }
+        private void UnitPrimaryAction(Message raw) { ProcessPrimaryAction((raw as MsgUnitPrimaryAction).position); }
+        private void ItemPrimaryAction(Message raw) { ProcessPrimaryAction((raw as MsgItemPrimaryAction).position); }
+        private void TileSecondaryAction(Message raw) { ProcessSecondaryAction((raw as MsgTileSecondaryAction).position); }
+        private void UnitSecondaryAction(Message raw) { ProcessSecondaryAction((raw as MsgUnitSecondaryAction).position); }
+        private void ItemSecondaryAction(Message raw) { ProcessSecondaryAction((raw as MsgItemSecondaryAction).position); }
+
+        /// <summary>
+        /// Create UI for items like tools in a general editor toolbox
+        /// </summary>
         private void CreateSelectableButtons()
         {
             foreach(Tile tileToCreate in lookup.tileTemplates)
             {
+                if(tileToCreate.name == nothingTileTag)
+                {
+                    continue;
+                }
+
                 PlayfieldEditorUISelectable tile = GameObject.Instantiate(tileEntryTemplate, tileEntryParent);
-                tile.SetData(tileToCreate.gameObject, SelectionType.Tile, tileToCreate.name, ProcessTileClicked);
+                tile.SetData(tileToCreate.gameObject, SelectionType.Tile, tileToCreate.name, ProcessedSelectableClick);
                 
                 tile.gameObject.SetActive(true);
             }
+
+            foreach (Unit unitToCreate in lookup.unitTemplates)
+            {
+                PlayfieldEditorUISelectable unit = GameObject.Instantiate(unitEntryTemplate, unitEntryParent);
+                unit.SetData(unitToCreate.gameObject, SelectionType.Unit, unitToCreate.name, ProcessedSelectableClick);
+
+                unit.gameObject.SetActive(true);
+            }
+
+            foreach (Item itemToCreate in lookup.itemTemplates)
+            {
+                PlayfieldEditorUISelectable item = GameObject.Instantiate(itemEntryTemplate, itemEntryParent);
+                item.SetData(itemToCreate.gameObject, SelectionType.Item, itemToCreate.name, ProcessedSelectableClick);
+
+                item.gameObject.SetActive(true);
+            }
         }
 
-        private void ProcessTileClicked(PlayfieldEditorUISelectable previewClicked)
+        private void ProcessedSelectableClick(PlayfieldEditorUISelectable previewClicked)
         {
             SetPreview(previewClicked.Visual, previewClicked.SelectableTag, previewClicked.SelectableType);
         }
@@ -114,163 +148,91 @@ namespace forest
                 DestroyImmediate(previewObject);
             }
 
+            // Strip any trail lines
             previewObject = GameObject.Instantiate(toPreview, previewTarget);
+            LineRenderer[] renderers = previewObject.GetComponentsInChildren<LineRenderer>();
+            foreach(LineRenderer renderer in renderers)
+            {
+                Destroy(renderer);
+            }
+
             previewObject.gameObject.SetActive(true);
         }
 
         private void Update()
         {
-            string status = "Placing Tile";
-            if (Input.GetKey(mainModifier))
+            string action = "Placing";
+            if(IsMainInputModifierDown())
             {
-                status = "Placing Unit";
-            }
-            else if (Input.GetKey(extraModifier))
-            {
-                status = "Placing Item";
+                action = "Removing";
             }
 
-            uiStatus.text = status;
+            uiStatus.text = $"{action} {previewType.ToString()}";
         }
 
-        /// <summary>
-        /// Processes an action that 
-        /// </summary>
-        /// <param name="raw"></param>
-        private void TilePrimaryAction(Message raw)
+        private void ProcessPrimaryAction(Vector2Int position)
         {
-            MsgTilePrimaryAction msg = raw as MsgTilePrimaryAction;
+            if(IsMainInputModifierDown())
+            {
+                ProcessSecondaryAction(position);
+                return;
+            }
 
             if (previewType == SelectionType.Tile)
             {
-                PlayfieldTile tile = workingPlayfield.world.Get(msg.tilePosition);
+                PlayfieldTile tile = workingPlayfield.world.Get(position);
                 tile.tag = previewTag;
             }
-
-            visuals.DisplayAll(workingPlayfield);
-        }
-        private void TileSecondaryAction(Message raw)
-        {
-            MsgTileSecondaryAction msg = raw as MsgTileSecondaryAction;
-            PlayfieldTile tile = workingPlayfield.world.Get(msg.position);
-
-            int index = GetTemplateIndex(lookup.tileTemplates, tile.tag);
-
-            index--;
-            if (index < 0)
+            else if (previewType == SelectionType.Unit)
             {
-                index = lookup.tileTemplates.Count - 1;
-            }
-
-            string newTag = lookup.tileTemplates[index].name;
-            tile.tag = newTag;
-
-            visuals.DisplayAll(workingPlayfield);
-        }
-
-        private void UnitPrimaryAction(Message raw)
-        {
-            MsgUnitPrimaryAction msg = raw as MsgUnitPrimaryAction;
-            PlayfieldUnit data = msg.unit.associatedData;
-
-            if (IsMainInputModifierDown())
-            {
-                workingPlayfield.units.Remove(data);
-            }
-            else
-            {
-                // display the next unit template, looping back if needed.
-                int index = GetTemplateIndex(lookup.unitTemplates, data.tag);
-                index++;
-                if (index >= lookup.unitTemplates.Count)
+                if (workingPlayfield.TryGetUnitAt(position, out PlayfieldUnit unit))
                 {
-                    index = 0;
+                    unit.tag = previewTag;
                 }
+                else
+                {
+                    PlayfieldUnit newUnit = new PlayfieldUnit();
+                    newUnit.locations.Add(position);
+                    newUnit.tag = previewTag;
+                    newUnit.id = workingPlayfield.GetNextID();
 
-                string newTag = lookup.unitTemplates[index].name;
-                Team newTeam = lookup.unitTemplates[index].defaultTeam;
-                data.tag = newTag;
-                data.team = newTeam;
+                    workingPlayfield.units.Add(newUnit);
+                }
+            }
+            else if (previewType == SelectionType.Item)
+            {
+                if (workingPlayfield.TryGetItemAt(position, out PlayfieldItem item))
+                {
+                    item.tag = previewTag;
+                }
+                else
+                {
+                    PlayfieldItem newItem = new PlayfieldItem();
+                    newItem.location = position;
+                    newItem.tag = previewTag;
+                    newItem.id = workingPlayfield.GetNextID();
+
+                    workingPlayfield.items.Add(newItem);
+                }
             }
 
             visuals.DisplayAll(workingPlayfield);
         }
 
-        private void UnitSecondaryAction(Message raw)
+        private void ProcessSecondaryAction(Vector2Int position)
         {
-            MsgUnitSecondaryAction msg = raw as MsgUnitSecondaryAction;
-            PlayfieldUnit data = msg.unit.associatedData;
-
-            if (IsMainInputModifierDown())
+            if (previewType == SelectionType.Tile)
             {
-                workingPlayfield.units.Remove(data);
+                PlayfieldTile tile = workingPlayfield.world.Get(position);
+                tile.tag = nothingTileTag;
             }
-            else
+            else if (previewType == SelectionType.Unit)
             {
-                // display previous unit template, looping back if needed.
-                int index = GetTemplateIndex(lookup.unitTemplates, data.tag);
-                index--;
-                if (index < 0)
-                {
-                    index = lookup.unitTemplates.Count - 1;
-                }
-
-                string newTag = lookup.unitTemplates[index].name;
-                Team newTeam = lookup.unitTemplates[index].defaultTeam;
-                data.tag = newTag;
-                data.team = newTeam;
+                workingPlayfield.RemoveUnitAt(position);
             }
-
-            visuals.DisplayAll(workingPlayfield);
-        }
-
-        private void ItemPrimaryAction(Message raw)
-        {
-            MsgItemPrimaryAction msg = raw as MsgItemPrimaryAction;
-            PlayfieldItem data = msg.item.associatedData;
-
-            if (IsExtraInputModifierDown())
+            else if (previewType == SelectionType.Item)
             {
-                workingPlayfield.items.Remove(data);
-            }
-            else
-            {
-                // display the next unit template, looping back if needed.
-                int index = GetTemplateIndex(lookup.itemTemplates, data.tag);
-                index++;
-                if (index >= lookup.itemTemplates.Count)
-                {
-                    index = 0;
-                }
-
-                string newTag = lookup.itemTemplates[index].name;
-                data.tag = newTag;
-            }
-
-            visuals.DisplayAll(workingPlayfield);
-        }
-
-        private void ItemSecondaryAction(Message raw)
-        {
-            MsgItemSecondaryAction msg = raw as MsgItemSecondaryAction;
-            PlayfieldItem data = msg.item.associatedData;
-
-            if (IsExtraInputModifierDown())
-            {
-                workingPlayfield.items.Remove(data);
-            }
-            else
-            {
-                // display previous unit template, looping back if needed.
-                int index = GetTemplateIndex(lookup.itemTemplates, data.tag);
-                index--;
-                if (index < 0)
-                {
-                    index = lookup.itemTemplates.Count - 1;
-                }
-
-                string newTag = lookup.itemTemplates[index].name;
-                data.tag = newTag;
+                workingPlayfield.RemoveItemAt(position);
             }
 
             visuals.DisplayAll(workingPlayfield);

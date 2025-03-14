@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using static UnityEditor.FilePathAttribute;
+using static UnityEngine.UI.CanvasScaler;
 
 namespace forest
 {
@@ -21,7 +23,7 @@ namespace forest
         [JsonProperty] private int nextID = 1;
 
         /// <summary>
-        /// Provide a playfield-unique ID for use when creating a new item within the playfield.
+        /// Provide a playfield-unique ID for use when creating a new tile/unit/item within the playfield.
         /// </summary>
         /// <returns>an unused integer to be used as an ID when identifying things in the playfield.</returns>
         public int GetNextID()
@@ -99,18 +101,45 @@ namespace forest
         }
 
         /// <summary>
-        /// Removes any item found at the specified location.
+        /// Removes first item found at the specified location.
         /// </summary>
         /// <param name="pos">X,Y world location to try and remove tiles at.</param>
-        public void RemoveItemAt(Vector2Int pos)
+        public bool RemoveItemAt(Vector2Int pos)
         {
             for(int i = items.Count - 1; i >= 0; --i)
             {
                 if (items[i].location == pos)
                 {
                     items.RemoveAt(i);
+                    return true;
                 }
             }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Removes first unit found at the specified location - tail location will work.
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <returns></returns>
+        public bool RemoveUnitAt(Vector2Int pos)
+        {
+            for (int unitIndex = 0; unitIndex < units.Count; ++unitIndex)
+            {
+                PlayfieldUnit current = units[unitIndex];
+                for (int locs = 0; locs < current.locations.Count; ++locs)
+                {
+                    Vector2Int curLoc = current.locations[locs];
+                    if (curLoc == pos)
+                    {
+                        units.RemoveAt(unitIndex);
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         /// <summary>

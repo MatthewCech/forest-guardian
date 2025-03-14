@@ -7,8 +7,24 @@ namespace forest
 {
     public enum Team
     {
+        /// <summary>
+        /// For use in situations where we want to indicate presence on any team
+        /// </summary>
+        ANY = -1,
+
+        /// <summary>
+        /// A very likely error state if seen at runtime
+        /// </summary>
         DEFAULT = 0,
+
+        /// <summary>
+        /// Player controlled
+        /// </summary>
         Player = 1,
+
+        /// <summary>
+        /// Generic NPC/Opponent
+        /// </summary>
         Opponent = 2,
     }
 
