@@ -29,19 +29,18 @@ namespace forest
         [SerializeField] private TMPro.TMP_InputField uiWidthEntryField;
         [SerializeField] private TMPro.TMP_InputField uiHeightEntryField;
         [SerializeField] private TMPro.TextMeshProUGUI uiStatus;
+        [SerializeField] private TMPro.TextMeshProUGUI uiLayer;
 
-        [Header("Selectables")]
-        [SerializeField] private PlayfieldEditorUISelectable tileEntryTemplate;
-        [SerializeField] private PlayfieldEditorUISelectable unitEntryTemplate;
-        [SerializeField] private PlayfieldEditorUISelectable itemEntryTemplate;
+        [Header("Selectable Entries")]
+        [SerializeField] private PlayfieldEditorUISelectable selectableEntryTemplate;
+        [SerializeField] private PlayfieldEditorUISelectableLabel selectableEntryLabelTemplate;
         [SerializeField] private Transform previewTarget;
 
+        
         // Internal
         private string nothingTileTag;
         private Playfield workingPlayfield;
-        private Transform tileEntryParent;
-        private Transform unitEntryParent;
-        private Transform itemEntryParent;
+        private Transform selectableEntryParent;
 
         private GameObject previewObject;
         private string previewTag;
@@ -54,14 +53,9 @@ namespace forest
             previewType = SelectionType.NONE;
             nothingTileTag = lookup.tileTemplates[0].name; // Set nothing tile tag
 
-            tileEntryParent = tileEntryTemplate.transform.parent;
-            tileEntryTemplate.gameObject.SetActive(false);
-
-            unitEntryParent = unitEntryTemplate.transform.parent;
-            unitEntryTemplate.gameObject.SetActive(false);
-
-            itemEntryParent = itemEntryTemplate.transform.parent;
-            itemEntryTemplate.gameObject.SetActive(false);
+            selectableEntryParent = selectableEntryTemplate.transform.parent;
+            selectableEntryTemplate.gameObject.SetActive(false);
+            selectableEntryLabelTemplate.gameObject.SetActive(false);
 
             visuals.Initialize(lookup);
 
@@ -98,35 +92,45 @@ namespace forest
         private void UnitSecondaryAction(Message raw) { ProcessSecondaryAction((raw as MsgUnitSecondaryAction).position); }
         private void ItemSecondaryAction(Message raw) { ProcessSecondaryAction((raw as MsgItemSecondaryAction).position); }
 
+        private void AddSelectableLabel(string label)
+        {
+            PlayfieldEditorUISelectableLabel labelObj = GameObject.Instantiate(selectableEntryLabelTemplate, selectableEntryParent);
+            labelObj.label.text = label;
+            labelObj.gameObject.SetActive(true);
+        }
+
         /// <summary>
         /// Create UI for items like tools in a general editor toolbox
         /// </summary>
         private void CreateSelectableButtons()
         {
-            foreach(Tile tileToCreate in lookup.tileTemplates)
+            AddSelectableLabel("Tiles");
+            foreach (Tile tileToCreate in lookup.tileTemplates)
             {
                 if(tileToCreate.name == nothingTileTag)
                 {
                     continue;
                 }
 
-                PlayfieldEditorUISelectable tile = GameObject.Instantiate(tileEntryTemplate, tileEntryParent);
+                PlayfieldEditorUISelectable tile = GameObject.Instantiate(selectableEntryTemplate, selectableEntryParent);
                 tile.SetData(tileToCreate.gameObject, SelectionType.Tile, tileToCreate.name, ProcessedSelectableClick);
                 
                 tile.gameObject.SetActive(true);
             }
 
+            AddSelectableLabel("Units");
             foreach (Unit unitToCreate in lookup.unitTemplates)
             {
-                PlayfieldEditorUISelectable unit = GameObject.Instantiate(unitEntryTemplate, unitEntryParent);
+                PlayfieldEditorUISelectable unit = GameObject.Instantiate(selectableEntryTemplate, selectableEntryParent);
                 unit.SetData(unitToCreate.gameObject, SelectionType.Unit, unitToCreate.name, ProcessedSelectableClick);
 
                 unit.gameObject.SetActive(true);
             }
 
+            AddSelectableLabel("Items");
             foreach (Item itemToCreate in lookup.itemTemplates)
             {
-                PlayfieldEditorUISelectable item = GameObject.Instantiate(itemEntryTemplate, itemEntryParent);
+                PlayfieldEditorUISelectable item = GameObject.Instantiate(selectableEntryTemplate, selectableEntryParent);
                 item.SetData(itemToCreate.gameObject, SelectionType.Item, itemToCreate.name, ProcessedSelectableClick);
 
                 item.gameObject.SetActive(true);
@@ -161,6 +165,7 @@ namespace forest
 
         private void Update()
         {
+            uiLayer.text = previewType.ToString();
             string action = "Placing";
             if(IsMainInputModifierDown())
             {
