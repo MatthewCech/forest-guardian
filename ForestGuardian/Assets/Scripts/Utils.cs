@@ -86,6 +86,12 @@ namespace forest
         {
             PlayfieldTile targetTile = playfield.world.Get(targetLocation);
 
+            // No moving to overly expensive tiles
+            if(unitTryingToMove.curMovementBudget - targetTile.curMoveDifficulty < 0)
+            {
+                return false;
+            }
+
             // No impassable tiles, do it as a permitted list so you can't go by default.
             if (targetTile.curIsImpassable)
             {
