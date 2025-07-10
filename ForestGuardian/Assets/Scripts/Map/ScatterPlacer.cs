@@ -12,7 +12,7 @@ public class ScatterPlacer : MonoBehaviour
     [Header("Placement Parameters")]
     [SerializeField, Range(0.01f, 3f)] private float scaleMin = 0.9f;
     [SerializeField, Range(0.01f, 3f)] private float scaleMax = 1.1f;
-    [SerializeField] private Vector2 placementArea = Vector2.one;
+    [SerializeField] private Vector3 placementArea = Vector3.one;
     [SerializeField, Range(1, 100)] private int number = 10;
     [SerializeField] private bool placeLocally = false;
     [SerializeField] private string groupName = "Scatter Group";
@@ -64,7 +64,7 @@ public class ScatterPlacer : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = new Color(.1f, .9f, .2f, .2f);
-        Gizmos.DrawWireCube(this.transform.position, new Vector3(placementArea.x, placementArea.y, 0));
+        Gizmos.DrawWireCube(this.transform.position, placementArea);
     }
 #endif
 
@@ -108,7 +108,8 @@ public class ScatterPlacer : MonoBehaviour
             // Position
             float posX = Random.Range(-placementArea.x / 2.0f, placementArea.x / 2.0f);
             float posY = Random.Range(-placementArea.y / 2.0f, placementArea.y / 2.0f);
-            Vector3 pos = new Vector3(posX, posY, 0);
+            float posZ = Random.Range(-placementArea.z / 2.0f, placementArea.z / 2.0f);
+            Vector3 pos = new Vector3(posX, posY, posZ);
             if (placeLocally)
             {
                 scatter.transform.position = this.transform.position + pos;
