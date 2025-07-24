@@ -24,6 +24,8 @@ namespace forest
 
         [Header("Various Templates")]
         public Tile defaultTileTemplate;
+        public Portal portalTemplate; // "Stairs" in a traditional rogue/PMD sense, dungeon advancement
+        public Exit exitTemplate;     // "Exit" in a "Go back to the map" sense
         public List<Tile> tileTemplates;
         public List<Unit> unitTemplates;
         public List<Item> itemTemplates;
@@ -73,6 +75,32 @@ namespace forest
             }
 
             return tileTemplates.Find(FindTile);
+        }
+
+        public Portal GetPortalByTag(string tag)
+        {
+            if (portalTemplate.name.Equals(tag, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return portalTemplate;
+            }
+            else
+            {
+                Debug.LogWarning($"You're trying to look up a portal by a different name? {tag} was asked for, {portalTemplate.name} exists.");
+                return portalTemplate;
+            }
+        }
+
+        public Exit GetExitByTag(string tag)
+        {
+            if (exitTemplate.name.Equals(tag, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return exitTemplate;
+            }
+            else
+            {
+                Debug.LogWarning($"You're trying to look up an exit by a different name? {tag} was asked for, {exitTemplate.name} exists.");
+                return exitTemplate;
+            }
         }
     }
 }

@@ -9,6 +9,8 @@ namespace forest
         NONE = 0,
         Tile,
         Unit,
-        Item
+        Item,
+        Portal,
+        Exit
     }
 }

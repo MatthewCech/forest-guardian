@@ -72,11 +72,16 @@ namespace forest
             Utils.CenterCamera(displayingCamera, visuals);
 
             Postmaster.Instance.Subscribe<MsgTilePrimaryAction>(TilePrimaryAction);
-            Postmaster.Instance.Subscribe<MsgTileSecondaryAction>(TileSecondaryAction);
-            Postmaster.Instance.Subscribe<MsgUnitPrimaryAction>(UnitPrimaryAction);
-            Postmaster.Instance.Subscribe<MsgUnitSecondaryAction>(UnitSecondaryAction);
             Postmaster.Instance.Subscribe<MsgItemPrimaryAction>(ItemPrimaryAction);
+            Postmaster.Instance.Subscribe<MsgUnitPrimaryAction>(UnitPrimaryAction);
+            Postmaster.Instance.Subscribe<MsgPortalPrimaryAction>(PortalPrimaryAction);
+            Postmaster.Instance.Subscribe<MsgExitPrimaryAction>(ExitPrimaryAction);
+
+            Postmaster.Instance.Subscribe<MsgUnitSecondaryAction>(UnitSecondaryAction);
+            Postmaster.Instance.Subscribe<MsgTileSecondaryAction>(TileSecondaryAction);
             Postmaster.Instance.Subscribe<MsgItemSecondaryAction>(ItemSecondaryAction);
+            Postmaster.Instance.Subscribe<MsgPortalSecondaryAction>(PortalSecondaryAction);
+            Postmaster.Instance.Subscribe<MsgExitSecondaryAction>(ExitSecondaryAction);
 
             CreateSelectableButtons();
 
@@ -88,9 +93,14 @@ namespace forest
         private void TilePrimaryAction(Message raw) { ProcessPrimaryAction((raw as MsgTilePrimaryAction).tilePosition); }
         private void UnitPrimaryAction(Message raw) { ProcessPrimaryAction((raw as MsgUnitPrimaryAction).position); }
         private void ItemPrimaryAction(Message raw) { ProcessPrimaryAction((raw as MsgItemPrimaryAction).position); }
+        private void PortalPrimaryAction(Message raw) { ProcessPrimaryAction((raw as MsgPortalPrimaryAction).position); }
+        private void ExitPrimaryAction(Message raw) { ProcessPrimaryAction((raw as MsgExitPrimaryAction).position); }
+
         private void TileSecondaryAction(Message raw) { ProcessSecondaryAction((raw as MsgTileSecondaryAction).position); }
         private void UnitSecondaryAction(Message raw) { ProcessSecondaryAction((raw as MsgUnitSecondaryAction).position); }
         private void ItemSecondaryAction(Message raw) { ProcessSecondaryAction((raw as MsgItemSecondaryAction).position); }
+        private void PortalSecondaryAction(Message raw) { ProcessSecondaryAction((raw as MsgPortalSecondaryAction).position); }
+        private void ExitSecondaryAction(Message raw) { ProcessSecondaryAction((raw as MsgExitSecondaryAction).position); }
 
         private void AddSelectableLabel(string label)
         {
@@ -135,6 +145,16 @@ namespace forest
 
                 item.gameObject.SetActive(true);
             }
+
+            AddSelectableLabel("Portal");
+            PlayfieldEditorUISelectable portal = GameObject.Instantiate(selectableEntryTemplate, selectableEntryParent);
+            portal.SetData(lookup.portalTemplate.gameObject, SelectionType.Portal, lookup.portalTemplate.name, ProcessedSelectableClick);
+            portal.gameObject.SetActive(true);
+
+            AddSelectableLabel("Exit");
+            PlayfieldEditorUISelectable exit = GameObject.Instantiate(selectableEntryTemplate, selectableEntryParent);
+            exit.SetData(lookup.exitTemplate.gameObject, SelectionType.Exit, lookup.exitTemplate.name, ProcessedSelectableClick);
+            exit.gameObject.SetActive(true);
         }
 
         private void ProcessedSelectableClick(PlayfieldEditorUISelectable previewClicked)
@@ -220,6 +240,35 @@ namespace forest
                     workingPlayfield.items.Add(newItem);
                 }
             }
+            else if (previewType == SelectionType.Portal)
+            {
+                if (workingPlayfield.TryGetPortalAt(position, out PlayfieldPortal portal))
+                {
+                    portal.tag = previewTag;
+                }
+                else
+                {
+                    PlayfieldPortal newPortal = new PlayfieldPortal();
+                    newPortal.location = position;
+                    newPortal.tag = previewTag;
+                    newPortal.id = workingPlayfield.GetNextID();
+
+                    workingPlayfield.portals.Add(newPortal);
+                }
+            }
+            else if(previewType == SelectionType.Exit)
+            {
+                if(workingPlayfield.exit != null)
+                {
+                    workingPlayfield.exit = null;
+                }
+
+                PlayfieldExit newExit = new PlayfieldExit();
+                newExit.location = position;
+                newExit.tag = previewTag;
+                newExit.id = workingPlayfield.GetNextID();
+                workingPlayfield.exit = newExit;
+            }
 
             visuals.DisplayAll(workingPlayfield);
         }
@@ -238,6 +287,14 @@ namespace forest
             else if (previewType == SelectionType.Item)
             {
                 workingPlayfield.RemoveItemAt(position);
+            }
+            else if (previewType == SelectionType.Portal)
+            {
+                workingPlayfield.RemovePortalAt(position);
+            }
+            else if (previewType == SelectionType.Exit)
+            {
+                workingPlayfield.RemoveExitAt(position);
             }
 
             visuals.DisplayAll(workingPlayfield);
@@ -282,6 +339,8 @@ namespace forest
             newPlayfield.items = new List<PlayfieldItem>();
             newPlayfield.units = new List<PlayfieldUnit>();
             newPlayfield.world = new Collection2D<PlayfieldTile>(newWidth, newHeight);
+            newPlayfield.portals = new List<PlayfieldPortal>();
+            newPlayfield.exit = null;
 
             for (int x = 0; x < newWidth; ++x)
             {

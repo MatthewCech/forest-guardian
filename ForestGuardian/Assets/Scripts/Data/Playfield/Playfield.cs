@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
+using System.Linq;
 using static UnityEditor.FilePathAttribute;
 using static UnityEngine.UI.CanvasScaler;
 
@@ -17,6 +18,8 @@ namespace forest
         [JsonProperty] public List<PlayfieldUnit> units;
         [JsonProperty] public Collection2D<PlayfieldTile> world;
         [JsonProperty] public List<PlayfieldItem> items;
+        [JsonProperty] public List<PlayfieldPortal> portals;
+        [JsonProperty] public PlayfieldExit exit;
 
         // Internal tracking for playfield.
         // This is not unique across the game, just the specific playfield.
@@ -63,7 +66,7 @@ namespace forest
             for (int i = 0; i < units.Count; ++i)
             {
                 PlayfieldUnit current = units[i];
-                for(int locs = 0; locs < current.locations.Count; ++locs)
+                for (int locs = 0; locs < current.locations.Count; ++locs)
                 {
                     Vector2Int curLoc = current.locations[locs];
                     if (curLoc == location)
@@ -86,7 +89,7 @@ namespace forest
         /// <returns></returns>
         public bool TryGetItemAt(Vector2Int pos, out PlayfieldItem item)
         {
-            for(int i = 0; i < items.Count; ++i)
+            for (int i = 0; i < items.Count; ++i)
             {
                 PlayfieldItem current = items[i];
                 if (current.location == pos)
@@ -106,7 +109,7 @@ namespace forest
         /// <param name="pos">X,Y world location to try and remove tiles at.</param>
         public bool RemoveItemAt(Vector2Int pos)
         {
-            for(int i = items.Count - 1; i >= 0; --i)
+            for (int i = items.Count - 1; i >= 0; --i)
             {
                 if (items[i].location == pos)
                 {
@@ -143,12 +146,89 @@ namespace forest
         }
 
         /// <summary>
+        /// Removes the exit at the specified position 
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <returns></returns>
+        public bool RemoveExitAt(Vector2Int pos)
+        {
+            if (exit == null)
+            {
+                return false;
+            }
+            
+            if (exit.location == pos)
+            {
+                exit = null;
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Try and get the exit at the specified location
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <param name="theExit"></param>
+        /// <returns></returns>
+        public bool TryGetExitAt(Vector2Int pos, out PlayfieldExit theExit)
+        {
+            if (exit == null)
+            {
+                theExit = null;
+                return false;
+            }
+
+            if (exit.location != pos)
+            {
+                theExit = null;
+                Debug.LogError("Exit location is not at the specified position.");
+                return false;
+            }
+
+            theExit = exit;
+            return true;
+        }
+
+        /// <summary>
+        /// See if we have an item at the specified location, and return it if so.
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public bool TryGetPortalAt(Vector2Int pos, out PlayfieldPortal portal)
+        {
+            foreach(PlayfieldPortal current in portals)
+            {
+                if (current.location == pos)
+                {
+                    portal = current;
+                    return true;
+                }
+            }
+
+            portal = null;
+            return false;
+        }
+
+        /// <summary>
+        /// Removes first portal found at the specified location.
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <returns></returns>
+        public bool RemovePortalAt(Vector2Int pos)
+        {
+            return portals.RemoveAll(portal => portal.location == pos) > 0;
+        }
+
+        /// <summary>
         /// Attempt to retrieve the location of the tile with the specified ID.
         /// </summary>
         /// <param name="id">The id of the tile to look up.</param>
-        /// <param name="loc">The position of the specified tile if found, zero otherwise.</param>
+        /// <param name="location">The position of the specified tile if found, zero otherwise.</param>
         /// <returns>If a tile was successfully found.</returns>
-        public bool TryGetTileXY(int id, out Vector2Int loc)
+        public bool TryGetTileXY(int id, out Vector2Int location)
         {
             int w = world.GetWidth();
             int h = world.GetHeight();
@@ -160,13 +240,13 @@ namespace forest
                     PlayfieldTile t = world.Get(x, y);
                     if(t.id == id)
                     {
-                        loc = new Vector2Int(x, y);
+                        location = new Vector2Int(x, y);
                         return true;
                     }
                 }
             }
 
-            loc = Vector2Int.zero;
+            location = Vector2Int.zero;
             return false;
         }
 

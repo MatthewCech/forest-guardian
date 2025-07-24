@@ -18,6 +18,9 @@ namespace forest
         private List<Tile> tileTracking;
         private List<Unit> unitTracking;
         private List<Item> itemTracking;
+        private List<Portal> portalTracking;
+        private Exit trackedExit;
+
         private List<Indicator> indicatorTracking;
 
         // Base parent object
@@ -29,6 +32,8 @@ namespace forest
             tileTracking = new List<Tile>();
             unitTracking = new List<Unit>();
             itemTracking = new List<Item>();
+            portalTracking = new List<Portal>();
+            trackedExit = null;
 
             indicatorTracking = new List<Indicator>();
         }
@@ -77,7 +82,7 @@ namespace forest
 
             Vector2Int headLocation = unit.locations[PlayfieldUnit.HEAD_INDEX];
 
-            if(unit.curMovementBudget == 0)
+            if (unit.curMovementBudget == 0)
             {
                 return;
             }
@@ -193,7 +198,7 @@ namespace forest
                 TryAdd(item, Vector2Int.down, range);
             }
 
-            foreach(var tileNode in visited)
+            foreach (var tileNode in visited)
             {
                 bool isHeadLocation = tileNode.parent == null;
                 if (isHeadLocation)
@@ -207,7 +212,7 @@ namespace forest
 
         private void DisplayIndicatorDiamond(PlayfieldUnit unit, int range, Playfield playfield, Vector2Int headLocation, Indicator indicator)
         {
-            if(range == 0)
+            if (range == 0)
             {
                 return;
             }
@@ -231,7 +236,7 @@ namespace forest
                     }
 
                     // Prevent showing preview on head specifically.
-                    if(modX == headLocation.x && modY == headLocation.y)
+                    if (modX == headLocation.x && modY == headLocation.y)
                     {
                         continue;
                     }
@@ -264,7 +269,7 @@ namespace forest
 
         public void DamageUnit(PlayfieldUnit attackingUnit, PlayfieldUnit defendingUnit, Playfield playfield)
         {
-            if(attackingUnit.id == defendingUnit.id)
+            if (attackingUnit.id == defendingUnit.id)
             {
                 return;
             }
@@ -273,7 +278,7 @@ namespace forest
             Unit defending = FindUnit(defendingUnit);
 
             int damage = attacking.attackDamage;
-            if(damage <= 0)
+            if (damage <= 0)
             {
                 return;
             }
@@ -291,19 +296,19 @@ namespace forest
                 Postmaster.Instance.Send(msg);
             }
 
-            if(defendingUnit.id == Playfield.NO_ID)
+            if (defendingUnit.id == Playfield.NO_ID)
             {
                 unitTracking.Remove(defending); // Remove tracking of visuals
                 Destroy(defending.gameObject); // Destroy visuals
             }
-            
+
             DisplayUnits(playfield);
         }
 
 
         public void ShowMovePath(Playfield playfield, PlayfieldUnit unit, List<Tile> steps)
         {
-            foreach(Tile tile in steps)
+            foreach (Tile tile in steps)
             {
                 DisplayIndicator(tile.associatedPos, playfield, unit, lookup.movePathTemplate);
             }
@@ -376,6 +381,31 @@ namespace forest
             }
         }
 
+        public void DisplayPortals(Playfield toDisplay)
+        {
+            ClearMonoBehaviourList(portalTracking);
+
+            for (int i = 0; i < toDisplay.portals.Count; ++i)
+            {
+                PlayfieldPortal portal = toDisplay.portals[i];
+                CreatePortal(portal);
+            }
+        }
+
+        public void DisplayExit(Playfield toDisplay)
+        {
+            if(trackedExit != null)
+            {
+                Destroy(trackedExit.gameObject);
+                trackedExit = null;
+            }
+
+            if(toDisplay.exit != null)
+            {
+                CreateExit(toDisplay.exit);
+            }
+        }
+
         /// <summary>
         /// Expensive draw-from-scratch for all items
         /// </summary>
@@ -397,6 +427,8 @@ namespace forest
 
             DisplayUnits(toDisplay);
             DisplayItems(toDisplay);
+            DisplayPortals(toDisplay);
+            DisplayExit(toDisplay);
         }
 
         /// <summary>
@@ -407,7 +439,15 @@ namespace forest
             ClearMonoBehaviourList(tileTracking);
             ClearMonoBehaviourList(unitTracking);
             ClearMonoBehaviourList(itemTracking);
+            ClearMonoBehaviourList(portalTracking);
             ClearMonoBehaviourList(indicatorTracking);
+
+            if (trackedExit != null)
+            {
+                Destroy(trackedExit.gameObject);
+            }
+
+            trackedExit = null;
         }
 
         /// <summary>
@@ -503,6 +543,50 @@ namespace forest
 
             instance.transform.position = new Vector3(x, -y, -lookup.unitZPriority);
             itemTracking.Add(instance);
+        }
+
+        public void CreatePortal(PlayfieldPortal data)
+        {
+            EnsureParentObjectExists();
+
+            Vector2Int curLocation = data.location;
+
+            Portal template = lookup.GetPortalByTag(data.tag);
+            Portal instance = GameObject.Instantiate(template, spawnParent);
+
+            instance.associatedData = data;
+            instance.gridPos = curLocation;
+
+            float x = Offset(curLocation.x);
+            float y = Offset(curLocation.y);
+
+            instance.transform.position = new Vector3(x, -y, -lookup.unitZPriority);
+            portalTracking.Add(instance);
+        }
+
+        public void CreateExit(PlayfieldExit data)
+        {
+            EnsureParentObjectExists();
+
+            Vector2Int curLocation = data.location;
+
+            Exit template = lookup.GetExitByTag(data.tag);
+            Exit instance = GameObject.Instantiate(template, spawnParent);
+
+            instance.associatedData = data;
+            instance.gridPos = curLocation;
+
+            float x = Offset(curLocation.x);
+            float y = Offset(curLocation.y);
+
+            instance.transform.position = new Vector3(x, -y, -lookup.unitZPriority);
+
+            if(trackedExit != null)
+            {
+                Debug.LogError("Woah, there are TWO exists trying to draw. This is not good. Going to track the most recent but things are probably broken.");
+            }
+
+            trackedExit = instance;
         }
 
         /// <summary>
