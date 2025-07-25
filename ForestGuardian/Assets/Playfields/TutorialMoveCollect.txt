@@ -410,5 +410,7 @@
       }
     }
   ],
-  "nextID": 95
+  "nextID": 95,
+  "portals": [],
+  "exit": null
 }

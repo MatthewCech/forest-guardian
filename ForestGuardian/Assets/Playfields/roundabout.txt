@@ -486,5 +486,7 @@
       }
     }
   ],
-  "nextID": 101
+  "nextID": 101,
+  "portals": [],
+  "exit": null
 }

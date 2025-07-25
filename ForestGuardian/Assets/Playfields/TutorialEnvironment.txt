@@ -374,5 +374,7 @@
     ]
   },
   "items": [],
-  "nextID": 92
+  "nextID": 92,
+  "portals": [],
+  "exit": null
 }

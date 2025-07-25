@@ -199,6 +199,12 @@ namespace forest
         /// <returns></returns>
         public bool TryGetPortalAt(Vector2Int pos, out PlayfieldPortal portal)
         {
+            if (portals == null)
+            {
+                portal = null;
+                return false;
+            }
+
             foreach(PlayfieldPortal current in portals)
             {
                 if (current.location == pos)
@@ -219,6 +225,11 @@ namespace forest
         /// <returns></returns>
         public bool RemovePortalAt(Vector2Int pos)
         {
+            if(portals == null)
+            {
+                return false;
+            }
+
             return portals.RemoveAll(portal => portal.location == pos) > 0;
         }
 

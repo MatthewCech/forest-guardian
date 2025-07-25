@@ -13,6 +13,8 @@ namespace forest
 {
     public class PlayfieldEditor : MonoBehaviour
     {
+        public const string LEVEL_FILE_EXTENSION = "txt";
+
         [Header("Editor Settings")]
         [SerializeField] private KeyCode mainModifier = KeyCode.LeftShift;
         [SerializeField] private KeyCode extraModifier = KeyCode.LeftControl;
@@ -24,6 +26,7 @@ namespace forest
 
         [Header("Old UI Style links")]
         [SerializeField] private Button uiSave;
+        [SerializeField] private Button uiLoad;
         [SerializeField] private Slider uiWidthSlider;
         [SerializeField] private Slider uiHeightSlider;
         [SerializeField] private TMPro.TMP_InputField uiWidthEntryField;
@@ -60,6 +63,7 @@ namespace forest
             visuals.Initialize(lookup);
 
             uiSave.onClick.AddListener(SaveCreatedPlayfield);
+            uiLoad.onClick.AddListener(LoadCreatedPlayfield);
 
             uiWidthSlider.onValueChanged.AddListener(SizeChange);
             uiHeightSlider.onValueChanged.AddListener(SizeChange);
@@ -429,7 +433,7 @@ namespace forest
         {
 
 #if UNITY_EDITOR
-            string path = UnityEditor.EditorUtility.SaveFilePanel("Select a place to save the level", Application.dataPath, "NewPlayfield", "txt");
+            string path = UnityEditor.EditorUtility.SaveFilePanel("Select a place to save the level", Application.dataPath, "NewPlayfield", LEVEL_FILE_EXTENSION);
             if(path == null || path.Length == 0)
             {
                 return;
@@ -440,6 +444,28 @@ namespace forest
             {
                 string toPrint = JsonConvert.SerializeObject(workingPlayfield, Formatting.Indented);
                 writer.Write(toPrint);
+            }
+#endif
+        }
+
+        private void LoadCreatedPlayfield()
+        {
+#if UNITY_EDITOR
+            string path = UnityEditor.EditorUtility.OpenFilePanel("Select a level to load", Application.dataPath, LEVEL_FILE_EXTENSION);
+            if(path == null || path.Length == 0)
+            {
+                Debug.LogWarning("Undefined path selected");
+                return;
+            }
+
+            JsonSerializer serializer = new JsonSerializer();
+            using (StreamReader reader = new StreamReader(path))
+            {
+                string all = reader.ReadToEnd();
+                Playfield field = JsonConvert.DeserializeObject<Playfield>(all);
+
+                workingPlayfield = field;
+                visuals.DisplayAll(workingPlayfield);
             }
 #endif
         }

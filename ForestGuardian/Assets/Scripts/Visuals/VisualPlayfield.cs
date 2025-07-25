@@ -241,7 +241,7 @@ namespace forest
                         continue;
                     }
 
-                    // If something doesn't exsit or does exist and is impassable, then no target can be on it so don't show.
+                    // If something doesn't exist or does exist and is impassable, then no target can be on it so don't show.
                     Tile curTarget = FindTile(new Vector2Int(modX, modY));
                     if (curTarget == null || curTarget.isImpassable)
                     {
@@ -359,6 +359,11 @@ namespace forest
         {
             ClearMonoBehaviourList(unitTracking);
 
+            if(toDisplay.units == null)
+            {
+                return;
+            }
+
             for (int i = 0; i < toDisplay.units.Count; ++i)
             {
                 PlayfieldUnit unit = toDisplay.units[i];
@@ -374,6 +379,11 @@ namespace forest
         {
             ClearMonoBehaviourList(itemTracking);
 
+            if(toDisplay.items == null)
+            {
+                return;
+            }
+
             for (int i = 0; i < toDisplay.items.Count; ++i)
             {
                 PlayfieldItem item = toDisplay.items[i];
@@ -385,6 +395,11 @@ namespace forest
         {
             ClearMonoBehaviourList(portalTracking);
 
+            if(toDisplay.portals == null)
+            {
+                return;
+            }
+
             for (int i = 0; i < toDisplay.portals.Count; ++i)
             {
                 PlayfieldPortal portal = toDisplay.portals[i];
@@ -393,7 +408,7 @@ namespace forest
         }
 
         public void DisplayExit(Playfield toDisplay)
-        {
+        { 
             if(trackedExit != null)
             {
                 Destroy(trackedExit.gameObject);
