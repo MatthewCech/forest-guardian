@@ -4,7 +4,10 @@ using UnityEngine;
 
 namespace forest
 {
-    public enum SelectionType
+    /// <summary>
+    /// Within the playfield editor itself, this represents the 'layer' or 'type' that's being edited.
+    /// </summary>
+    public enum PlayfieldEditorSelectionType
     {
         NONE = 0,
         Tile,

@@ -47,13 +47,13 @@ namespace forest
 
         private GameObject previewObject;
         private string previewTag;
-        private SelectionType previewType;
+        private PlayfieldEditorSelectionType previewType;
 
         public void Start()
         {
             previewObject = null;
             previewTag = "";
-            previewType = SelectionType.NONE;
+            previewType = PlayfieldEditorSelectionType.NONE;
             nothingTileTag = lookup.tileTemplates[0].name; // Set nothing tile tag
 
             selectableEntryParent = selectableEntryTemplate.transform.parent;
@@ -91,7 +91,7 @@ namespace forest
 
             // Basic tile
             Tile tile = lookup.tileTemplates[1];
-            SetPreview(tile.gameObject, tile.name, SelectionType.Tile);
+            SetPreview(tile.gameObject, tile.name, PlayfieldEditorSelectionType.Tile);
         }
 
         private void TilePrimaryAction(Message raw) { ProcessPrimaryAction((raw as MsgTilePrimaryAction).tilePosition); }
@@ -127,7 +127,7 @@ namespace forest
                 }
 
                 PlayfieldEditorUISelectable tile = GameObject.Instantiate(selectableEntryTemplate, selectableEntryParent);
-                tile.SetData(tileToCreate.gameObject, SelectionType.Tile, tileToCreate.name, ProcessedSelectableClick);
+                tile.SetData(tileToCreate.gameObject, PlayfieldEditorSelectionType.Tile, tileToCreate.name, ProcessedSelectableClick);
                 
                 tile.gameObject.SetActive(true);
             }
@@ -136,7 +136,7 @@ namespace forest
             foreach (Unit unitToCreate in lookup.unitTemplates)
             {
                 PlayfieldEditorUISelectable unit = GameObject.Instantiate(selectableEntryTemplate, selectableEntryParent);
-                unit.SetData(unitToCreate.gameObject, SelectionType.Unit, unitToCreate.name, ProcessedSelectableClick);
+                unit.SetData(unitToCreate.gameObject, PlayfieldEditorSelectionType.Unit, unitToCreate.name, ProcessedSelectableClick);
 
                 unit.gameObject.SetActive(true);
             }
@@ -145,19 +145,19 @@ namespace forest
             foreach (Item itemToCreate in lookup.itemTemplates)
             {
                 PlayfieldEditorUISelectable item = GameObject.Instantiate(selectableEntryTemplate, selectableEntryParent);
-                item.SetData(itemToCreate.gameObject, SelectionType.Item, itemToCreate.name, ProcessedSelectableClick);
+                item.SetData(itemToCreate.gameObject, PlayfieldEditorSelectionType.Item, itemToCreate.name, ProcessedSelectableClick);
 
                 item.gameObject.SetActive(true);
             }
 
             AddSelectableLabel("Portal");
             PlayfieldEditorUISelectable portal = GameObject.Instantiate(selectableEntryTemplate, selectableEntryParent);
-            portal.SetData(lookup.portalTemplate.gameObject, SelectionType.Portal, lookup.portalTemplate.name, ProcessedSelectableClick);
+            portal.SetData(lookup.portalTemplate.gameObject, PlayfieldEditorSelectionType.Portal, lookup.portalTemplate.name, ProcessedSelectableClick);
             portal.gameObject.SetActive(true);
 
             AddSelectableLabel("Exit");
             PlayfieldEditorUISelectable exit = GameObject.Instantiate(selectableEntryTemplate, selectableEntryParent);
-            exit.SetData(lookup.exitTemplate.gameObject, SelectionType.Exit, lookup.exitTemplate.name, ProcessedSelectableClick);
+            exit.SetData(lookup.exitTemplate.gameObject, PlayfieldEditorSelectionType.Exit, lookup.exitTemplate.name, ProcessedSelectableClick);
             exit.gameObject.SetActive(true);
         }
 
@@ -166,7 +166,7 @@ namespace forest
             SetPreview(previewClicked.Visual, previewClicked.SelectableTag, previewClicked.SelectableType);
         }
 
-        private void SetPreview(GameObject toPreview, string tag, SelectionType type)
+        private void SetPreview(GameObject toPreview, string tag, PlayfieldEditorSelectionType type)
         {
             previewTag = tag;
             previewType = type;
@@ -207,12 +207,12 @@ namespace forest
                 return;
             }
 
-            if (previewType == SelectionType.Tile)
+            if (previewType == PlayfieldEditorSelectionType.Tile)
             {
                 PlayfieldTile tile = workingPlayfield.world.Get(position);
                 tile.tag = previewTag;
             }
-            else if (previewType == SelectionType.Unit)
+            else if (previewType == PlayfieldEditorSelectionType.Unit)
             {
                 if (workingPlayfield.TryGetUnitAt(position, out PlayfieldUnit unit))
                 {
@@ -228,7 +228,7 @@ namespace forest
                     workingPlayfield.units.Add(newUnit);
                 }
             }
-            else if (previewType == SelectionType.Item)
+            else if (previewType == PlayfieldEditorSelectionType.Item)
             {
                 if (workingPlayfield.TryGetItemAt(position, out PlayfieldItem item))
                 {
@@ -244,7 +244,7 @@ namespace forest
                     workingPlayfield.items.Add(newItem);
                 }
             }
-            else if (previewType == SelectionType.Portal)
+            else if (previewType == PlayfieldEditorSelectionType.Portal)
             {
                 if (workingPlayfield.TryGetPortalAt(position, out PlayfieldPortal portal))
                 {
@@ -260,7 +260,7 @@ namespace forest
                     workingPlayfield.portals.Add(newPortal);
                 }
             }
-            else if(previewType == SelectionType.Exit)
+            else if(previewType == PlayfieldEditorSelectionType.Exit)
             {
                 if(workingPlayfield.exit != null)
                 {
@@ -279,24 +279,24 @@ namespace forest
 
         private void ProcessSecondaryAction(Vector2Int position)
         {
-            if (previewType == SelectionType.Tile)
+            if (previewType == PlayfieldEditorSelectionType.Tile)
             {
                 PlayfieldTile tile = workingPlayfield.world.Get(position);
                 tile.tag = nothingTileTag;
             }
-            else if (previewType == SelectionType.Unit)
+            else if (previewType == PlayfieldEditorSelectionType.Unit)
             {
                 workingPlayfield.RemoveUnitAt(position);
             }
-            else if (previewType == SelectionType.Item)
+            else if (previewType == PlayfieldEditorSelectionType.Item)
             {
                 workingPlayfield.RemoveItemAt(position);
             }
-            else if (previewType == SelectionType.Portal)
+            else if (previewType == PlayfieldEditorSelectionType.Portal)
             {
                 workingPlayfield.RemovePortalAt(position);
             }
-            else if (previewType == SelectionType.Exit)
+            else if (previewType == PlayfieldEditorSelectionType.Exit)
             {
                 workingPlayfield.RemoveExitAt(position);
             }
@@ -465,6 +465,7 @@ namespace forest
                 Playfield field = JsonConvert.DeserializeObject<Playfield>(all);
 
                 workingPlayfield = field;
+                bool isValid = workingPlayfield.Validate();
                 visuals.DisplayAll(workingPlayfield);
             }
 #endif

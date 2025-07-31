@@ -35,6 +35,24 @@ namespace forest
         }
 
         /// <summary>
+        /// Determine if the data makes sense
+        /// </summary>
+        /// <returns></returns>
+        public bool Validate()
+        {
+            bool isValid = true;
+
+            isValid &= units != null;
+            isValid &= world != null;
+            isValid &= items != null;
+            isValid &= portals != null;
+            isValid &= nextID > 0;
+
+            // Note: Exit is allowed to be null.
+            return isValid;
+        }
+
+        /// <summary>
         /// Returns the first unit with the specified ID, or null if no unit was found.
         /// </summary>
         /// <param name="id"></param>
