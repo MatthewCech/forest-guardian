@@ -33,7 +33,7 @@ namespace forest
         private IEnumerator ScreenDelay()
         {
             yield return new WaitForSeconds(StateMachine.resultScreenTime);
-            StateMachine.SetState<Combat10Shutdown>();
+            StateMachine.SetState<Combat20Shutdown>();
         }
     }
 }

@@ -43,7 +43,7 @@ namespace forest
             if(!NextUnit())
             {
                 Debug.LogError("No pending player units, we shouldn't be entering a player move phase with none available. Attempting to exit/shut down.");
-                StateMachine.SetState<Combat10Shutdown>();
+                StateMachine.SetState<Combat20Shutdown>();
                 return;
             }
 
@@ -95,7 +95,7 @@ namespace forest
             if (msg.indicator.type == IndicatorType.ImmediateMove)
             {
                 Utils.MoveUnitToLocation(StateMachine.Playfield, StateMachine.VisualPlayfield, unit, target);
-                ShortCircuitVictoryIfNeeded();
+                ShortCircuitVictoryIfNeeded(unit);
                 if (unit.curMovementBudget == 0)
                 {
                     StateMachine.VisualPlayfield.DisplayIndicatorAttackPreview(unit, StateMachine.Playfield);
@@ -142,7 +142,7 @@ namespace forest
                 if (Utils.CanMovePlayfieldUnitTo(StateMachine.Playfield, controlledUnit, newMovement))
                 {
                     Utils.MoveUnitToLocation(StateMachine.Playfield, StateMachine.VisualPlayfield, controlledUnit, newMovement);
-                    ShortCircuitVictoryIfNeeded();
+                    ShortCircuitVictoryIfNeeded(controlledUnit);
                 }
             }
         }
@@ -169,12 +169,32 @@ namespace forest
             }
         }
 
-        private void ShortCircuitVictoryIfNeeded()
+        private void ShortCircuitVictoryIfNeeded(PlayfieldUnit controlledUnit)
         {
-            if (StateMachine.Playfield.items.Count == 0 && !HasEnemies())
+            Vector2Int head = controlledUnit.locations[PlayfieldUnit.HEAD_INDEX];
+
+            if (StateMachine.Playfield.exit != null)
+            {
+                if (head == StateMachine.Playfield.exit.location)
+                {
+                    StateMachine.SetState<Combat09Defeat>();
+                }
+            }
+
+            if (StateMachine.Playfield.portals.Count > 0)
+            {
+                if (StateMachine.Playfield.TryGetPortalAt(head, out PlayfieldPortal portal))
+                {
+                    StateMachine.SetState<Combat10PortalWarp>();
+                }
+            }
+
+            /*
+            else if (StateMachine.Playfield.items.Count == 0 && !HasEnemies())
             {
                 StateMachine.SetState<Combat08Victory>();
             }
+            */
         }
     }
 }

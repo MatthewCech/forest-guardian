@@ -355,7 +355,7 @@
     {
       "tag": "Portal",
       "id": 78,
-      "target": null,
+      "target": "tutorial_03_environment",
       "location": {
         "x": 6,
         "y": 0,

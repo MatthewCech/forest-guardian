@@ -265,6 +265,22 @@ PrefabInstance:
       propertyPath: levelOverride
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 1285525200247335279, guid: 8c75ae87fd7db0242b67a4ae2166b5e4, type: 3}
+      propertyPath: TEMPlevelAssets.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1285525200247335279, guid: 8c75ae87fd7db0242b67a4ae2166b5e4, type: 3}
+      propertyPath: TEMPlevelAssets.Array.data[0]
+      value: 
+      objectReference: {fileID: 4900000, guid: 452d49e01e553c74882fe826e05fb2cf, type: 3}
+    - target: {fileID: 1285525200247335279, guid: 8c75ae87fd7db0242b67a4ae2166b5e4, type: 3}
+      propertyPath: TEMPlevelAssets.Array.data[1]
+      value: 
+      objectReference: {fileID: 4900000, guid: 2f9ed1f8fdfed7b4fafd206273d40152, type: 3}
+    - target: {fileID: 1285525200247335279, guid: 8c75ae87fd7db0242b67a4ae2166b5e4, type: 3}
+      propertyPath: TEMPlevelAssets.Array.data[2]
+      value: 
+      objectReference: {fileID: 4900000, guid: ee1992b8f5ee47145a879db7124a0f7a, type: 3}
     - target: {fileID: 7464986875187134393, guid: 8c75ae87fd7db0242b67a4ae2166b5e4, type: 3}
       propertyPath: m_Name
       value: PlayfieldCore

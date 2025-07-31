@@ -23,16 +23,34 @@ namespace forest
         {
             yield return new WaitForSeconds(StateMachine.turnDelay);
 
-            // Win value, in this case I've hard-coded to be "No items left"
-            if (StateMachine.Playfield.items.Count == 0 && !HasEnemies())
+            bool didFindPortal = false;
+            for(int i = 0; i < StateMachine.Playfield.portals.Count; ++i)
             {
-                yield return null;
-                StateMachine.SetState<Combat08Victory>();
+                PlayfieldPortal portal = StateMachine.Playfield.portals[i];
+                if(StateMachine.Playfield.TryGetUnitAt(portal.location, out PlayfieldUnit unit))
+                {
+                    if(unit.team == Team.Player)
+                    {
+                        yield return null;
+                        StateMachine.SetState<Combat08Victory>();
+                        didFindPortal = true;
+                    }
+                }
             }
-            else
+
+            if (!didFindPortal)
             {
-                yield return null;
-                StateMachine.SetState<Combat02PrepareTurn>();
+                // If we have no portals, then exit if all items are collected.
+                if (StateMachine.Playfield.portals.Count == 0 && StateMachine.Playfield.items.Count == 0 && !HasEnemies())
+                {
+                    yield return null;
+                    StateMachine.SetState<Combat08Victory>();
+                }
+                else
+                {
+                    yield return null;
+                    StateMachine.SetState<Combat02PrepareTurn>();
+                }
             }
         }
     }

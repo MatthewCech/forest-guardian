@@ -21,7 +21,10 @@ namespace forest
         [Header("Links for States")]
         [SerializeField] private VisualLookup lookup;
         [SerializeField] private Playfield playfield;
-        [SerializeField] private VisualPlayfield visualizerPlayfield;      
+        [SerializeField] private VisualPlayfield visualizerPlayfield;
+
+        [Header("TEMP FIX ME")]
+        [SerializeField] private List<TextAsset> TEMPlevelAssets;
 
         // Various delays to space out the feel of the game, all in seconds
         [Header("Artificial Delays")] 
@@ -47,7 +50,7 @@ namespace forest
             if(!TrySelectLevel(out TextAsset toLoad))
             {
                 Debug.LogError("No playfield specified! Attempting to exit.");
-                SetState<Combat10Shutdown>();
+                SetState<Combat20Shutdown>();
                 return;
             }
 
@@ -108,7 +111,7 @@ namespace forest
 
         private void Exit()
         {
-            SetState<Combat10Shutdown>();
+            SetState<Combat20Shutdown>();
         }
 
         /// <summary>
@@ -131,6 +134,27 @@ namespace forest
             current?.Shutdown();
             ui.rootVisualElement.Q<Label>("bannerLabel").text = current?.GetType().Name;
             current = instance;
+        }
+
+        /// <summary>
+        /// Thumb through all available level assets and attempt to get one by name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="levelAsset"></param>
+        /// <returns></returns>
+        public bool TryGetLevelByName(string name, out TextAsset levelAsset)
+        {
+            foreach(TextAsset asset in TEMPlevelAssets)
+            {
+                if (string.Equals(asset.name, name, System.StringComparison.InvariantCultureIgnoreCase))
+                {
+                    levelAsset = asset;
+                    return true;
+                }
+            }
+
+            levelAsset = null;
+            return false;
         }
     }
 }

@@ -8,6 +8,7 @@ using Loam;
 using System.IO;
 using Newtonsoft.Json;
 using UnityEngine.Events;
+using UnityEditor.Experimental.GraphView;
 
 namespace forest
 {
@@ -23,6 +24,7 @@ namespace forest
         [SerializeField] private VisualLookup lookup;
         [SerializeField] private VisualPlayfield visuals;
         [SerializeField] private Camera displayingCamera;
+        [SerializeField] PlayfieldEditorCamera playfieldEditorCamera;
 
         [Header("Old UI Style links")]
         [SerializeField] private Button uiSave;
@@ -33,6 +35,12 @@ namespace forest
         [SerializeField] private TMPro.TMP_InputField uiHeightEntryField;
         [SerializeField] private TMPro.TextMeshProUGUI uiStatus;
         [SerializeField] private TMPro.TextMeshProUGUI uiLayer;
+
+        [Header("Metadata Panel")]
+        [SerializeField] private TMPro.TMP_InputField inputMetadataPanel;
+        [SerializeField] private CanvasGroup metadataPanel;
+        [SerializeField] private TMPro.TextMeshProUGUI metadataPanelLabel;
+        [SerializeField] private Button metadataPanelCloseButton;
 
         [Header("Selectable Entries")]
         [SerializeField] private PlayfieldEditorUISelectable selectableEntryTemplate;
@@ -49,6 +57,9 @@ namespace forest
         private string previewTag;
         private PlayfieldEditorSelectionType previewType;
 
+        private PlayfieldPortal selectedPortal;
+        private bool isShowingMetadataPanel = false;
+
         public void Start()
         {
             previewObject = null;
@@ -64,9 +75,12 @@ namespace forest
 
             uiSave.onClick.AddListener(SaveCreatedPlayfield);
             uiLoad.onClick.AddListener(LoadCreatedPlayfield);
+            metadataPanelCloseButton.onClick.AddListener(HideMetadataPanel);
 
             uiWidthSlider.onValueChanged.AddListener(SizeChange);
             uiHeightSlider.onValueChanged.AddListener(SizeChange);
+
+            inputMetadataPanel.onValueChanged.AddListener(PortalLabelModified);
 
             uiWidthEntryField.text = uiWidthSlider.value.ToString();
             uiHeightEntryField.text = uiHeightSlider.value.ToString();
@@ -111,6 +125,16 @@ namespace forest
             PlayfieldEditorUISelectableLabel labelObj = GameObject.Instantiate(selectableEntryLabelTemplate, selectableEntryParent);
             labelObj.label.text = label;
             labelObj.gameObject.SetActive(true);
+        }
+
+        private void PortalLabelModified(string value)
+        {
+            if(selectedPortal == null)
+            {
+                return;
+            }
+
+            selectedPortal.target = value;
         }
 
         /// <summary>
@@ -176,6 +200,11 @@ namespace forest
                 DestroyImmediate(previewObject);
             }
 
+            if(previewType != PlayfieldEditorSelectionType.Portal)
+            {
+                HideMetadataPanel();
+            }
+
             // Strip any trail lines
             previewObject = GameObject.Instantiate(toPreview, previewTarget);
             LineRenderer[] renderers = previewObject.GetComponentsInChildren<LineRenderer>();
@@ -196,7 +225,41 @@ namespace forest
                 action = "Removing";
             }
 
+            if(IsExtraInputModifierDown())
+            {
+                action = "Writing";
+            }
+
             uiStatus.text = $"{action} {previewType.ToString()}";
+
+            playfieldEditorCamera.isEnabledWASD = !isShowingMetadataPanel;
+        }
+
+        private void HideMetadataPanel()
+        {
+            metadataPanel.alpha = 0;
+            metadataPanel.interactable = false;
+            metadataPanel.blocksRaycasts = false;
+
+            selectedPortal = null;
+
+            isShowingMetadataPanel = false;
+            visuals.DisplayAll(workingPlayfield);
+        }
+
+        private void ShowMetadataPanel(PlayfieldPortal portal)
+        {
+            metadataPanel.alpha = 1;
+            metadataPanel.interactable = true;
+            metadataPanel.blocksRaycasts = true;
+
+            selectedPortal = portal;
+            inputMetadataPanel.text = portal.target;
+
+            metadataPanelLabel.text = $"Portal @ ({portal.location.x},{portal.location.y})";
+            visuals.DisplayIndicatorAt(portal.location.x, portal.location.y, workingPlayfield, lookup.movePreviewTemplate);
+
+            isShowingMetadataPanel = true;
         }
 
         private void ProcessPrimaryAction(Vector2Int position)
@@ -204,6 +267,26 @@ namespace forest
             if(IsMainInputModifierDown())
             {
                 ProcessSecondaryAction(position);
+                return;
+            }
+
+            if(IsExtraInputModifierDown())
+            {
+                if(previewType == PlayfieldEditorSelectionType.Portal)
+                {
+                    if(workingPlayfield.TryGetPortalAt(position, out PlayfieldPortal portal))
+                    {
+                        if(isShowingMetadataPanel)
+                        {
+                            HideMetadataPanel();
+                        }
+                        else
+                        {
+                            ShowMetadataPanel(portal);
+                        }
+                    }
+                }
+
                 return;
             }
 
@@ -259,6 +342,8 @@ namespace forest
 
                     workingPlayfield.portals.Add(newPortal);
                 }
+
+                HideMetadataPanel();
             }
             else if(previewType == PlayfieldEditorSelectionType.Exit)
             {
@@ -465,7 +550,11 @@ namespace forest
                 Playfield field = JsonConvert.DeserializeObject<Playfield>(all);
 
                 workingPlayfield = field;
-                bool isValid = workingPlayfield.Validate();
+                if(!workingPlayfield.Validate())
+                {
+                    Debug.LogError("Mis-configured playfield");
+                }
+
                 visuals.DisplayAll(workingPlayfield);
             }
 #endif

@@ -5,11 +5,11 @@ using UnityEngine.UIElements;
 
 namespace forest
 {
-    public class Combat10Shutdown : CombatState
+    public class Combat20Shutdown : CombatState
     {
         private bool firstStep = false;
         private VisualElement resultBanner;
-        public Combat10Shutdown(PlayfieldCore stateMachine) : base(stateMachine) { }
+        public Combat20Shutdown(PlayfieldCore stateMachine) : base(stateMachine) { }
 
         public override void Start()
         {

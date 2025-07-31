@@ -267,6 +267,11 @@ namespace forest
             return tileTracking.Find((cur) => cur.associatedPos == location);
         }
 
+        public Portal FindPortal(Vector2Int location)
+        {
+            return portalTracking.Find((cur) => cur.associatedPos == location);
+        }
+
         public void DamageUnit(PlayfieldUnit attackingUnit, PlayfieldUnit defendingUnit, Playfield playfield)
         {
             if (attackingUnit.id == defendingUnit.id)
@@ -338,6 +343,21 @@ namespace forest
                     return;
                 }
             }
+
+            DisplayIndicatorAt(x, y, playfield, indicatorTemplate, unitDisplayingIndicatorFor);
+        }
+
+        /// <summary>
+        /// Without any checking, displays the specified indicator at the specified location.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="playfield"></param>
+        /// <param name="indicatorTemplate"></param>
+        /// <param name="unitDisplayingIndicatorFor"></param>
+        public void DisplayIndicatorAt(int x, int y, Playfield playfield, Indicator indicatorTemplate, PlayfieldUnit unitDisplayingIndicatorFor = null)
+        {
+            PlayfieldTile toOverlay = playfield.world.Get(x, y);
 
             Indicator movePreview = Instantiate(indicatorTemplate, spawnParent);
             movePreview.associatedTile = toOverlay;
@@ -570,7 +590,7 @@ namespace forest
             Portal instance = GameObject.Instantiate(template, spawnParent);
 
             instance.associatedData = data;
-            instance.gridPos = curLocation;
+            instance.associatedPos = curLocation;
 
             float x = Offset(curLocation.x);
             float y = Offset(curLocation.y);
