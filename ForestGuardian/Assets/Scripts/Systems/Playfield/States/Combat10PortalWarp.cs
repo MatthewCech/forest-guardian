@@ -11,7 +11,7 @@ namespace forest
         private bool firstStep = false;
         private VisualElement resultBanner;
         private Label resultLabel;
-
+        
         public Combat10PortalWarp(PlayfieldCore stateMachine) : base(stateMachine) { }
 
         public override void Start()

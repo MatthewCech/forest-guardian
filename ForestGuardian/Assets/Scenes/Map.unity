@@ -426,6 +426,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &14269857
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -493,6 +496,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &22192349
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -904,6 +910,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &48207144
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1338,6 +1347,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &79551830
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2374,6 +2386,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &174016732
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2441,6 +2456,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &186396332
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2592,6 +2610,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &197604240
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3208,6 +3229,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &264581673
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3276,6 +3300,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &267619937
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3626,6 +3653,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &279140552
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3726,26 +3756,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &281651974 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1720372127498171107, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-  m_PrefabInstance: {fileID: 1507898364}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &281651978
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 281651974}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f0eeb33d81d64cc4eac01e1a142570be, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lookOnX: 0
-  lookOnY: 1
-  lookOnZ: 0
 --- !u!1 &289463443
 GameObject:
   m_ObjectHideFlags: 0
@@ -3998,26 +4008,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &295676397 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1720372127498171107, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-  m_PrefabInstance: {fileID: 366852682}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &295676401
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 295676397}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f0eeb33d81d64cc4eac01e1a142570be, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lookOnX: 0
-  lookOnY: 1
-  lookOnZ: 0
 --- !u!1 &296271603
 GameObject:
   m_ObjectHideFlags: 0
@@ -4489,6 +4479,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &322520599
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4955,26 +4948,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &345548069 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1720372127498171107, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-  m_PrefabInstance: {fileID: 3372670674132212144}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &345548073
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 345548069}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f0eeb33d81d64cc4eac01e1a142570be, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lookOnX: 0
-  lookOnY: 1
-  lookOnZ: 0
 --- !u!1 &351632925
 GameObject:
   m_ObjectHideFlags: 0
@@ -5027,6 +5000,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &351632928
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5127,87 +5103,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1001 &366852682
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 1672223266829813505, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: m_text
-      value: '[Tutorial]
-
-        Environment'
-      objectReference: {fileID: 0}
-    - target: {fileID: 1720372127498171107, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: m_Name
-      value: environment tutorial
-      objectReference: {fileID: 0}
-    - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8028662989881650721, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: m_Name
-      value: Shadow
-      objectReference: {fileID: 0}
-    - target: {fileID: 8028662989881650721, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8682143159296459062, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: levelData
-      value: 
-      objectReference: {fileID: 4900000, guid: 14175c18fdbe90348ac05e4c4de89e21, type: 3}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1720372127498171107, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 295676401}
-    - targetCorrespondingSourceObject: {fileID: 7690414718388180640, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-  m_SourcePrefab: {fileID: 100100000, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
 --- !u!1 &368162014
 GameObject:
   m_ObjectHideFlags: 0
@@ -5710,6 +5605,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &392187081
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6410,6 +6308,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &431306795
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6562,6 +6463,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &440794302
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6630,6 +6534,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &447830187
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7078,6 +6985,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &476953599
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7146,6 +7056,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &481368481
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7214,6 +7127,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &485039158
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7281,6 +7197,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &488311171
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7814,6 +7733,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &521204213
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7965,6 +7887,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &533064598
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8032,6 +7957,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &533992764
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9144,6 +9072,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &595414507
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9646,6 +9577,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &613809006
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10095,6 +10029,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &650726462
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10163,6 +10100,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &653730194
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10497,6 +10437,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &673269502
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10814,6 +10757,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &688171714
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11994,6 +11940,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &783737293
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12062,6 +12011,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &789424060
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12129,6 +12081,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &790896362
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12380,6 +12335,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &804255944
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12616,6 +12574,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &813470221
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12950,6 +12911,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &837869193
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13384,6 +13348,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &873953294
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14283,6 +14250,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &920234300
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14702,6 +14672,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &931747473
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15333,6 +15306,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &968399058
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16454,6 +16430,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1071919000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16788,6 +16767,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1087172542
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16940,6 +16922,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1100911357
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17191,6 +17176,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1113729507
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17258,6 +17246,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1118986350
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17424,6 +17415,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1127452423
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17576,6 +17570,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1134569821
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17842,6 +17839,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1140077609
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18923,6 +18923,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1208929782
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19706,6 +19709,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1249183538
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19773,6 +19779,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1249493258
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20306,6 +20315,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1268961298
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20809,6 +20821,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1339239073
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21578,6 +21593,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1403103811
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22630,6 +22648,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1466792334
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22697,6 +22718,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1477100766
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22764,6 +22788,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1496447355
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22831,6 +22858,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1501087653
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22946,87 +22976,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1001 &1507898364
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 1672223266829813505, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: m_text
-      value: '[Tutorial]
-
-        Combat'
-      objectReference: {fileID: 0}
-    - target: {fileID: 1720372127498171107, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: m_Name
-      value: combat tutorial
-      objectReference: {fileID: 0}
-    - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -0.33
-      objectReference: {fileID: 0}
-    - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8028662989881650721, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: m_Name
-      value: Shadow
-      objectReference: {fileID: 0}
-    - target: {fileID: 8028662989881650721, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8682143159296459062, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: levelData
-      value: 
-      objectReference: {fileID: 4900000, guid: f1ca0f60a3907aa4ca016a6a2bcd3c22, type: 3}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1720372127498171107, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 281651978}
-    - targetCorrespondingSourceObject: {fileID: 7690414718388180640, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
-  m_SourcePrefab: {fileID: 100100000, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
 --- !u!1 &1515656360
 GameObject:
   m_ObjectHideFlags: 0
@@ -23163,6 +23112,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1516332975
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23230,6 +23182,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1517383289
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23664,6 +23619,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1548153249
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23900,6 +23858,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1580177879
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25164,6 +25125,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1681493233
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25381,6 +25345,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1706515497
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26378,6 +26345,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1758865912
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26629,6 +26599,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1769058152
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27047,6 +27020,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1793398222
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27198,6 +27174,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1799772511
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27637,6 +27616,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1826099812
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27705,6 +27687,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1839910280
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27773,6 +27758,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1848186558
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28458,6 +28446,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1886003123
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28610,6 +28601,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1889002668
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29128,6 +29122,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1935167200
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29196,6 +29193,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1937184325
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29461,6 +29461,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1948880982
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29528,6 +29531,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1953747781
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29829,6 +29835,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &1991809790
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30201,6 +30210,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &2003405807
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30268,6 +30280,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &2008542287
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31334,6 +31349,9 @@ MonoBehaviour:
   lookOnX: 0
   lookOnY: 1
   lookOnZ: 0
+  flipX: 0
+  flipY: 1
+  flipZ: 0
 --- !u!114 &2089959827
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -31780,13 +31798,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1672223266829813505, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
       propertyPath: m_text
-      value: '[Tutorial]
-
-        Movement'
+      value: Ivy Grove
       objectReference: {fileID: 0}
     - target: {fileID: 1720372127498171107, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
       propertyPath: m_Name
-      value: move tutorial
+      value: 'dungeon: tutorial'
       objectReference: {fileID: 0}
     - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
       propertyPath: m_LocalPosition.x
@@ -31794,7 +31810,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
       propertyPath: m_LocalPosition.z
@@ -31828,14 +31844,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8028662989881650721, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: m_Name
-      value: Shadow
-      objectReference: {fileID: 0}
-    - target: {fileID: 8028662989881650721, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 8682143159296459062, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
       propertyPath: levelData
       value: 
@@ -31844,9 +31852,6 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 1720372127498171107, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 345548073}
     - targetCorrespondingSourceObject: {fileID: 7690414718388180640, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
       insertIndex: -1
       addedObject: {fileID: 0}
@@ -31857,8 +31862,6 @@ SceneRoots:
   m_Roots:
   - {fileID: 29152334}
   - {fileID: 3372670674132212144}
-  - {fileID: 1507898364}
-  - {fileID: 366852682}
   - {fileID: 1248114744}
   - {fileID: 1994666534}
   - {fileID: 1811498346}
