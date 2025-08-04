@@ -62,17 +62,8 @@ namespace forest
                             break;
                         }
 
-                        int budget = curOpponentToMove.curMovementBudget;
-                        int cost = step.moveDifficulty;
-                        if (budget >= cost)
-                        {
-                            Utils.MoveUnitToLocation(StateMachine.Playfield, StateMachine.VisualPlayfield, curOpponentToMove, step.associatedPos);
-                            yield return new WaitForSeconds(visualMoveDelay);
-                        }
-                        else
-                        {
-                            break;
-                        }
+                        Utils.MoveUnitToLocation(StateMachine.Playfield, StateMachine.VisualPlayfield, curOpponentToMove, step.associatedPos);
+                        yield return new WaitForSeconds(visualMoveDelay);
                     }
                 }
 

@@ -21,7 +21,7 @@ namespace forest
         /// <param name="moveCost"></param>
         public static void StepUnitTo(PlayfieldUnit unitToMove, Playfield playfield, Vector2Int pos, int moveCost)
         {
-            UnityEngine.Assertions.Assert.IsFalse(unitToMove.curMovementBudget - moveCost < 0, $"You must have enough available steps to pay for the projected move cost. Some check elsewhere probably failed. Had: {unitToMove.curMovementBudget}, Cost: {moveCost}");
+            UnityEngine.Assertions.Assert.IsFalse(unitToMove.curMovementBudget - moveCost < 0 && unitToMove.curMovesTaken > 0, $"You must have enough available steps to pay for the projected move cost. Some check elsewhere probably failed. Had: {unitToMove.curMovementBudget}, Cost: {moveCost}");
 
             PlayfieldTile targetTile = playfield.world.Get(pos.x, pos.y);
 
@@ -54,8 +54,9 @@ namespace forest
                 ShortenUnitTailByOne(unitToMove, playfield);
             }
 
-            // Charge 'em!
+            // Charge 'em, and track the move!
             unitToMove.curMovementBudget -= moveCost;
+            unitToMove.curMovesTaken += 1;
         }
 
         public static void ShortenUnitTailByOne(PlayfieldUnit unitToShorten, Playfield playfield)
@@ -86,20 +87,20 @@ namespace forest
         {
             PlayfieldTile targetTile = playfield.world.Get(targetLocation);
 
-            // No moving to overly expensive tiles
-            if(unitTryingToMove.curMovementBudget - targetTile.curMoveDifficulty < 0)
-            {
-                return false;
-            }
-
             // No impassable tiles, do it as a permitted list so you can't go by default.
             if (targetTile.curIsImpassable)
             {
                 return false;
             }
 
-            // If there is a unit and it's not us, no-go.
-            if(playfield.TryGetUnitAt(targetLocation, out PlayfieldUnit atTile))
+            // If we have no ability to move, there's no rule that will save us.
+            if (unitTryingToMove.curMaxMomvementBudget <= 0)
+            {
+                return false;
+            }
+
+            // If there is a unit and it's not us, no-go. That's overlap.
+            if (playfield.TryGetUnitAt(targetLocation, out PlayfieldUnit atTile))
             {
                 if(atTile.id != unitTryingToMove.id)
                 {
@@ -107,6 +108,13 @@ namespace forest
                 }
             }
 
+            // If the move is too expensive AND we've already moved, we can't move.
+            // This is written like this to allow a single movement if we have a speed > 0 but we haven't moved yet. 
+            if(unitTryingToMove.curMovementBudget - targetTile.curMoveDifficulty < 0 && unitTryingToMove.curMovesTaken != 0)
+            {
+                return false;
+            }
+               
             return true;
         }
 

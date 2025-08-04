@@ -32,7 +32,6 @@ namespace forest
     [JsonObject(MemberSerialization.OptIn)]
     public class PlayfieldUnit
     {
-
         [JsonProperty] public string tag = null;
         [JsonProperty] public int id = Playfield.NO_ID; // PLAYFIELD-SPECIFIC id.
         [JsonProperty] public Team team = Team.DEFAULT;
@@ -46,7 +45,13 @@ namespace forest
         // information that all units have, and you should be able to interact with between units but it
         // also could be argued that it's only related to the specific visual+controller implementation.
         public int curMovementBudget = 0;
-        
+
+        // Max movement assigned
+        public int curMaxMomvementBudget = 0;
+
+        // A count of the number of moves taken this specific turn
+        public int curMovesTaken = 0;
+
         // Like this one for example. You'd expect it to be serialized, but it's entirely reasonable to
         // buffer or tweak the max length based on various gameplay elements. 
         public int curMaxSize = 1;

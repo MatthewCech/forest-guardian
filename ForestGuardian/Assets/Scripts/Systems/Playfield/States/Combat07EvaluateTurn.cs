@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace forest
 {
@@ -22,6 +23,24 @@ namespace forest
         private IEnumerator Evaluate()
         {
             yield return new WaitForSeconds(StateMachine.turnDelay);
+
+            bool hasPlayerUnit = false;
+            for (int i = 0; i < StateMachine.Playfield.units.Count; ++i)
+            {
+                PlayfieldUnit cur = StateMachine.Playfield.units[i];
+                if (cur.team == Team.Player)
+                {
+                    hasPlayerUnit = true;
+                    break;
+                }
+            }
+
+            if(!hasPlayerUnit)
+            {
+                yield return null;
+                StateMachine.SetState<Combat09Defeat>();
+                yield break;
+            }
 
             bool didFindPortal = false;
             for(int i = 0; i < StateMachine.Playfield.portals.Count; ++i)

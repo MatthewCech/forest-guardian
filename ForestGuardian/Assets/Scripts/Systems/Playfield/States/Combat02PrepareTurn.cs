@@ -30,6 +30,8 @@ namespace forest
 
                 Unit template = StateMachine.Lookup.GetUnityByTag(unit.tag);
                 unit.curMovementBudget = template.moveSpeed;
+                unit.curMaxMomvementBudget = template.moveSpeed;
+                unit.curMovesTaken = 0;
                 unit.curMaxSize = template.maxSize;
                 unit.curAttackRange = template.attackRange;
             }
