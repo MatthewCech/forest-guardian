@@ -94,7 +94,7 @@ namespace forest
             }
 
             // If we have no ability to move, there's no rule that will save us.
-            if (unitTryingToMove.curMaxMomvementBudget <= 0)
+            if (unitTryingToMove.curMaxMovementBudget <= 0)
             {
                 return false;
             }
@@ -125,8 +125,11 @@ namespace forest
             // Step the unit to the new place. Ensure this happens before visualizer update.
             Utils.StepUnitTo(unit, playfield, target, moveCost);
 
-            if (playfield.TryGetItemAt(target, out PlayfieldItem item))
+            // #TODO: Consider moving this
+            if (unit.team == Team.Player && playfield.TryGetItemAt(target, out PlayfieldItem item))
             {
+                // NOTE: Assume all items are currency at this time
+                ++Core.Instance.game.currency;
                 playfield.RemoveItemAt(target);
             }
 

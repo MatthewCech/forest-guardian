@@ -24,6 +24,16 @@ namespace forest
             if(!firstStep)
             {
                 firstStep = true;
+
+                if(!string.IsNullOrWhiteSpace(StateMachine.Playfield.tagBestowed))
+                {
+                    bool has = Core.Instance.game.completedLevelTags.Contains(StateMachine.Playfield.tagBestowed);
+                    if (!has)
+                    {
+                        Core.Instance.game.completedLevelTags.Add(StateMachine.Playfield.tagBestowed);
+                    }
+                }
+
                 resultBanner.visible = true;
                 resultLabel.text = "Area Cleared - Victory!";
                 Loam.CoroutineObject.Instance.StartCoroutine(ScreenDelay());

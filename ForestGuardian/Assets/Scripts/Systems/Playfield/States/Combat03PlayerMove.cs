@@ -189,12 +189,6 @@ namespace forest
                 }
             }
 
-            /*
-            else if (StateMachine.Playfield.items.Count == 0 && !HasEnemies())
-            {
-                StateMachine.SetState<Combat08Victory>();
-            }
-            */
         }
     }
 }

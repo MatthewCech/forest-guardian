@@ -1,4 +1,6 @@
 {
+  "tagLabel": "tutorial 1",
+  "tagBestowed" : null,
   "units": [
     {
       "tag": "Guardian",

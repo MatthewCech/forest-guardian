@@ -60,6 +60,5 @@ namespace forest
         {
             SceneManager.LoadScene(SCENE_NAME_MAP);
         }
-
     }
 }

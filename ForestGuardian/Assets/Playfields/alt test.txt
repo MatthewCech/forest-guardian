@@ -1,0 +1,231 @@
+{
+  "tagLabel": "alt test",
+  "tagBestowed": "test",
+  "units": [
+    {
+      "tag": "Guardian",
+      "id": 26,
+      "team": 1,
+      "locations": [
+        {
+          "x": 1,
+          "y": 4,
+          "magnitude": 4.12310553,
+          "sqrMagnitude": 17
+        }
+      ]
+    },
+    {
+      "tag": "Ivy",
+      "id": 45,
+      "team": 0,
+      "locations": [
+        {
+          "x": 5,
+          "y": 3,
+          "magnitude": 5.83095169,
+          "sqrMagnitude": 34
+        }
+      ]
+    }
+  ],
+  "world": {
+    "data": [
+      [
+        {
+          "tag": "Nothing",
+          "id": 1
+        },
+        {
+          "tag": "Nothing",
+          "id": 2
+        },
+        {
+          "tag": "Nothing",
+          "id": 3
+        },
+        {
+          "tag": "Wall",
+          "id": 4
+        },
+        {
+          "tag": "Basic",
+          "id": 5
+        },
+        {
+          "tag": "Basic",
+          "id": 6
+        }
+      ],
+      [
+        {
+          "tag": "Wall",
+          "id": 6
+        },
+        {
+          "tag": "Wall",
+          "id": 7
+        },
+        {
+          "tag": "Wall",
+          "id": 8
+        },
+        {
+          "tag": "Wall",
+          "id": 9
+        },
+        {
+          "tag": "Basic",
+          "id": 10
+        },
+        {
+          "tag": "Basic",
+          "id": 12
+        }
+      ],
+      [
+        {
+          "tag": "Basic",
+          "id": 11
+        },
+        {
+          "tag": "Wall",
+          "id": 12
+        },
+        {
+          "tag": "Wall",
+          "id": 13
+        },
+        {
+          "tag": "Basic",
+          "id": 14
+        },
+        {
+          "tag": "Basic",
+          "id": 15
+        },
+        {
+          "tag": "Basic",
+          "id": 18
+        }
+      ],
+      [
+        {
+          "tag": "Basic",
+          "id": 16
+        },
+        {
+          "tag": "Basic",
+          "id": 17
+        },
+        {
+          "tag": "Basic",
+          "id": 18
+        },
+        {
+          "tag": "Basic",
+          "id": 19
+        },
+        {
+          "tag": "Basic",
+          "id": 20
+        },
+        {
+          "tag": "Wall",
+          "id": 24
+        }
+      ],
+      [
+        {
+          "tag": "Nothing",
+          "id": 21
+        },
+        {
+          "tag": "Basic",
+          "id": 22
+        },
+        {
+          "tag": "Basic",
+          "id": 23
+        },
+        {
+          "tag": "Basic",
+          "id": 24
+        },
+        {
+          "tag": "Basic",
+          "id": 25
+        },
+        {
+          "tag": "Wall",
+          "id": 30
+        }
+      ],
+      [
+        {
+          "tag": "Nothing",
+          "id": 26
+        },
+        {
+          "tag": "Nothing",
+          "id": 27
+        },
+        {
+          "tag": "Basic",
+          "id": 28
+        },
+        {
+          "tag": "Basic",
+          "id": 29
+        },
+        {
+          "tag": "Wall",
+          "id": 30
+        },
+        {
+          "tag": "Wall",
+          "id": 36
+        }
+      ],
+      [
+        {
+          "tag": "Nothing",
+          "id": 37
+        },
+        {
+          "tag": "Nothing",
+          "id": 38
+        },
+        {
+          "tag": "Nothing",
+          "id": 39
+        },
+        {
+          "tag": "Wall",
+          "id": 40
+        },
+        {
+          "tag": "Wall",
+          "id": 41
+        },
+        {
+          "tag": "Nothing",
+          "id": 42
+        }
+      ]
+    ]
+  },
+  "items": [],
+  "portals": [],
+  "exit": {
+    "tag": "Exit",
+    "id": 46,
+    "location": {
+      "x": 3,
+      "y": 0,
+      "magnitude": 3.0,
+      "sqrMagnitude": 9
+    }
+  },
+  "nextID": 47
+}

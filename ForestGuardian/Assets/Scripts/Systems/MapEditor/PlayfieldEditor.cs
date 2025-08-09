@@ -9,6 +9,7 @@ using System.IO;
 using Newtonsoft.Json;
 using UnityEngine.Events;
 using UnityEditor.Experimental.GraphView;
+using System.Linq;
 
 namespace forest
 {
@@ -26,7 +27,7 @@ namespace forest
         [SerializeField] private Camera displayingCamera;
         [SerializeField] PlayfieldEditorCamera playfieldEditorCamera;
 
-        [Header("Old UI Style links")]
+        [Header("General Config")]
         [SerializeField] private Button uiSave;
         [SerializeField] private Button uiLoad;
         [SerializeField] private Slider uiWidthSlider;
@@ -35,6 +36,13 @@ namespace forest
         [SerializeField] private TMPro.TMP_InputField uiHeightEntryField;
         [SerializeField] private TMPro.TextMeshProUGUI uiStatus;
         [SerializeField] private TMPro.TextMeshProUGUI uiLayer;
+        [SerializeField] private TMPro.TMP_InputField uiTagLabelEntryField;
+        [SerializeField] private TMPro.TMP_InputField uiTagBestowedEntryField;
+        [SerializeField] private TMPro.TextMeshProUGUI uiTagLabelValue;
+        [SerializeField] private TMPro.TextMeshProUGUI uiTagBestowedValue;
+        [SerializeField] private Toggle uiIsPlayerTeam;
+        [SerializeField] private Toggle uiIsEnemyTeam;
+        [SerializeField] private ToggleGroup group;
 
         [Header("Metadata Panel")]
         [SerializeField] private TMPro.TMP_InputField inputMetadataPanel;
@@ -79,6 +87,8 @@ namespace forest
 
             uiWidthSlider.onValueChanged.AddListener(SizeChange);
             uiHeightSlider.onValueChanged.AddListener(SizeChange);
+            uiTagBestowedEntryField.onValueChanged.AddListener(TagBestowedChange);
+            uiTagLabelEntryField.onValueChanged.AddListener(TagLabelChange);
 
             inputMetadataPanel.onValueChanged.AddListener(PortalLabelModified);
 
@@ -103,9 +113,14 @@ namespace forest
 
             CreateSelectableButtons();
 
+            // Set tags as default
+            TagLabelChange("");
+            TagBestowedChange("");
+
             // Basic tile
             Tile tile = lookup.tileTemplates[1];
             SetPreview(tile.gameObject, tile.name, PlayfieldEditorSelectionType.Tile);
+
         }
 
         private void TilePrimaryAction(Message raw) { ProcessPrimaryAction((raw as MsgTilePrimaryAction).tilePosition); }
@@ -308,6 +323,17 @@ namespace forest
                     newUnit.tag = previewTag;
                     newUnit.id = workingPlayfield.GetNextID();
 
+                    // Map checkboxes to team
+                    newUnit.team = Team.DEFAULT;
+                    if(uiIsPlayerTeam.isOn)
+                    {
+                        newUnit.team = Team.Player;
+                    }
+                    else if (uiIsEnemyTeam.isOn)
+                    {
+                        newUnit.team = Team.Opponent;
+                    }
+                    
                     workingPlayfield.units.Add(newUnit);
                 }
             }
@@ -512,6 +538,21 @@ namespace forest
             // Readouts
             uiWidthEntryField.text = uiWidthSlider.value.ToString();
             uiHeightEntryField.text = uiHeightSlider.value.ToString();
+
+            workingPlayfield.tagBestowed = uiTagBestowedValue.text;
+            workingPlayfield.tagLabel = uiTagLabelValue.text;
+        }
+
+        private void TagBestowedChange(string value)
+        {
+            workingPlayfield.tagBestowed = value;
+            uiTagBestowedValue.text = workingPlayfield.tagBestowed;
+        }
+
+        private void TagLabelChange(string value)
+        {
+            workingPlayfield.tagLabel = value;
+            uiTagLabelValue.text = workingPlayfield.tagLabel;
         }
 
         private void SaveCreatedPlayfield()
@@ -554,6 +595,9 @@ namespace forest
                 {
                     Debug.LogError("Mis-configured playfield");
                 }
+
+                uiTagBestowedValue.text = field.tagBestowed;
+                uiTagLabelValue.text = field.tagLabel;
 
                 visuals.DisplayAll(workingPlayfield);
             }

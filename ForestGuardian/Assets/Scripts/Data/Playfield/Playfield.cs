@@ -15,6 +15,11 @@ namespace forest
     {
         public const int NO_ID = -1;
 
+        // Data about the playfield
+        [JsonProperty] public string tagLabel;
+        [JsonProperty] public string tagBestowed;
+
+        // Contents of the playfield
         [JsonProperty] public List<PlayfieldUnit> units;
         [JsonProperty] public Collection2D<PlayfieldTile> world;
         [JsonProperty] public List<PlayfieldItem> items;

@@ -47,7 +47,7 @@ namespace forest
         public int curMovementBudget = 0;
 
         // Max movement assigned
-        public int curMaxMomvementBudget = 0;
+        public int curMaxMovementBudget = 0;
 
         // A count of the number of moves taken this specific turn
         public int curMovesTaken = 0;

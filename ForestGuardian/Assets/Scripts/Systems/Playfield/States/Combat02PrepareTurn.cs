@@ -26,11 +26,11 @@ namespace forest
 
             foreach (PlayfieldUnit unit in StateMachine.Playfield.units)
             {
-                UnityEngine.Assertions.Assert.IsFalse(unit.team == Team.DEFAULT);
+                UnityEngine.Assertions.Assert.IsFalse(unit.team == Team.DEFAULT, "A unit has an unassigned team. This needs to be updated in JSON, and likely represents an editor export issue.");
 
                 Unit template = StateMachine.Lookup.GetUnityByTag(unit.tag);
                 unit.curMovementBudget = template.moveSpeed;
-                unit.curMaxMomvementBudget = template.moveSpeed;
+                unit.curMaxMovementBudget = template.moveSpeed;
                 unit.curMovesTaken = 0;
                 unit.curMaxSize = template.maxSize;
                 unit.curAttackRange = template.attackRange;
