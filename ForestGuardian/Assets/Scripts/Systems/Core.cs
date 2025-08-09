@@ -21,6 +21,14 @@ namespace forest
             }
         }
 
+        public static bool HasInstance
+        {
+            get
+            {
+                return instance != null;
+            }
+        }
+
         public GameInstance gameData { get; private set; }
         public AudioCore audioCore { get; private set; }
 

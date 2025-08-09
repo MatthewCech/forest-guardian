@@ -14,7 +14,7 @@ namespace forest
 
         void Start()
         {
-            if (Core.Instance.audioCore != null)
+            if (Core.HasInstance && Core.Instance.audioCore != null)
             {
                 Core.Instance.audioCore.TryPlay(tagToPlay, isLooping, out audioHandle);
             }
@@ -22,7 +22,7 @@ namespace forest
 
         private void OnDestroy()
         {
-            if (stopOnDestroy && Core.Instance.audioCore != null)
+            if (stopOnDestroy && Core.HasInstance && Core.Instance.audioCore != null)
             {
                 Core.Instance.audioCore.TryStop(audioHandle);
             }
