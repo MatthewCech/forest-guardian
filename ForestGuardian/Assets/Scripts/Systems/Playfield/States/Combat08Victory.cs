@@ -27,10 +27,10 @@ namespace forest
 
                 if(!string.IsNullOrWhiteSpace(StateMachine.Playfield.tagBestowed))
                 {
-                    bool has = Core.Instance.game.completedLevelTags.Contains(StateMachine.Playfield.tagBestowed);
+                    bool has = Core.Instance.gameData.completedLevelTags.Contains(StateMachine.Playfield.tagBestowed);
                     if (!has)
                     {
-                        Core.Instance.game.completedLevelTags.Add(StateMachine.Playfield.tagBestowed);
+                        Core.Instance.gameData.completedLevelTags.Add(StateMachine.Playfield.tagBestowed);
                     }
                 }
 

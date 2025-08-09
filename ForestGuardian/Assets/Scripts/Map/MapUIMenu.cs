@@ -26,7 +26,7 @@ namespace forest
             {
                 if (Core.Instance != null)
                 {
-                    instanceState.text = JsonUtility.ToJson(Core.Instance.game, true);
+                    instanceState.text = JsonUtility.ToJson(Core.Instance.gameData, true);
                 }
 
                 timeSoFar = 0;

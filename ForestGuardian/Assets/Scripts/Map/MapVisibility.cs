@@ -15,15 +15,15 @@ namespace forest
             bool didSetActive = false;
 
             // Don't proceed if we have no level tags.
-            if(Core.Instance.game.completedLevelTags == null)
+            if(Core.Instance.gameData.completedLevelTags == null)
             {
                 this.gameObject.SetActive(false);
                 return;
             }
 
-            for (int i = 0; i < Core.Instance.game.completedLevelTags.Count; ++i)
+            for (int i = 0; i < Core.Instance.gameData.completedLevelTags.Count; ++i)
             {
-                string curTag = Core.Instance.game.completedLevelTags[i];
+                string curTag = Core.Instance.gameData.completedLevelTags[i];
                 if (string.Equals(label, curTag, System.StringComparison.InvariantCultureIgnoreCase))
                 {
                     this.gameObject.SetActive(true);

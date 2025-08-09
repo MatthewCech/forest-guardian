@@ -10,7 +10,7 @@ namespace forest
     /// <summary>
     /// NOTE: This can be turned into addressables long term if desired.
     /// </summary>
-    [CreateAssetMenu(fileName = "Lookup Data", menuName = "ScriptableObjects/Lookup Data", order = 1)]
+    [CreateAssetMenu(fileName = "Lookup Data", menuName = "ScriptableObjects/Visual Lookup Data", order = 1)]
     public class VisualLookup : ScriptableObject
     {
         public float interactionZPriority = 0.4f; // Used as -z in practice to move towards camera

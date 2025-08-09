@@ -21,7 +21,8 @@ namespace forest
             }
         }
 
-        public GameInstance game;
+        public GameInstance gameData { get; private set; }
+        public AudioCore audioCore { get; private set; }
 
         /// <summary>
         /// Pre-awake initialization and singleton setup
@@ -41,8 +42,23 @@ namespace forest
             DontDestroyOnLoad(coreObj);
             instance = core;
 
-            // Initialization
-            core.game = new GameInstance();
+            // Data Initialization
+            core.gameData = new GameInstance();
+        }
+
+        public void TryRegisterAudioCore(AudioCore coreToRegister)
+        {
+            if(audioCore != null)
+            {
+                Debug.Log("Ignoring audio core registration attempt. Not necessarily anything wrong, just noting it.");
+                return;
+            }
+
+            DontDestroyOnLoad(coreToRegister);
+            coreToRegister.transform.SetParent(instance.transform);
+            coreToRegister.transform.position = Vector3.zero;
+
+            audioCore = coreToRegister;
         }
 
         public void LoadLevelPlayfield()
@@ -52,7 +68,7 @@ namespace forest
 
         public void LoadLevelPlayfield(TextAsset levelToLoad)
         {
-            game.currentPlayfield = levelToLoad;
+            gameData.currentPlayfield = levelToLoad;
             SceneManager.LoadScene(SCENE_NAME_PLAYFIELD);
         }
 
