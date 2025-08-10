@@ -9,6 +9,7 @@ namespace forest
         [SerializeField] private TextAsset asset = null;
 
         private string label;
+
         void Start()
         {
             label = JsonUtility.FromJson<Playfield>(asset.text).tagLabel;

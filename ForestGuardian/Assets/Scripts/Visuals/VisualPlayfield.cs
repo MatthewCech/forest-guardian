@@ -282,7 +282,7 @@ namespace forest
             Unit attacking = FindUnit(attackingUnit);
             Unit defending = FindUnit(defendingUnit);
 
-            int damage = attacking.attackDamage;
+            int damage = attacking.data.attacks[0].attackDamage;
             if (damage <= 0)
             {
                 return;

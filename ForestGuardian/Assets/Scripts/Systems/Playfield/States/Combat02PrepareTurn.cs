@@ -29,11 +29,12 @@ namespace forest
                 UnityEngine.Assertions.Assert.IsFalse(unit.team == Team.DEFAULT, "A unit has an unassigned team. This needs to be updated in JSON, and likely represents an editor export issue.");
 
                 Unit template = StateMachine.Lookup.GetUnityByTag(unit.tag);
-                unit.curMovementBudget = template.moveSpeed;
-                unit.curMaxMovementBudget = template.moveSpeed;
+                unit.curMovementBudget = template.data.speed;
+                unit.curMaxMovementBudget = template.data.speed;
                 unit.curMovesTaken = 0;
-                unit.curMaxSize = template.maxSize;
-                unit.curAttackRange = template.attackRange;
+                unit.curMaxSize = template.data.maxSize;
+
+                unit.curAttackRange = template.data.attacks[0].attackRange;
             }
 
             foreach (PlayfieldTile tile in StateMachine.Playfield.world)

@@ -7,14 +7,7 @@ namespace forest
 {
     public class Unit : MonoBehaviour
     {
-        // TODO: Extract this data to make it visual agnostic
-        public int maxSize = 3;
-        public int moveSpeed = 2;
-        public int attackRange = 1;
-        public Team defaultTeam = Team.DEFAULT;
-
-        // ALSO TODO: collect this kinda stuff into objects for multi-attack
-        public int attackDamage = 2;
+        public UnitData data;
 
         [Header("General Visuals")]
         [SerializeField] private GameObject head = null;

@@ -534,11 +534,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd7ec118793c3ab41a8b14eb944e0bdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSize: 6
-  moveSpeed: 1
-  attackRange: 1
-  defaultTeam: 2
-  attackDamage: 2
+  data:
+    unitName: Ivy
+    maxSize: 5
+    speed: 1
+    defaultTeam: 2
+    attacks:
+    - attackName: Wrap
+      attackDamage: 2
+      attackRange: 1
   head: {fileID: 4261630505289986683}
   segmentLink: {fileID: 7345218864977399038}
   associatedData:
@@ -547,6 +551,8 @@ MonoBehaviour:
     team: 0
     locations: []
     curMovementBudget: 0
+    curMaxMovementBudget: 0
+    curMovesTaken: 0
     curMaxSize: 1
     curAttackRange: 1
   gridPos: {x: 0, y: 0}

@@ -20,6 +20,12 @@ namespace forest
 
         void Start()
         {
+            StartCoroutine(Delay());
+        }
+
+        IEnumerator Delay()
+        {
+            yield return new WaitForEndOfFrame();
             RedrawConnectionLines();
         }
 
@@ -34,6 +40,11 @@ namespace forest
             List<Vector3> pos = new List<Vector3>();
             foreach (Object o in obj)
             {
+                if(!((MapVisibility)o).gameObject.activeInHierarchy)
+                {
+                    continue;
+                }
+
                 Vector3 curPos = ((MapVisibility)o).gameObject.transform.position;
                 pos.Add(new Vector3(curPos.x, 0, curPos.z));
             }

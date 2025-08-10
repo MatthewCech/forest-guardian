@@ -790,11 +790,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd7ec118793c3ab41a8b14eb944e0bdf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSize: 3
-  moveSpeed: 2
-  attackRange: 2
-  defaultTeam: 1
-  attackDamage: 2
+  data:
+    unitName: Guardian
+    maxSize: 3
+    speed: 2
+    defaultTeam: 1
+    attacks:
+    - attackName: Swipe
+      attackDamage: 2
+      attackRange: 2
   head: {fileID: 334675950987140449}
   segmentLink: {fileID: 6897957375675128042}
   associatedData:
@@ -803,6 +807,8 @@ MonoBehaviour:
     team: 0
     locations: []
     curMovementBudget: 0
+    curMaxMovementBudget: 0
+    curMovesTaken: 0
     curMaxSize: 1
     curAttackRange: 1
   gridPos: {x: 0, y: 0}
