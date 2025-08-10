@@ -12,6 +12,7 @@ namespace forest
         [Header("General Visuals")]
         [SerializeField] private GameObject head = null;
         [SerializeField] public LineRenderer segmentLink = null;
+        [SerializeField] public Sprite uiIcon;
 
         // CONSIDER: Replace with int ID if the reference creates issues.
         [Header("Runtime Association")]

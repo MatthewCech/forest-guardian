@@ -794,13 +794,13 @@ MonoBehaviour:
     unitName: Guardian
     maxSize: 3
     speed: 2
-    defaultTeam: 1
-    attacks:
-    - attackName: Swipe
-      attackDamage: 2
-      attackRange: 2
+    moves:
+    - moveName: Swipe
+      moveDamage: 2
+      moveRange: 2
   head: {fileID: 334675950987140449}
   segmentLink: {fileID: 6897957375675128042}
+  uiIcon: {fileID: 21300000, guid: 92fc557f70adf4b45af7ce58ddba0eb9, type: 3}
   associatedData:
     tag: 
     id: -1

@@ -2,7 +2,6 @@ using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Playables;
 
 namespace forest
 {
@@ -44,6 +43,11 @@ namespace forest
             }
 
             roster.Add(guardian);
+        }
+
+        public UnitData GetRosterEntry(string name)
+        {
+            return roster.Find(unit => string.Equals(unit.unitName, name, System.StringComparison.CurrentCultureIgnoreCase));
         }
     }
 }
