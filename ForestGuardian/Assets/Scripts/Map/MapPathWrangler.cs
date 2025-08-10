@@ -16,7 +16,15 @@ namespace forest
 
     public class MapPathWrangler : MonoBehaviour
     {
-        [SerializeField] private LineRenderer lineRenderer;
+        [SerializeField] private LineRenderer referenceLineRenderer;
+        [SerializeField] private Transform lineParent;
+
+        List<LineRenderer> trackedLines = new List<LineRenderer>();
+
+        private void Awake()
+        {
+            referenceLineRenderer.gameObject.SetActive(false);
+        }
 
         void Start()
         {
@@ -25,6 +33,13 @@ namespace forest
 
         void RedrawConnectionLines()
         {
+            // For now, one line though we'll use the list since we'll need it later for branching unlocks.
+            foreach(LineRenderer line in trackedLines)
+            {
+                GameObject.Destroy(line.gameObject);
+            }
+            trackedLines.Clear();
+
             // Collect all MapVisibility objects and then sort them by order in hierarchy
             Object[] obj = FindObjectsByType(typeof(MapVisibility), FindObjectsSortMode.InstanceID);
             IComparer byHierarchyPosition = new ByHierarchyPosition();
@@ -43,9 +58,12 @@ namespace forest
                 pos.Add(new Vector3(curPos.x, 0, curPos.z));
             }
 
-            // Configure
-            lineRenderer.positionCount = pos.Count;
-            lineRenderer.SetPositions(pos.ToArray());
+            // Configure line as a single long item, this will need to be done differently once branching is added.
+            LineRenderer renderer = Instantiate(referenceLineRenderer, lineParent);
+            renderer.gameObject.SetActive(true);
+            renderer.positionCount = pos.Count;
+            renderer.SetPositions(pos.ToArray());
+            trackedLines.Add(renderer);
         }
     }
 }
