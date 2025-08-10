@@ -20,12 +20,6 @@ namespace forest
 
         void Start()
         {
-            StartCoroutine(Delay());
-        }
-
-        IEnumerator Delay()
-        {
-            yield return new WaitForEndOfFrame();
             RedrawConnectionLines();
         }
 

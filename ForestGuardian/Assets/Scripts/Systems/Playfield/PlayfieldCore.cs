@@ -19,25 +19,24 @@ namespace forest
         [SerializeField] private UIDocument ui;
 
         [Header("Links for States")]
-        [SerializeField] private VisualLookup lookup;
-        [SerializeField] private Playfield playfield;
+        [SerializeField] private PlayfieldLookup playfieldLookup;
+        [SerializeField] private VisualLookup visualLookup;
         [SerializeField] private VisualPlayfield visualizerPlayfield;
 
-        [Header("TEMP FIX ME")]
-        [SerializeField] private List<TextAsset> TEMPlevelAssets;
-
         // Various delays to space out the feel of the game, all in seconds
-        [Header("Artificial Delays")] 
-        public float turnDelay = 0.2f;        
+        [Header("Artificial Delays")]
+        public float turnDelay = 0.2f;
         public float resultScreenTime = 3.0f;
 
         // Singleton/global access equivalent, exposing these to various states.
         public VisualPlayfield VisualPlayfield { get; private set; }
         public Playfield Playfield { get; private set; }
-        public VisualLookup Lookup { get; private set; }
+        public VisualLookup VisualLookup { get; private set; }
+        public PlayfieldLookup PlayfieldLookup { get; private set; }
         public UIDocument UI { get; private set; }
 
         // Internal
+        private Playfield playfield;
         private CombatState current = null;
 
         /// <summary>
@@ -47,7 +46,7 @@ namespace forest
         {
             Postmaster.Instance.Configure(PostmasterConfig.Default());
 
-            if(!TrySelectLevel(out TextAsset toLoad))
+            if (!TrySelectLevel(out TextAsset toLoad))
             {
                 Debug.LogError("No playfield specified! Attempting to exit.");
                 SetState<Combat20Shutdown>();
@@ -55,7 +54,7 @@ namespace forest
             }
 
             playfield = Playfield.BuildPlayfield(toLoad.text);
-            visualizerPlayfield.Initialize(lookup);
+            visualizerPlayfield.Initialize(visualLookup);
             visualizerPlayfield.DisplayAll(playfield);
 
             Utils.CenterCamera(mainCam, visualizerPlayfield);
@@ -76,7 +75,7 @@ namespace forest
 
             // Try and collect level information from the game instance
             TextAsset coreValue = Core.Instance.gameData.currentPlayfield;
-            if(coreValue != null) 
+            if (coreValue != null)
             {
                 selected = coreValue;
 
@@ -96,7 +95,8 @@ namespace forest
             // Internal links
             Playfield = playfield;
             VisualPlayfield = visualizerPlayfield;
-            Lookup = lookup;
+            VisualLookup = visualLookup;
+            PlayfieldLookup = playfieldLookup;
             UI = ui;
 
             // Connect relevant UI.
@@ -129,32 +129,11 @@ namespace forest
         /// <typeparam name="T"></typeparam>
         public void SetState<T>() where T : CombatState
         {
-            T instance = (T)System.Activator.CreateInstance(typeof(T), args:this);
+            T instance = (T)System.Activator.CreateInstance(typeof(T), args: this);
             instance.Start();
             current?.Shutdown();
             ui.rootVisualElement.Q<Label>("bannerLabel").text = current?.GetType().Name;
             current = instance;
-        }
-
-        /// <summary>
-        /// Thumb through all available level assets and attempt to get one by name
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="levelAsset"></param>
-        /// <returns></returns>
-        public bool TryGetLevelByName(string name, out TextAsset levelAsset)
-        {
-            foreach(TextAsset asset in TEMPlevelAssets)
-            {
-                if (string.Equals(asset.name, name, System.StringComparison.InvariantCultureIgnoreCase))
-                {
-                    levelAsset = asset;
-                    return true;
-                }
-            }
-
-            levelAsset = null;
-            return false;
         }
     }
 }

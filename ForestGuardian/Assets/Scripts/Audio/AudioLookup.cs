@@ -38,6 +38,9 @@ namespace forest
         public AudioSource source;
     }
 
+    /// <summary>
+    /// NOTE: This can be turned into addressables long term.
+    /// </summary>
     [CreateAssetMenu(fileName = "Audio Data", menuName = "ScriptableObjects/Audio Lookup Data", order = 2)]
     public class AudioLookup : ScriptableObject
     {

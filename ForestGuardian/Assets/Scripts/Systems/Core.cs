@@ -31,6 +31,7 @@ namespace forest
 
         public GameInstance gameData { get; private set; }
         public AudioCore audioCore { get; private set; }
+        public VisualLookup visualLookup { get; private set; }
 
         /// <summary>
         /// Pre-awake initialization and singleton setup
@@ -50,8 +51,26 @@ namespace forest
             DontDestroyOnLoad(coreObj);
             instance = core;
 
+        }
+
+        private void OnGameInstanceInitConditionsMet()
+        {
             // Data Initialization
-            core.gameData = new GameInstance();
+            gameData = new GameInstance();
+            gameData.PopulateDefaults(visualLookup);
+        }
+
+        public void TryRegisterVisualLookup(VisualLookup lookup)
+        {
+            if(visualLookup != null)
+            {
+                Debug.Log("Ignoring visual lookup registration attempt. Not a huge deal, just noted.");
+                return;
+            }
+
+            visualLookup = lookup;
+
+            OnGameInstanceInitConditionsMet();
         }
 
         public void TryRegisterAudioCore(AudioCore coreToRegister)
@@ -63,7 +82,7 @@ namespace forest
             }
 
             DontDestroyOnLoad(coreToRegister);
-            coreToRegister.transform.SetParent(instance.transform);
+            coreToRegister.transform.SetParent(this.transform);
             coreToRegister.transform.position = Vector3.zero;
 
             audioCore = coreToRegister;

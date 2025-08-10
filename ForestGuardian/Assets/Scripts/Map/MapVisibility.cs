@@ -10,7 +10,7 @@ namespace forest
 
         private string label;
 
-        void Start()
+        void Awake()
         {
             label = JsonUtility.FromJson<Playfield>(asset.text).tagLabel;
             bool didSetActive = false;

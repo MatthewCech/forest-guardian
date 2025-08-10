@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4969527040709754658}
   - component: {fileID: 2494758750400133552}
   m_Layer: 0
-  m_Name: PlayfieldCore
+  m_Name: Playfield Core
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -46,11 +46,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41ca9b7832a8cd44f85de1cc5b42ca5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelData: {fileID: 0}
-  lookup: {fileID: 0}
-  visualizerPlayfield: {fileID: 4969527040709754658}
+  levelOverride: {fileID: 0}
   mainCam: {fileID: 0}
   ui: {fileID: 2494758750400133552}
+  playfieldLookup: {fileID: 11400000, guid: 3a643ce5a438a824ebb61a9e96b135b9, type: 2}
+  visualLookup: {fileID: 11400000, guid: 8ec9726a8fd6d0b4580e6136cf9f33a6, type: 2}
+  visualizerPlayfield: {fileID: 4969527040709754658}
+  turnDelay: 0.2
+  resultScreenTime: 3
 --- !u!114 &4969527040709754658
 MonoBehaviour:
   m_ObjectHideFlags: 0

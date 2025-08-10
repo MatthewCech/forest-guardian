@@ -57,7 +57,7 @@ namespace forest
                 }
             }
 
-            if (StateMachine.TryGetLevelByName(targetPortal.target, out TextAsset levelAsset))
+            if (StateMachine.PlayfieldLookup.TryGetPlayfieldByName(targetPortal.target, out TextAsset levelAsset))
             {
                 Core.Instance.LoadLevelPlayfield(levelAsset);
             }

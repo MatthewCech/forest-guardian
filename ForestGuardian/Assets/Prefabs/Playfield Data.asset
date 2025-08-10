@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac2144d8a830d424f8927542b46961ea, type: 3}
+  m_Name: Playfield Data
+  m_EditorClassIdentifier: 
+  playfields:
+  - {fileID: 4900000, guid: 452d49e01e553c74882fe826e05fb2cf, type: 3}
+  - {fileID: 4900000, guid: 2f9ed1f8fdfed7b4fafd206273d40152, type: 3}
+  - {fileID: 4900000, guid: ee1992b8f5ee47145a879db7124a0f7a, type: 3}
+  - {fileID: 4900000, guid: ec31c1b91d9b72f428af27cb26fdc1b1, type: 3}
+  - {fileID: 4900000, guid: ebc0520e30878bf41b2aa2ca2d00c1ca, type: 3}

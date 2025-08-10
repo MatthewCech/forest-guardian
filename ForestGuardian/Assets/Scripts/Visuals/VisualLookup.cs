@@ -8,7 +8,7 @@ using static forest.VisualPlayfield;
 namespace forest
 {
     /// <summary>
-    /// NOTE: This can be turned into addressables long term if desired.
+    /// NOTE: This can be turned into addressables long term.
     /// </summary>
     [CreateAssetMenu(fileName = "Lookup Data", menuName = "ScriptableObjects/Visual Lookup Data", order = 1)]
     public class VisualLookup : ScriptableObject
@@ -38,9 +38,9 @@ namespace forest
         /// <returns></returns>
         public Unit GetUnityByTag(string tag)
         {
-            bool FindTag(Unit info)
+            bool FindTag(Unit unit)
             {
-                return info.name.Equals(tag, StringComparison.InvariantCultureIgnoreCase);
+                return unit.data.unitName.Equals(tag, StringComparison.InvariantCultureIgnoreCase);
             }
 
             return unitTemplates.Find(FindTag);
