@@ -20,7 +20,8 @@ namespace forest
 
         public Combat040PlayerMove(PlayfieldCore stateMachine) : base(stateMachine) { }
 
-        public bool NextUnit()
+        // Pop the head to get to the next available unit
+        public bool SelectNextUnitToMove()
         {
             if (pendingUnits == null || pendingUnits.Count == 0)
             {
@@ -30,6 +31,8 @@ namespace forest
 
             currentUnit = pendingUnits[0];
             pendingUnits.RemoveAt(0);
+
+            StateMachine.VisualPlayfield.DisplayIndicatorMovePreview(currentUnit, StateMachine.Playfield);
             return true;
         }
 
@@ -40,15 +43,12 @@ namespace forest
 
             // Collect player units
             pendingUnits = StateMachine.Playfield.units.Where((unit) => unit.team == Team.Player).ToList();
-            if(!NextUnit())
+            if (!SelectNextUnitToMove())
             {
                 Debug.LogError("No pending player units, we shouldn't be entering a player move phase with none available. Attempting to exit/shut down.");
                 StateMachine.SetState<Combat200Shutdown>();
                 return;
             }
-
-            // NOTE: Currently hard-coded. Need to select players piece by piece in the future.
-            StateMachine.VisualPlayfield.DisplayIndicatorMovePreview(currentUnit, StateMachine.Playfield);
         }
 
         public override void Update()
@@ -95,7 +95,7 @@ namespace forest
             if (msg.indicator.type == IndicatorType.ImmediateMove)
             {
                 Utils.MoveUnitToLocation(StateMachine.Playfield, StateMachine.VisualPlayfield, unit, target);
-                ShortCircuitVictoryIfNeeded(unit);
+                ShortCircuitExitOrPortal(unit);
                 if (unit.curMovementBudget == 0)
                 {
                     StateMachine.VisualPlayfield.DisplayIndicatorAttackPreview(unit, StateMachine.Playfield);
@@ -110,7 +110,12 @@ namespace forest
                 }
 
                 StateMachine.VisualPlayfield.HideIndicators();
-                StateMachine.SetState<Combat050OpponentMove>();
+
+                if(!SelectNextUnitToMove())
+                {
+                    StateMachine.SetState<Combat050OpponentMove>();
+                }
+
                 return;
             }
         }
@@ -142,7 +147,7 @@ namespace forest
                 if (Utils.CanMovePlayfieldUnitTo(StateMachine.Playfield, controlledUnit, newMovement))
                 {
                     Utils.MoveUnitToLocation(StateMachine.Playfield, StateMachine.VisualPlayfield, controlledUnit, newMovement);
-                    ShortCircuitVictoryIfNeeded(controlledUnit);
+                    ShortCircuitExitOrPortal(controlledUnit);
                 }
             }
         }
@@ -169,7 +174,12 @@ namespace forest
             }
         }
 
-        private void ShortCircuitVictoryIfNeeded(PlayfieldUnit controlledUnit)
+        /// <summary>
+        /// Determine if we're in a situation where we need to make a jump to either an exit or to another level.
+        /// In these situations, we're done here so we don't want to bother with enemy turns, etc.
+        /// </summary>
+        /// <param name="controlledUnit"></param>
+        private void ShortCircuitExitOrPortal(PlayfieldUnit controlledUnit)
         {
             Vector2Int head = controlledUnit.locations[PlayfieldUnit.HEAD_INDEX];
 
@@ -188,7 +198,6 @@ namespace forest
                     StateMachine.SetState<Combat100PortalWarp>();
                 }
             }
-
         }
     }
 }
