@@ -5,23 +5,14 @@ using UnityEngine.UIElements;
 
 namespace forest
 {
-    public class Combat08Victory : CombatState
+    public class Combat080Victory : CombatState
     {
         private bool firstStep = false;
 
-        /*
-        private VisualElement resultBanner;
-        private Label resultLabel; 
-        */
-
-        public Combat08Victory(PlayfieldCore stateMachine) : base(stateMachine) { }
+        public Combat080Victory(PlayfieldCore stateMachine) : base(stateMachine) { }
 
         public override void Start()
         {
-            /*
-            resultBanner = StateMachine.ModernUI.rootVisualElement.Q<VisualElement>("result");
-            resultLabel = StateMachine.ModernUI.rootVisualElement.Q<Label>("resultLabel");
-            */
 
         }
 
@@ -49,7 +40,7 @@ namespace forest
         private IEnumerator ScreenDelay()
         {
             yield return new WaitForSeconds(StateMachine.resultScreenTime);
-            StateMachine.SetState<Combat20Shutdown>();
+            StateMachine.SetState<Combat200Shutdown>();
         }
     }
 }

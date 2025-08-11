@@ -9,7 +9,7 @@ using static UnityEngine.UI.CanvasScaler;
 
 namespace forest
 {
-    public class Combat03PlayerMove : CombatState
+    public class Combat040PlayerMove : CombatState
     {
 
         private MessageSubscription subMoveTileClicked = null;
@@ -18,7 +18,7 @@ namespace forest
         private List<PlayfieldUnit> pendingUnits = null;
         private PlayfieldUnit currentUnit = null;
 
-        public Combat03PlayerMove(PlayfieldCore stateMachine) : base(stateMachine) { }
+        public Combat040PlayerMove(PlayfieldCore stateMachine) : base(stateMachine) { }
 
         public bool NextUnit()
         {
@@ -43,7 +43,7 @@ namespace forest
             if(!NextUnit())
             {
                 Debug.LogError("No pending player units, we shouldn't be entering a player move phase with none available. Attempting to exit/shut down.");
-                StateMachine.SetState<Combat20Shutdown>();
+                StateMachine.SetState<Combat200Shutdown>();
                 return;
             }
 
@@ -110,7 +110,7 @@ namespace forest
                 }
 
                 StateMachine.VisualPlayfield.HideIndicators();
-                StateMachine.SetState<Combat05OpponentMove>();
+                StateMachine.SetState<Combat050OpponentMove>();
                 return;
             }
         }
@@ -177,7 +177,7 @@ namespace forest
             {
                 if (head == StateMachine.Playfield.exit.location)
                 {
-                    StateMachine.SetState<Combat09Defeat>();
+                    StateMachine.SetState<Combat090Defeat>();
                 }
             }
 
@@ -185,7 +185,7 @@ namespace forest
             {
                 if (StateMachine.Playfield.TryGetPortalAt(head, out PlayfieldPortal portal))
                 {
-                    StateMachine.SetState<Combat10PortalWarp>();
+                    StateMachine.SetState<Combat100PortalWarp>();
                 }
             }
 

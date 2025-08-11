@@ -5,19 +5,55 @@ using UnityEngine;
 
 namespace forest
 {
-    public class Combat02PrepareTurn : CombatState
+    public class Combat030PrepareTurn : CombatState
     {
         private bool firstStep = false;
 
-        public Combat02PrepareTurn(PlayfieldCore stateMachine) : base(stateMachine) { }
+        public Combat030PrepareTurn(PlayfieldCore stateMachine) : base(stateMachine) { }
 
         public override void Update()
         {
             if (!firstStep)
             {
                 firstStep = true;
+                WriteOriginUnitsToPlayfield();
                 Loam.CoroutineObject.Instance.StartCoroutine(ProcessWithDelay());
             }
+        }
+
+        /// <summary>
+        /// Writes and displays the origin units to the playfield
+        /// </summary>
+        private void WriteOriginUnitsToPlayfield()
+        {
+            if(StateMachine.Playfield.origins == null || StateMachine.Playfield.origins.Count == 0)
+            {
+                return;
+            }
+
+            foreach (PlayfieldOrigin origin in StateMachine.Playfield.origins)
+            {
+                if(origin.curRosterIndex == PlayfieldOrigin.ROSTER_NONE_SELECTED)
+                {
+                    continue;
+                }
+
+                UnitData unit = Core.Instance.gameData.roster[origin.curRosterIndex];
+
+                PlayfieldUnit unitToAdd = new PlayfieldUnit();
+                unitToAdd.tag = unit.unitName;
+                unitToAdd.id = StateMachine.Playfield.GetNextID();
+                unitToAdd.team = Team.Player;
+                unitToAdd.locations = new List<Vector2Int>() { origin.location };
+                unitToAdd.rosterOverride = unit;
+
+                StateMachine.Playfield.units.Add(unitToAdd);
+            }
+
+            StateMachine.Playfield.origins.Clear();
+
+            StateMachine.VisualPlayfield.DisplayUnits(StateMachine.Playfield);
+            StateMachine.VisualPlayfield.DisplayOrigins(StateMachine.Playfield);
         }
 
         private IEnumerator ProcessWithDelay()
@@ -45,7 +81,7 @@ namespace forest
             }
 
             yield return null;
-            StateMachine.SetState<Combat03PlayerMove>();
+            StateMachine.SetState<Combat040PlayerMove>();
         }
     }
 }

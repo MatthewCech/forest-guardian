@@ -5,21 +5,16 @@ using UnityEngine.UIElements;
 
 namespace forest
 {
-    public class Combat01Startup : CombatState
+    public class Combat010Startup : CombatState
     {
         private bool firstStep = false;
 
-        /*
-        private VisualElement resultBanner;
-        */
 
-        public Combat01Startup(PlayfieldCore stateMachine) : base(stateMachine) { }
+        public Combat010Startup(PlayfieldCore stateMachine) : base(stateMachine) { }
 
         public override void Start()
         {
-            /*
-            resultBanner = StateMachine.ModernUI.rootVisualElement.Q<VisualElement>("result");
-            */
+
         }
 
         public override void Update()
@@ -35,7 +30,24 @@ namespace forest
         private IEnumerator QueueUpNext()
         {
             yield return new WaitForSeconds(StateMachine.turnDelay);
-            StateMachine.SetState<Combat02PrepareTurn>();
+
+            int originCount = StateMachine.Playfield.origins.Count;
+            foreach (PlayfieldOrigin origin in StateMachine.Playfield.origins)
+            {
+                if(origin.curSelectionPreComplete)
+                {
+                    originCount--;
+                }
+            }
+
+            if (originCount > 0)
+            {
+                StateMachine.SetState<Combat020Place>();
+            }
+            else
+            {
+                StateMachine.SetState<Combat030PrepareTurn>();
+            }
         }
     }
 }

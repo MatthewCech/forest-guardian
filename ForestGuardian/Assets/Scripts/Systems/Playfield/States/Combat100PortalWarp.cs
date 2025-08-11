@@ -6,23 +6,16 @@ using UnityEngine.UIElements;
 
 namespace forest
 {
-    public class Combat10PortalWarp : CombatState
+    public class Combat100PortalWarp : CombatState
     {
         private bool firstStep = false;
 
-        /*
-        private VisualElement resultBanner;
-        private Label resultLabel;
-        */
 
-        public Combat10PortalWarp(PlayfieldCore stateMachine) : base(stateMachine) { }
+        public Combat100PortalWarp(PlayfieldCore stateMachine) : base(stateMachine) { }
 
         public override void Start()
         {
-            /*
-            resultBanner = StateMachine.ModernUI.rootVisualElement.Q<VisualElement>("result");
-            resultLabel = StateMachine.ModernUI.rootVisualElement.Q<Label>("resultLabel");
-            */
+
         }
 
         public override void Update()
@@ -39,11 +32,11 @@ namespace forest
         private IEnumerator ScreenDelay()
         {
             yield return new WaitForSeconds(StateMachine.resultScreenTime);
-            StateMachine.SetState<Combat20Shutdown>();
+            StateMachine.SetState<Combat200Shutdown>();
 
             UnityEngine.Assertions.Assert.IsTrue(StateMachine.Playfield.portals.Count > 0, "There must be portals to parse this state.");
 
-            // Assume we have a portal, so 
+            // Assume we have a portal
             PlayfieldPortal targetPortal = null;
             foreach(PlayfieldUnit unit in StateMachine.Playfield.units)
             {

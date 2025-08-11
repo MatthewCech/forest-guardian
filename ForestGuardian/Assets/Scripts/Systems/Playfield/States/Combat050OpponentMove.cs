@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace forest
 {
-    public class Combat05OpponentMove : CombatState
+    public class Combat050OpponentMove : CombatState
     {
         private bool firstStep = false;
 
-        public Combat05OpponentMove(PlayfieldCore stateMachine) : base(stateMachine) { }
+        public Combat050OpponentMove(PlayfieldCore stateMachine) : base(stateMachine) { }
 
         public override void Update()
         {
@@ -30,7 +30,7 @@ namespace forest
 
                 // If we're here, we're not gonna get anything done
                 // since there are no players yet.
-                StateMachine.SetState<Combat07EvaluateTurn>();
+                StateMachine.SetState<Combat070EvaluateTurn>();
 
                 yield break;
             }
@@ -87,7 +87,7 @@ namespace forest
                 yield return new WaitForSeconds(visualDisplayDelay);
             }
 
-            StateMachine.SetState<Combat07EvaluateTurn>();
+            StateMachine.SetState<Combat070EvaluateTurn>();
         }
 
         private Vector2Int GetClosestOpponentPosition(PlayfieldUnit curOpponent)

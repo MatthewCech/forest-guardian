@@ -5,11 +5,11 @@ using System.Linq;
 
 namespace forest
 {
-    public class Combat07EvaluateTurn : CombatState
+    public class Combat070EvaluateTurn : CombatState
     {
         private bool firstStep = false;
 
-        public Combat07EvaluateTurn(PlayfieldCore stateMachine) : base(stateMachine) { }
+        public Combat070EvaluateTurn(PlayfieldCore stateMachine) : base(stateMachine) { }
 
         public override void Update()
         {
@@ -38,7 +38,7 @@ namespace forest
             if(!hasPlayerUnit)
             {
                 yield return null;
-                StateMachine.SetState<Combat09Defeat>();
+                StateMachine.SetState<Combat090Defeat>();
                 yield break;
             }
 
@@ -51,7 +51,7 @@ namespace forest
                     if(unit.team == Team.Player)
                     {
                         yield return null;
-                        StateMachine.SetState<Combat08Victory>();
+                        StateMachine.SetState<Combat080Victory>();
                         didFindPortal = true;
                     }
                 }
@@ -63,12 +63,12 @@ namespace forest
                 if (StateMachine.Playfield.portals.Count == 0 && StateMachine.Playfield.items.Count == 0 && !HasEnemies())
                 {
                     yield return null;
-                    StateMachine.SetState<Combat08Victory>();
+                    StateMachine.SetState<Combat080Victory>();
                 }
                 else
                 {
                     yield return null;
-                    StateMachine.SetState<Combat02PrepareTurn>();
+                    StateMachine.SetState<Combat030PrepareTurn>();
                 }
             }
         }
