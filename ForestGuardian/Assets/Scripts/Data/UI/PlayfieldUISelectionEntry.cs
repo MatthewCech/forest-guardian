@@ -11,14 +11,33 @@ namespace forest
         [SerializeField] private TMPro.TextMeshProUGUI unitSpeed;
         [SerializeField] private TMPro.TextMeshProUGUI unitSize;
         [SerializeField] private Image unitIcon;
-
+        [SerializeField] private Button unitButton;
         [SerializeField] private PlayfieldUISelectionEntryMove move0;
         [SerializeField] private PlayfieldUISelectionEntryMove move1;
         [SerializeField] private PlayfieldUISelectionEntryMove move2;
         [SerializeField] private PlayfieldUISelectionEntryMove move3;
 
-        public void DisplayData(UnitData data, Unit visual)
+        public void OnEnable()
         {
+            unitButton.onClick.AddListener(NotifyUnitClicked);
+        }
+
+        public void OnDisable()
+        {
+            unitButton.onClick.RemoveListener(NotifyUnitClicked);
+        }
+
+        private void NotifyUnitClicked()
+        {
+            Loam.Postmaster.Instance.Send(new MsgRosterUnitIndicated() { rosterIndex = readOnlyRosterIndex });
+        }
+
+        private int readOnlyRosterIndex;
+
+        public void DisplayData(int rosterIndex, UnitData data, Unit visual)
+        {
+            readOnlyRosterIndex = rosterIndex;
+
             unitName.text = data.unitName;
             unitSpeed.text = data.speed.ToString();
             unitSize.text = data.maxSize.ToString();

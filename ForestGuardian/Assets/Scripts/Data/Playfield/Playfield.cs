@@ -52,6 +52,7 @@ namespace forest
             isValid &= world != null;
             isValid &= items != null;
             isValid &= portals != null;
+            isValid &= origins != null;
             isValid &= nextID > 0;
 
             // Note: Exit is allowed to be null.

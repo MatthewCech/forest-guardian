@@ -42,7 +42,6 @@ namespace forest
         [SerializeField] private TMPro.TextMeshProUGUI uiTagBestowedValue;
         [SerializeField] private Toggle uiIsPlayerTeam;
         [SerializeField] private Toggle uiIsEnemyTeam;
-        [SerializeField] private ToggleGroup group;
 
         [Header("Metadata Panel")]
         [SerializeField] private TMPro.TMP_InputField inputMetadataPanel;
@@ -104,12 +103,14 @@ namespace forest
             Postmaster.Instance.Subscribe<MsgUnitPrimaryAction>(UnitPrimaryAction);
             Postmaster.Instance.Subscribe<MsgPortalPrimaryAction>(PortalPrimaryAction);
             Postmaster.Instance.Subscribe<MsgExitPrimaryAction>(ExitPrimaryAction);
+            Postmaster.Instance.Subscribe<MsgOriginPrimaryAction>(OriginPrimaryAction);
 
             Postmaster.Instance.Subscribe<MsgUnitSecondaryAction>(UnitSecondaryAction);
             Postmaster.Instance.Subscribe<MsgTileSecondaryAction>(TileSecondaryAction);
             Postmaster.Instance.Subscribe<MsgItemSecondaryAction>(ItemSecondaryAction);
             Postmaster.Instance.Subscribe<MsgPortalSecondaryAction>(PortalSecondaryAction);
             Postmaster.Instance.Subscribe<MsgExitSecondaryAction>(ExitSecondaryAction);
+            Postmaster.Instance.Subscribe<MsgOriginSecondaryAction>(OriginSecondaryAction);
 
             CreateSelectableButtons();
 
@@ -128,12 +129,14 @@ namespace forest
         private void ItemPrimaryAction(Message raw) { ProcessPrimaryAction((raw as MsgItemPrimaryAction).position); }
         private void PortalPrimaryAction(Message raw) { ProcessPrimaryAction((raw as MsgPortalPrimaryAction).position); }
         private void ExitPrimaryAction(Message raw) { ProcessPrimaryAction((raw as MsgExitPrimaryAction).position); }
+        private void OriginPrimaryAction(Message raw) { ProcessPrimaryAction((raw as MsgOriginPrimaryAction).position); }
 
         private void TileSecondaryAction(Message raw) { ProcessSecondaryAction((raw as MsgTileSecondaryAction).position); }
         private void UnitSecondaryAction(Message raw) { ProcessSecondaryAction((raw as MsgUnitSecondaryAction).position); }
         private void ItemSecondaryAction(Message raw) { ProcessSecondaryAction((raw as MsgItemSecondaryAction).position); }
         private void PortalSecondaryAction(Message raw) { ProcessSecondaryAction((raw as MsgPortalSecondaryAction).position); }
         private void ExitSecondaryAction(Message raw) { ProcessSecondaryAction((raw as MsgExitSecondaryAction).position); }
+        private void OriginSecondaryAction(Message raw) { ProcessSecondaryAction((raw as MsgOriginSecondaryAction).position); }
 
         private void AddSelectableLabel(string label)
         {
@@ -191,12 +194,17 @@ namespace forest
 
             AddSelectableLabel("Portal");
             PlayfieldEditorUISelectable portal = GameObject.Instantiate(selectableEntryTemplate, selectableEntryParent);
-            portal.SetData(lookup.portalTemplate.gameObject, PlayfieldEditorSelectionType.Portal, lookup.portalTemplate.name, ProcessedSelectableClick);
+            portal.SetData(lookup.portalTemplate.gameObject, PlayfieldEditorSelectionType.Portal, lookup.PortalTemplate.name, ProcessedSelectableClick);
             portal.gameObject.SetActive(true);
+
+            AddSelectableLabel("Origin");
+            PlayfieldEditorUISelectable origin = GameObject.Instantiate(selectableEntryTemplate, selectableEntryParent);
+            origin.SetData(lookup.originTemplate.gameObject, PlayfieldEditorSelectionType.Origin, lookup.OriginTemplate.name, ProcessedSelectableClick);
+            origin.gameObject.SetActive(true);
 
             AddSelectableLabel("Exit");
             PlayfieldEditorUISelectable exit = GameObject.Instantiate(selectableEntryTemplate, selectableEntryParent);
-            exit.SetData(lookup.exitTemplate.gameObject, PlayfieldEditorSelectionType.Exit, lookup.exitTemplate.name, ProcessedSelectableClick);
+            exit.SetData(lookup.exitTemplate.gameObject, PlayfieldEditorSelectionType.Exit, lookup.ExitTemplate.name, ProcessedSelectableClick);
             exit.gameObject.SetActive(true);
         }
 
@@ -366,7 +374,18 @@ namespace forest
 
                 HideMetadataPanel();
             }
-            else if(previewType == PlayfieldEditorSelectionType.Exit)
+            else if (previewType == PlayfieldEditorSelectionType.Origin)
+            {
+                if (!workingPlayfield.TryGetOriginAt(position, out PlayfieldOrigin origin))
+                {
+                    PlayfieldOrigin newOrigin = new PlayfieldOrigin();
+                    newOrigin.location = position;
+                    newOrigin.id = workingPlayfield.GetNextID();
+
+                    workingPlayfield.origins.Add(newOrigin);
+                }
+            }
+            else if (previewType == PlayfieldEditorSelectionType.Exit)
             {
                 if(workingPlayfield.exit != null)
                 {
@@ -400,6 +419,10 @@ namespace forest
             else if (previewType == PlayfieldEditorSelectionType.Portal)
             {
                 workingPlayfield.RemovePortalAt(position);
+            }
+            else if (previewType == PlayfieldEditorSelectionType.Origin)
+            {
+                workingPlayfield.RemoveOriginAt(position);
             }
             else if (previewType == PlayfieldEditorSelectionType.Exit)
             {
@@ -449,6 +472,7 @@ namespace forest
             newPlayfield.units = new List<PlayfieldUnit>();
             newPlayfield.world = new Collection2D<PlayfieldTile>(newWidth, newHeight);
             newPlayfield.portals = new List<PlayfieldPortal>();
+            newPlayfield.origins = new List<PlayfieldOrigin>();
             newPlayfield.exit = null;
 
             for (int x = 0; x < newWidth; ++x)

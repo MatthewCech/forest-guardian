@@ -19,6 +19,7 @@ namespace forest
         private List<Unit> unitTracking;
         private List<Item> itemTracking;
         private List<Portal> portalTracking;
+        private List<Origin> originTracking;
         private Exit trackedExit;
 
         private List<Indicator> indicatorTracking;
@@ -33,6 +34,7 @@ namespace forest
             unitTracking = new List<Unit>();
             itemTracking = new List<Item>();
             portalTracking = new List<Portal>();
+            originTracking = new List<Origin>();
             trackedExit = null;
 
             indicatorTracking = new List<Indicator>();
@@ -272,6 +274,11 @@ namespace forest
             return portalTracking.Find((cur) => cur.associatedPos == location);
         }
 
+        public Origin FindOrigin(Vector2Int location)
+        {
+            return originTracking.Find((cur) => cur.associatedPos == location);
+        }
+
         public void DamageUnit(PlayfieldUnit attackingUnit, PlayfieldUnit defendingUnit, Playfield playfield)
         {
             if (attackingUnit.id == defendingUnit.id)
@@ -427,6 +434,22 @@ namespace forest
             }
         }
 
+        public void DisplayOrigins(Playfield toDisplay)
+        {
+            ClearMonoBehaviourList(originTracking);
+
+            if (toDisplay.origins == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < toDisplay.origins.Count; ++i)
+            {
+                PlayfieldOrigin origin = toDisplay.origins[i];
+                CreateOrigin(origin);
+            }
+        }
+
         public void DisplayExit(Playfield toDisplay)
         { 
             if(trackedExit != null)
@@ -463,6 +486,7 @@ namespace forest
             DisplayUnits(toDisplay);
             DisplayItems(toDisplay);
             DisplayPortals(toDisplay);
+            DisplayOrigins(toDisplay);
             DisplayExit(toDisplay);
         }
 
@@ -476,13 +500,13 @@ namespace forest
             ClearMonoBehaviourList(itemTracking);
             ClearMonoBehaviourList(portalTracking);
             ClearMonoBehaviourList(indicatorTracking);
+            ClearMonoBehaviourList(originTracking);
 
             if (trackedExit != null)
             {
                 Destroy(trackedExit.gameObject);
+                trackedExit = null;
             }
-
-            trackedExit = null;
         }
 
         /// <summary>
@@ -571,7 +595,7 @@ namespace forest
             Item instance = GameObject.Instantiate(template, spawnParent);
 
             instance.associatedData = data;
-            instance.gridPos = curLocation;
+            instance.associatedPos = curLocation;
 
             float x = Offset(curLocation.x);
             float y = Offset(curLocation.y);
@@ -596,6 +620,30 @@ namespace forest
 
             instance.transform.position = new Vector3(x, -y, -lookup.unitZPriority);
             portalTracking.Add(instance);
+        }
+
+        public void CreateOrigin(PlayfieldOrigin data)
+        {
+            EnsureParentObjectExists();
+
+            Vector2Int curLocation = data.location;
+
+            Origin instance = GameObject.Instantiate(lookup.OriginTemplate, spawnParent);
+
+            instance.associatedData = data;
+            instance.associatedPos = curLocation;
+             
+            float x = Offset(curLocation.x);
+            float y = Offset(curLocation.y);
+
+            instance.transform.position = new Vector3(x, -y, -lookup.unitZPriority);
+            originTracking.Add(instance);
+
+            if(data.curRosterIndex != PlayfieldOrigin.ROSTER_NONE_SELECTED)
+            {
+                UnitData unitDat = Core.Instance.gameData.roster[data.curRosterIndex];
+                instance.unitIcon.sprite = lookup.GetUnitTemplateByName(unitDat.unitName).uiIcon;
+            }
         }
 
         public void CreateExit(PlayfieldExit data)

@@ -14,6 +14,7 @@ namespace forest
         Unit,
         Item,
         Portal,
-        Exit
+        Exit,
+        Origin
     }
 }

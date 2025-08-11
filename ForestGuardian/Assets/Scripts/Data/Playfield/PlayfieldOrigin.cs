@@ -20,7 +20,10 @@ namespace forest
 
         // Per turn variables
         // Tunable tile data based on lookup information, etc
-        public bool curSelectionComplete = false;
         public int curRosterIndex = ROSTER_NONE_SELECTED;
+
+        // If we are pre-writing the contents or indicating we're going to potentially skip player choice,
+        // we can set this to true. If every origin is flagged true, then we skip the placement phase.
+        public bool curSelectionPreComplete = false;
     }
 }

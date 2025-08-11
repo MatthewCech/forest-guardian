@@ -28,14 +28,21 @@ namespace forest
     friendlyName: "Unit Segment Destroyed",
     description: "A segment of a unit was destroyed",
     isVisible: true)]
-        public class MsgUnitSegmentDestroyed : Loam.Message
-        {
-            public int attackingUnitID = Playfield.NO_ID;
-            public int defendingUnitID = Playfield.NO_ID;
-            public Vector2Int destroyedPosition;
-        }
+    public class MsgUnitSegmentDestroyed : Loam.Message
+    {
+        public int attackingUnitID = Playfield.NO_ID;
+        public int defendingUnitID = Playfield.NO_ID;
+        public Vector2Int destroyedPosition;
+    }
 
-
+    [MessageMetadata(
+    friendlyName: "Roster Unit Clicked",
+    description: "The user is indicating they wish to select this unit for the specified spot on the playfield",
+    isVisible: true)]
+    public class MsgRosterUnitIndicated : Loam.Message
+    {
+        public int rosterIndex;
+    }
 
     // Direct input style interactions with playfield stuff
     // -------------------------------------------------------------------------------------------------------------
@@ -117,6 +124,25 @@ namespace forest
     public class MsgPortalSecondaryAction : Loam.Message
     {
         public Portal item;
+        public Vector2Int position;
+    }
+    [MessageMetadata(
+    friendlyName: "Origin Primary Action",
+    description: "A primary action, such as a left-click, was performed over playfield Origin. This takes precedence over a playfield tile.",
+    isVisible: true)]
+    public class MsgOriginPrimaryAction : Loam.Message
+    {
+        public Origin origin;
+        public Vector2Int position;
+    }
+
+    [MessageMetadata(
+    friendlyName: "Origin Secondary Action",
+    description: "A secondary action, such as a right-click, was performed over a playfield Origin. This takes precedence over a playfield tile.",
+    isVisible: true)]
+    public class MsgOriginSecondaryAction : Loam.Message
+    {
+        public Origin origin;
         public Vector2Int position;
     }
 

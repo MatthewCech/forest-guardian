@@ -1,21 +1,7 @@
 {
   "tagLabel": "tutorial 1",
-  "tagBestowed" : null,
-  "units": [
-    {
-      "tag": "Guardian",
-      "id": 94,
-      "team": 1,
-      "locations": [
-        {
-          "x": 3,
-          "y": 5,
-          "magnitude": 5.83095169,
-          "sqrMagnitude": 34
-        }
-      ]
-    }
-  ],
+  "tagBestowed": null,
+  "units": [],
   "world": {
     "data": [
       [
@@ -424,7 +410,26 @@
       }
     }
   ],
-  "origins": [],
+  "origins": [
+    {
+      "id": 99,
+      "location": {
+        "x": 3,
+        "y": 5,
+        "magnitude": 5.83095169,
+        "sqrMagnitude": 34
+      }
+    },
+    {
+      "id": 100,
+      "location": {
+        "x": 4,
+        "y": 6,
+        "magnitude": 7.21110249,
+        "sqrMagnitude": 52
+      }
+    }
+  ],
   "exit": {
     "id": 96,
     "location": {
@@ -434,5 +439,5 @@
       "sqrMagnitude": 80
     }
   },
-  "nextID": 99
+  "nextID": 101
 }

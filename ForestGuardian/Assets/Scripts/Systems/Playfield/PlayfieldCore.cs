@@ -16,7 +16,6 @@ namespace forest
         [Tooltip("The text asset that'll be used to build out the playfield. If left empty/null, the game core is checked.")]
         [SerializeField] private TextAsset levelOverride;
         [SerializeField] private Camera mainCam;
-        //[SerializeField] private UIDocument modernUI;
         [SerializeField] private PlayfieldUI ui;
 
         [Header("Links for States")]
@@ -34,7 +33,6 @@ namespace forest
         public Playfield Playfield { get; private set; }
         public VisualLookup VisualLookup { get; private set; }
         public PlayfieldLookup PlayfieldLookup { get; private set; }
-        //public UIDocument ModernUI { get; private set; }
         public PlayfieldUI UI { get; private set; }
 
         // Internal
@@ -51,7 +49,7 @@ namespace forest
             if (!TrySelectLevel(out TextAsset toLoad))
             {
                 Debug.LogError("No playfield specified! Attempting to exit.");
-                SetState<Combat20Shutdown>();
+                SetState<Combat200Shutdown>();
                 return;
             }
 
@@ -99,23 +97,21 @@ namespace forest
             VisualPlayfield = visualizerPlayfield;
             VisualLookup = visualLookup;
             PlayfieldLookup = playfieldLookup;
-            //ModernUI = modernUI;
             UI = ui;
 
             // Connect relevant UI.
-            //modernUI.rootVisualElement.Q<Button>("buttonMap").clicked += Exit;
             UI.buttonExit.onClick.AddListener(Exit);
 
             // Pre-poke coroutine singleton by just doing some guaranteed function to force init.
             Loam.CoroutineObject.Instance.name.ToString();
 
             // State config
-            SetState<Combat01Startup>();
+            SetState<Combat010Startup>();
         }
 
         private void Exit()
         {
-            SetState<Combat20Shutdown>();
+            SetState<Combat200Shutdown>();
         }
 
         /// <summary>

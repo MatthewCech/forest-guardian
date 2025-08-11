@@ -19,6 +19,7 @@ namespace forest
         public PlayfieldUISelectionEntry selectionEntryTemplate;
         public Transform selectionParent;
         public PlayfieldUIUnitDetails unitDetails;
+        public Button startFloor;
 
         private List<PlayfieldUISelectionEntry> trackedEntries;
 
@@ -31,13 +32,15 @@ namespace forest
         void Start()
         {
             List<UnitData> roster = Core.Instance.gameData.roster;
-            foreach(UnitData rosterEntry in roster)
+            for(int i = 0; i < roster.Count; ++i)
             {
+                UnitData rosterEntry = roster[i];
+
                 PlayfieldUISelectionEntry entry = Instantiate(selectionEntryTemplate, selectionParent);
                 entry.gameObject.SetActive(true);
 
                 Unit unitVisual = visualLookup.GetUnitTemplateByName(rosterEntry.unitName);
-                entry.DisplayData(rosterEntry, unitVisual);
+                entry.DisplayData(i, rosterEntry, unitVisual);
 
                 trackedEntries.Add(entry);
             }

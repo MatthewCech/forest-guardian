@@ -58,6 +58,9 @@ namespace forest
 
         // This is basically the same move situation, but rehashed.
         public int curAttackRange = 1;
+
+        // read only data with roster override info
+        public UnitData rosterOverride = null;
     }
 }
 
