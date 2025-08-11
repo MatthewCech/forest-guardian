@@ -70,6 +70,7 @@ namespace forest
             if (levelOverride != null)
             {
                 selected = levelOverride;
+                Debug.LogWarning("Hey! You've overridden the level for the playfield, hopefully for testing. This will prevent normal progression otherwise.");
                 return true;
             }
 

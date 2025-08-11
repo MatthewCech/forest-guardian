@@ -16,6 +16,7 @@ namespace forest
         public TMPro.TextMeshProUGUI result;
 
         [Header("Entry Handling")]
+        public CanvasGroup placementGroup;
         public PlayfieldUISelectionEntry selectionEntryTemplate;
         public Transform selectionParent;
         public PlayfieldUIUnitDetails unitDetails;
@@ -27,6 +28,22 @@ namespace forest
         {
             trackedEntries = new List<PlayfieldUISelectionEntry>();
             selectionEntryTemplate.gameObject.SetActive(false);
+        }
+
+        public void SetSelectorVisibility(bool isVisible)
+        {
+            if(isVisible)
+            {
+                placementGroup.alpha = 1;
+                placementGroup.interactable = true;
+                placementGroup.blocksRaycasts = true;
+            }
+            else
+            {
+                placementGroup.alpha = 0;
+                placementGroup.interactable = false;
+                placementGroup.blocksRaycasts = false;
+            }
         }
 
         void Start()

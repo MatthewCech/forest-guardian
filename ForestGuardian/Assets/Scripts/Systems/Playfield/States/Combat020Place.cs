@@ -1,6 +1,7 @@
 using Loam;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UIElements;
 using static Codice.Client.Commands.WkTree.WorkspaceTreeNode;
@@ -17,9 +18,12 @@ namespace forest
 
         public override void Start()
         {
+            StateMachine.UI.SetSelectorVisibility(true);
+
             Postmaster.Instance.Subscribe<MsgOriginPrimaryAction>(SelectOrigin);
             Postmaster.Instance.Subscribe<MsgRosterUnitIndicated>(UnitIndicated);
             StateMachine.UI.startFloor.onClick.AddListener(TryStart);
+            StateMachine.UI.startFloor.interactable = false;
         }
 
         private void UnitIndicated(Message raw)
@@ -34,6 +38,11 @@ namespace forest
             if(StateMachine.Playfield.TryGetOriginAt(selected.associatedPos, out PlayfieldOrigin origin))
             {
                 origin.curRosterIndex = msg.rosterIndex;
+                UnitData data = Core.Instance.gameData.roster[origin.curRosterIndex];
+                Unit visual = StateMachine.VisualLookup.GetUnitTemplateByName(data.unitName);
+                StateMachine.UI.unitDetails.ShowDetails(data, visual);
+
+                StateMachine.UI.startFloor.interactable = true;
             }
 
             StateMachine.VisualPlayfield.DisplayOrigins(StateMachine.Playfield);
@@ -72,6 +81,9 @@ namespace forest
 
         private IEnumerator QueueUpNext()
         {
+            StateMachine.UI.startFloor.onClick.RemoveListener(TryStart);
+            StateMachine.UI.SetSelectorVisibility(false);
+
             yield return new WaitForSeconds(StateMachine.turnDelay);
             StateMachine.SetState<Combat030PrepareTurn>();
         }

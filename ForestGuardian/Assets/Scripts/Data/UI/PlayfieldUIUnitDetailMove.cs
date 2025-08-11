@@ -6,9 +6,9 @@ using Loam;
 
 namespace forest
 {
-    public class PlayfieldUISelectionEntryMove : MonoBehaviour
+    public class PlayfieldUIUnitDetailMove : MonoBehaviour
     {
-        [SerializeField] private Button move;
+        [SerializeField] public Button move;
         [SerializeField] private TMPro.TextMeshProUGUI moveText;
 
         private MoveData associatedMoveData;
@@ -19,8 +19,6 @@ namespace forest
         {
             moveText.text = moveData.moveName.ToString();
             associatedMoveData = moveData;
-
-            //Loam.Postmaster.Instance.
         }
     }
 }
