@@ -5382,7 +5382,7 @@ PrefabInstance:
     - target: {fileID: 1285525200247335279, guid: 8c75ae87fd7db0242b67a4ae2166b5e4, type: 3}
       propertyPath: levelOverride
       value: 
-      objectReference: {fileID: 4900000, guid: 452d49e01e553c74882fe826e05fb2cf, type: 3}
+      objectReference: {fileID: 0}
     - target: {fileID: 1285525200247335279, guid: 8c75ae87fd7db0242b67a4ae2166b5e4, type: 3}
       propertyPath: TEMPlevelAssets.Array.size
       value: 3
