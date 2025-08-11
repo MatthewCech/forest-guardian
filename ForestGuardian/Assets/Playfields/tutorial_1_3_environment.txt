@@ -377,8 +377,8 @@
   },
   "items": [],
   "portals": [],
+  "origins": [],
   "exit": {
-    "tag": "Exit",
     "id": 92,
     "location": {
       "x": 1,

@@ -355,15 +355,10 @@ namespace forest
             }
             else if (previewType == PlayfieldEditorSelectionType.Portal)
             {
-                if (workingPlayfield.TryGetPortalAt(position, out PlayfieldPortal portal))
-                {
-                    portal.tag = previewTag;
-                }
-                else
+                if (!workingPlayfield.TryGetPortalAt(position, out PlayfieldPortal portal))
                 {
                     PlayfieldPortal newPortal = new PlayfieldPortal();
                     newPortal.location = position;
-                    newPortal.tag = previewTag;
                     newPortal.id = workingPlayfield.GetNextID();
 
                     workingPlayfield.portals.Add(newPortal);
@@ -380,7 +375,6 @@ namespace forest
 
                 PlayfieldExit newExit = new PlayfieldExit();
                 newExit.location = position;
-                newExit.tag = previewTag;
                 newExit.id = workingPlayfield.GetNextID();
                 workingPlayfield.exit = newExit;
             }

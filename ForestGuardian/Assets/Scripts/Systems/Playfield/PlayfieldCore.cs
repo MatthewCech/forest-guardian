@@ -16,7 +16,8 @@ namespace forest
         [Tooltip("The text asset that'll be used to build out the playfield. If left empty/null, the game core is checked.")]
         [SerializeField] private TextAsset levelOverride;
         [SerializeField] private Camera mainCam;
-        [SerializeField] private UIDocument ui;
+        //[SerializeField] private UIDocument modernUI;
+        [SerializeField] private PlayfieldUI ui;
 
         [Header("Links for States")]
         [SerializeField] private PlayfieldLookup playfieldLookup;
@@ -33,7 +34,8 @@ namespace forest
         public Playfield Playfield { get; private set; }
         public VisualLookup VisualLookup { get; private set; }
         public PlayfieldLookup PlayfieldLookup { get; private set; }
-        public UIDocument UI { get; private set; }
+        //public UIDocument ModernUI { get; private set; }
+        public PlayfieldUI UI { get; private set; }
 
         // Internal
         private Playfield playfield;
@@ -97,10 +99,12 @@ namespace forest
             VisualPlayfield = visualizerPlayfield;
             VisualLookup = visualLookup;
             PlayfieldLookup = playfieldLookup;
+            //ModernUI = modernUI;
             UI = ui;
 
             // Connect relevant UI.
-            ui.rootVisualElement.Q<Button>("buttonMap").clicked += Exit;
+            //modernUI.rootVisualElement.Q<Button>("buttonMap").clicked += Exit;
+            UI.buttonExit.onClick.AddListener(Exit);
 
             // Pre-poke coroutine singleton by just doing some guaranteed function to force init.
             Loam.CoroutineObject.Instance.name.ToString();
@@ -132,7 +136,8 @@ namespace forest
             T instance = (T)System.Activator.CreateInstance(typeof(T), args: this);
             instance.Start();
             current?.Shutdown();
-            ui.rootVisualElement.Q<Label>("bannerLabel").text = current?.GetType().Name;
+            //modernUI.rootVisualElement.Q<Label>("bannerLabel").text = current?.GetType().Name;
+            UI.result.text = current?.GetType().Name;
             current = instance;
         }
     }

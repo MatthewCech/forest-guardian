@@ -24,6 +24,7 @@ namespace forest
         [JsonProperty] public Collection2D<PlayfieldTile> world;
         [JsonProperty] public List<PlayfieldItem> items;
         [JsonProperty] public List<PlayfieldPortal> portals;
+        [JsonProperty] public List<PlayfieldOrigin> origins;
         [JsonProperty] public PlayfieldExit exit;
 
         // Internal tracking for playfield.
@@ -254,6 +255,43 @@ namespace forest
             }
 
             return portals.RemoveAll(portal => portal.location == pos) > 0;
+        }
+
+
+        public bool TryGetOriginAt(Vector2Int pos, out PlayfieldOrigin origin)
+        {
+            if (origins == null)
+            {
+                origin = null;
+                return false;
+            }
+
+            foreach (PlayfieldOrigin cur in origins)
+            {
+                if (cur.location == pos)
+                {
+                    origin = cur;
+                    return true;
+                }
+            }
+
+            origin = null;
+            return false;
+        }
+
+        /// <summary>
+        /// Removes first portal found at the specified location.
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <returns></returns>
+        public bool RemoveOriginAt(Vector2Int pos)
+        {
+            if (origins == null)
+            {
+                return false;
+            }
+
+            return origins.RemoveAll(origin => origin.location == pos) > 0;
         }
 
         /// <summary>

@@ -23,12 +23,35 @@ namespace forest
         public Indicator movePathTemplate;
 
         [Header("Various Templates")]
-        public Tile defaultTileTemplate;
+        public Tile defaultTileTemplate; // The tile used when there's nothing present
         public Portal portalTemplate; // "Stairs" in a traditional rogue/PMD sense, dungeon advancement
         public Exit exitTemplate;     // "Exit" in a "Go back to the map" sense
+         
+
+        [Header("Template Lists")]
         public List<Tile> tileTemplates;
         public List<Unit> unitTemplates;
         public List<Item> itemTemplates;
+
+
+        public Tile DefaultTileTemplate { get { return defaultTileTemplate; } }
+        public Portal PortalTemplate { get { return portalTemplate; } }
+        public Exit ExitTemplate { get { return exitTemplate; } }
+
+        /// <summary>
+        /// Access to the tile associated with the specific tile type laid out in the TileType enum.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public Tile GetTileByTag(string tag)
+        {
+            bool FindTile(Tile info)
+            {
+                return info.name.Equals(tag, StringComparison.InvariantCultureIgnoreCase);
+            }
+
+            return tileTemplates.Find(FindTile);
+        }
 
         /// <summary>
         /// Access to the unit that's associated with with the specified tag.
@@ -36,7 +59,7 @@ namespace forest
         /// </summary>
         /// <param name="tag"></param>
         /// <returns></returns>
-        public Unit GetUnityByTag(string tag)
+        public Unit GetUnitTemplateByName(string tag)
         {
             bool FindTag(Unit unit)
             {
@@ -60,47 +83,6 @@ namespace forest
             }
 
             return itemTemplates.Find(FindInfo);
-        }
-
-        /// <summary>
-        /// Access to the tile associated with the specific tile type laid out in the TileType enum.
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public Tile GetTileByTag(string tag)
-        {
-            bool FindTile(Tile info)
-            {
-                return info.name.Equals(tag, StringComparison.InvariantCultureIgnoreCase);
-            }
-
-            return tileTemplates.Find(FindTile);
-        }
-
-        public Portal GetPortalByTag(string tag)
-        {
-            if (portalTemplate.name.Equals(tag, StringComparison.InvariantCultureIgnoreCase))
-            {
-                return portalTemplate;
-            }
-            else
-            {
-                Debug.LogWarning($"You're trying to look up a portal by a different name? {tag} was asked for, {portalTemplate.name} exists.");
-                return portalTemplate;
-            }
-        }
-
-        public Exit GetExitByTag(string tag)
-        {
-            if (exitTemplate.name.Equals(tag, StringComparison.InvariantCultureIgnoreCase))
-            {
-                return exitTemplate;
-            }
-            else
-            {
-                Debug.LogWarning($"You're trying to look up an exit by a different name? {tag} was asked for, {exitTemplate.name} exists.");
-                return exitTemplate;
-            }
         }
     }
 }

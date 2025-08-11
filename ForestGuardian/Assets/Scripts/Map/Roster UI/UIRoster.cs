@@ -34,7 +34,7 @@ namespace forest
             foreach (UnitData data in roster)
             {
                 UIRosterEntry rosterEntry = Instantiate(rosterEntryTemplate, rosterEntryParent);
-                Unit unitVisual = visualLookup.GetUnityByTag(data.unitName);
+                Unit unitVisual = visualLookup.GetUnitTemplateByName(data.unitName);
                 rosterEntry.UpdateAll(data, unitVisual);
 
                 rosterEntry.gameObject.SetActive(true);

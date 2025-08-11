@@ -10,8 +10,7 @@ namespace forest
     [System.Serializable]
     public class PlayfieldExit
     {
-        public string tag = null;
-        public int id = Playfield.NO_ID; // PLAYFIELD-SPECIFIC id.
+        public int id = Playfield.NO_ID; // Playfield specific id.
         public Vector2Int location = Vector2Int.zero;
     }
 }

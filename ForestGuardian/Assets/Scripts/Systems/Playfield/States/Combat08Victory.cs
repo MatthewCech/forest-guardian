@@ -8,15 +8,21 @@ namespace forest
     public class Combat08Victory : CombatState
     {
         private bool firstStep = false;
+
+        /*
         private VisualElement resultBanner;
         private Label resultLabel; 
+        */
 
         public Combat08Victory(PlayfieldCore stateMachine) : base(stateMachine) { }
 
         public override void Start()
         {
-            resultBanner = StateMachine.UI.rootVisualElement.Q<VisualElement>("result");
-            resultLabel = StateMachine.UI.rootVisualElement.Q<Label>("resultLabel");
+            /*
+            resultBanner = StateMachine.ModernUI.rootVisualElement.Q<VisualElement>("result");
+            resultLabel = StateMachine.ModernUI.rootVisualElement.Q<Label>("resultLabel");
+            */
+
         }
 
         public override void Update()
@@ -34,8 +40,8 @@ namespace forest
                     }
                 }
 
-                resultBanner.visible = true;
-                resultLabel.text = "Area Cleared - Victory!";
+                StateMachine.UI.result.gameObject.SetActive(true);
+                StateMachine.UI.result.text = "Area Cleared - Victory!";
                 Loam.CoroutineObject.Instance.StartCoroutine(ScreenDelay());
             }
         }

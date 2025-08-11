@@ -355,7 +355,6 @@
   "items": [],
   "portals": [
     {
-      "tag": "Portal",
       "id": 78,
       "target": "tutorial_1_3_environment",
       "location": {
@@ -366,6 +365,7 @@
       }
     }
   ],
+  "origins": [],
   "exit": null,
   "nextID": 79
 }

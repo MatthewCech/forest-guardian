@@ -9,15 +9,20 @@ namespace forest
     public class Combat10PortalWarp : CombatState
     {
         private bool firstStep = false;
+
+        /*
         private VisualElement resultBanner;
         private Label resultLabel;
-        
+        */
+
         public Combat10PortalWarp(PlayfieldCore stateMachine) : base(stateMachine) { }
 
         public override void Start()
         {
-            resultBanner = StateMachine.UI.rootVisualElement.Q<VisualElement>("result");
-            resultLabel = StateMachine.UI.rootVisualElement.Q<Label>("resultLabel");
+            /*
+            resultBanner = StateMachine.ModernUI.rootVisualElement.Q<VisualElement>("result");
+            resultLabel = StateMachine.ModernUI.rootVisualElement.Q<Label>("resultLabel");
+            */
         }
 
         public override void Update()
@@ -25,8 +30,8 @@ namespace forest
             if (!firstStep)
             {
                 firstStep = true;
-                resultBanner.visible = true;
-                resultLabel.text = "Deeper into the woods...";
+                StateMachine.UI.result.gameObject.SetActive(true);
+                StateMachine.UI.result.text = "Deeper into the woods...";
                 Loam.CoroutineObject.Instance.StartCoroutine(ScreenDelay());
             }
         }

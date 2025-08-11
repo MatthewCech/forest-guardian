@@ -515,7 +515,7 @@ namespace forest
         {
             EnsureParentObjectExists();
 
-            Unit template = lookup.GetUnityByTag(data.tag);
+            Unit template = lookup.GetUnitTemplateByName(data.tag);
             for (int i = 0; i < data.locations.Count; ++i)
             {
                 Vector2Int curLocation = data.locations[i];
@@ -586,8 +586,7 @@ namespace forest
 
             Vector2Int curLocation = data.location;
 
-            Portal template = lookup.GetPortalByTag(data.tag);
-            Portal instance = GameObject.Instantiate(template, spawnParent);
+            Portal instance = GameObject.Instantiate(lookup.PortalTemplate, spawnParent);
 
             instance.associatedData = data;
             instance.associatedPos = curLocation;
@@ -605,8 +604,7 @@ namespace forest
 
             Vector2Int curLocation = data.location;
 
-            Exit template = lookup.GetExitByTag(data.tag);
-            Exit instance = GameObject.Instantiate(template, spawnParent);
+            Exit instance = GameObject.Instantiate(lookup.ExitTemplate, spawnParent);
 
             instance.associatedData = data;
             instance.gridPos = curLocation;

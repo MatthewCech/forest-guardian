@@ -28,7 +28,7 @@ namespace forest
             {
                 UnityEngine.Assertions.Assert.IsFalse(unit.team == Team.DEFAULT, "A unit has an unassigned team. This needs to be updated in JSON, and likely represents an editor export issue.");
 
-                Unit template = StateMachine.VisualLookup.GetUnityByTag(unit.tag);
+                Unit template = StateMachine.VisualLookup.GetUnitTemplateByName(unit.tag);
                 unit.curMovementBudget = template.data.speed;
                 unit.curMaxMovementBudget = template.data.speed;
                 unit.curMovesTaken = 0;

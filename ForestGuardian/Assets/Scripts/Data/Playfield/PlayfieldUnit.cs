@@ -32,11 +32,11 @@ namespace forest
     [JsonObject(MemberSerialization.OptIn)]
     public class PlayfieldUnit
     {
+        public const int HEAD_INDEX = 0;
+
         [JsonProperty] public string tag = null;
         [JsonProperty] public int id = Playfield.NO_ID; // PLAYFIELD-SPECIFIC id.
         [JsonProperty] public Team team = Team.DEFAULT;
-
-        public const int HEAD_INDEX = 0;
         [JsonProperty] public List<Vector2Int> locations = new List<Vector2Int>();
 
         // Per-turn variables... These don't need serialization in practice,

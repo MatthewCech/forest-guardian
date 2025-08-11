@@ -7,8 +7,7 @@ namespace forest
     [System.Serializable]
     public class PlayfieldPortal
     {
-        public string tag = null;        // Unique tag for template
-        public int id = Playfield.NO_ID; // PLAYFIELD-SPECIFIC id.
+        public int id = Playfield.NO_ID; // Playfield specific id.
         public string target = null;     // Names being targeted for portal location
         public Vector2Int location = Vector2Int.zero;
     }

@@ -36,7 +36,7 @@ namespace forest
                 "tutorial 1"
             };
 
-            UnitData guardian = lookup.GetUnityByTag("Guardian").data;
+            UnitData guardian = lookup.GetUnitTemplateByName("Guardian").data;
             if (guardian == null)
             {
                 throw new System.Exception("OI! Where's the guardian?");

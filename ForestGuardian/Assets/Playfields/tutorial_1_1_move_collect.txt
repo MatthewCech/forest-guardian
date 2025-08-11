@@ -414,7 +414,6 @@
   ],
   "portals": [
     {
-      "tag": "Portal",
       "id": 95,
       "target": "tutorial_1_2_combat",
       "location": {
@@ -425,8 +424,8 @@
       }
     }
   ],
+  "origins": [],
   "exit": {
-    "tag": "Exit",
     "id": 96,
     "location": {
       "x": 4,
