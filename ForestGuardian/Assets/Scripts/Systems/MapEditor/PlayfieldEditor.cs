@@ -545,6 +545,42 @@ namespace forest
                 }
             }
             newPlayfield.items = existing.items;
+
+            for(int i = existing.portals.Count - 1; i >= 0; --i)
+            {
+                PlayfieldPortal portal = existing.portals[i];
+                Vector2Int cur = portal.location;
+
+                if(!InCombinedBounds(cur))
+                {
+                    existing.portals.RemoveAt(i);
+                    continue;
+                }
+            }
+            newPlayfield.portals = existing.portals;
+
+            for (int i = existing.origins.Count - 1; i >= 0; --i)
+            {
+                PlayfieldOrigin origin = existing.origins[i];
+                Vector2Int cur = origin.location;
+
+                if (!InCombinedBounds(cur))
+                {
+                    existing.origins.RemoveAt(i);
+                    continue;
+                }
+            }
+            newPlayfield.origins = existing.origins;
+
+            if(existing.exit != null)
+            {
+                Vector2Int curExitPos = existing.exit.location;
+                if(!InCombinedBounds(curExitPos))
+                {
+                    existing.exit = null;
+                }
+            }
+            newPlayfield.exit = existing.exit;
         }
 
         private void SizeChange(float e)
@@ -616,6 +652,11 @@ namespace forest
 
                 uiTagBestowedValue.text = field.tagBestowed;
                 uiTagLabelValue.text = field.tagLabel;
+
+                uiWidthSlider.SetValueWithoutNotify(workingPlayfield.world.GetWidth());
+                uiWidthEntryField.SetTextWithoutNotify(workingPlayfield.world.GetWidth().ToString());
+                uiHeightSlider.SetValueWithoutNotify(workingPlayfield.world.GetHeight());
+                uiHeightEntryField.SetTextWithoutNotify(workingPlayfield.world.GetHeight().ToString());
 
                 visuals.DisplayAll(workingPlayfield);
             }
