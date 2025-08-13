@@ -157,7 +157,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.000015258789, y: 0.0000048796437}
+  m_AnchoredPosition: {x: 0.000015258789, y: 0.00028141603}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &12434597
@@ -3877,7 +3877,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: -1.9000015, y: 0}
-  m_SizeDelta: {x: 118.3, y: 10}
+  m_SizeDelta: {x: 118.3, y: 30}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &901070694
 MonoBehaviour:
@@ -7004,7 +7004,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: -1.9000015, y: 0}
-  m_SizeDelta: {x: 118.3, y: 10}
+  m_SizeDelta: {x: 120, y: 30}
   m_Pivot: {x: 1, y: 1}
 --- !u!114 &1593097612
 MonoBehaviour:
@@ -7026,7 +7026,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: <b>Bestowed Tag:</b>\n<i>(unlocked level's\ngroup name)</i>
+  m_text: <b>Bestowed Tag(s):</b>\n<i>(comma separated\ngroup names)</i>
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

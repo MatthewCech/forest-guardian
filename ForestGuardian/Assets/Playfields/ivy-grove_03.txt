@@ -1,6 +1,8 @@
 {
   "tagLabel": "ivy-grove",
-  "tagBestowed": "",
+  "tagsBestowed": [
+    "stream"
+  ],
   "units": [
     {
       "tag": "Ivy",

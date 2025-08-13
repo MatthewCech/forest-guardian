@@ -1,6 +1,6 @@
 {
-  "tagLabel": "alt test",
-  "tagBestowed": "",
+  "tagLabel": "test-unlocked",
+  "tagsBestowed": null,
   "units": [
     {
       "tag": "Guardian",

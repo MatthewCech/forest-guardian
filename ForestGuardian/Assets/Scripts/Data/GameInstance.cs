@@ -18,7 +18,7 @@ namespace forest
 
         // Data
         [JsonProperty] public int currency = 0;
-        [JsonProperty] public List<string> completedLevelTags = new List<string>();
+        [JsonProperty] public List<string> unlockedTags = new List<string>();
         [JsonProperty] public List<UnitData> roster = new List<UnitData>();
 
         // Runtime Data Only
@@ -31,7 +31,7 @@ namespace forest
         {
             currency = 0;
 
-            completedLevelTags = new List<string>()
+            unlockedTags = new List<string>()
             {
                 "tutorial",
                 "ivy-grove"

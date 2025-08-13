@@ -581,6 +581,10 @@ namespace forest
                 }
             }
             newPlayfield.exit = existing.exit;
+
+            // Other data
+            newPlayfield.tagLabel = existing.tagLabel;
+            newPlayfield.tagsBestowed = existing.tagsBestowed;
         }
 
         private void SizeChange(float e)
@@ -593,14 +597,14 @@ namespace forest
             uiWidthEntryField.text = uiWidthSlider.value.ToString();
             uiHeightEntryField.text = uiHeightSlider.value.ToString();
 
-            workingPlayfield.tagBestowed = uiTagBestowedValue.text;
+            workingPlayfield.SetBestowedList(uiTagBestowedValue.text);
             workingPlayfield.tagLabel = uiTagLabelValue.text;
         }
 
         private void TagBestowedChange(string value)
         {
-            workingPlayfield.tagBestowed = value;
-            uiTagBestowedValue.text = workingPlayfield.tagBestowed;
+            workingPlayfield.SetBestowedList(value);
+            uiTagBestowedValue.text = workingPlayfield.GetBestowedList();
         }
 
         private void TagLabelChange(string value)
@@ -650,8 +654,10 @@ namespace forest
                     Debug.LogError("Mis-configured playfield");
                 }
 
-                uiTagBestowedValue.text = field.tagBestowed;
+                uiTagBestowedValue.text = field.GetBestowedList();
+                uiTagBestowedEntryField.text = uiTagBestowedValue.text;
                 uiTagLabelValue.text = field.tagLabel;
+                uiTagLabelEntryField.text = uiTagLabelValue.text;
 
                 uiWidthSlider.SetValueWithoutNotify(workingPlayfield.world.GetWidth());
                 uiWidthEntryField.SetTextWithoutNotify(workingPlayfield.world.GetWidth().ToString());

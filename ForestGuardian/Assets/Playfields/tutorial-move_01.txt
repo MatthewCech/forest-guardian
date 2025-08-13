@@ -1,6 +1,9 @@
 {
   "tagLabel": "tutorial",
-  "tagBestowed": "test",
+  "tagsBestowed": [
+    "ivy-grove",
+    "test-unlocker"
+  ],
   "units": [
     {
       "tag": "Ivy",

@@ -22,18 +22,35 @@ namespace forest
             {
                 firstStep = true;
 
-                if(!string.IsNullOrWhiteSpace(StateMachine.Playfield.tagBestowed))
-                {
-                    bool has = Core.Instance.gameData.completedLevelTags.Contains(StateMachine.Playfield.tagBestowed);
-                    if (!has)
-                    {
-                        Core.Instance.gameData.completedLevelTags.Add(StateMachine.Playfield.tagBestowed);
-                    }
-                }
+                TryBestowTags();
 
                 StateMachine.UI.result.gameObject.SetActive(true);
                 StateMachine.UI.result.text = "Area Cleared - Victory!";
                 Loam.CoroutineObject.Instance.StartCoroutine(ScreenDelay());
+            }
+        }
+
+        /// <summary>
+        /// Perform any unlocks we're expecting if this playfield has them
+        /// </summary>
+        private void TryBestowTags()
+        {
+            if (StateMachine.Playfield.tagsBestowed == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < StateMachine.Playfield.tagsBestowed.Count; ++i)
+            {
+                string toUnlock = StateMachine.Playfield.tagsBestowed[i];
+                if (!string.IsNullOrWhiteSpace(toUnlock))
+                {
+                    bool tagAlreadyUnlocked = Core.Instance.gameData.unlockedTags.Contains(toUnlock);
+                    if (!tagAlreadyUnlocked)
+                    {
+                        Core.Instance.gameData.unlockedTags.Add(toUnlock);
+                    }
+                }
             }
         }
 

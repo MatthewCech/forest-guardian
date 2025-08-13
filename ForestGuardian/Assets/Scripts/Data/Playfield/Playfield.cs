@@ -14,10 +14,11 @@ namespace forest
     public class Playfield
     {
         public const int NO_ID = -1;
+        public const char TAGS_SPLIT_CHAR = ',';
 
         // Data about the playfield
         [JsonProperty] public string tagLabel;
-        [JsonProperty] public string tagBestowed;
+        [JsonProperty] public List<string> tagsBestowed;
 
         // Contents of the playfield
         [JsonProperty] public List<PlayfieldUnit> units;
@@ -322,6 +323,54 @@ namespace forest
             location = Vector2Int.zero;
             return false;
         }
+
+        public string GetBestowedList()
+        {
+            if(tagsBestowed == null || tagsBestowed.Count == 0)
+            {
+                return "";
+            }
+
+            string toReturn = "";
+            bool isFirst = true;
+            foreach (string s in tagsBestowed)
+            {
+                if(!isFirst)
+                {
+                    toReturn += ", ";
+                }
+
+                toReturn += s;
+                isFirst = false;
+            }
+
+            return toReturn;
+        }
+
+        /// <summary>
+        /// Take a comma separated list of tags to bestow upon completion and split then track it in tagsBestowed.
+        /// </summary>
+        /// <param name="toParse">a comma separated list that will be split and trimmed of whitespace, then stored as a list.</param>
+        /// <returns></returns>
+        public void SetBestowedList(string toParse)
+        {
+            if(string.IsNullOrWhiteSpace(toParse))
+            {
+                return;
+            }
+
+            tagsBestowed = new List<string>();
+
+            string[] split = toParse.Split(TAGS_SPLIT_CHAR);
+            foreach (string s in split)
+            {
+                if(!string.IsNullOrWhiteSpace(s))
+                {
+                    tagsBestowed.Add(s.Trim());
+                }
+            }
+        }
+
 
         /// <summary>
         /// Given a raw string in the supported format, parses out a playfield

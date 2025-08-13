@@ -14,7 +14,8 @@ namespace forest
 
         public override void Start()
         {
-
+            StateMachine.UI.SetSelectorVisibility(false);
+            StateMachine.UI.result.gameObject.SetActive(false);
         }
 
         public override void Update()
@@ -22,7 +23,6 @@ namespace forest
             if(!firstStep)
             {
                 firstStep = true;
-                StateMachine.UI.result.gameObject.SetActive(false);
                 Loam.CoroutineObject.Instance.StartCoroutine(QueueUpNext());
             }
         }
@@ -31,21 +31,29 @@ namespace forest
         {
             yield return new WaitForSeconds(StateMachine.turnDelay);
 
-            int originCount = StateMachine.Playfield.origins.Count;
-            foreach (PlayfieldOrigin origin in StateMachine.Playfield.origins)
+            int originCount = 0;
+            
+            if (StateMachine.Playfield.origins != null)
             {
-                if(origin.curSelectionPreComplete)
+                originCount = StateMachine.Playfield.origins.Count;
+
+                foreach (PlayfieldOrigin origin in StateMachine.Playfield.origins)
                 {
-                    originCount--;
+                    if (origin.curSelectionPreComplete)
+                    {
+                        originCount--;
+                    }
                 }
             }
 
             if (originCount > 0)
             {
+                StateMachine.UI.SetSelectorVisibility(true);
                 StateMachine.SetState<Combat020Place>();
             }
             else
             {
+                StateMachine.UI.SetSelectorVisibility(false);
                 StateMachine.SetState<Combat030PrepareTurn>();
             }
         }

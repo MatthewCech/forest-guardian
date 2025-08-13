@@ -1,6 +1,6 @@
 {
   "tagLabel": "ivy-grove",
-  "tagBestowed": null,
+  "tagsBestowed": null,
   "units": [
     {
       "tag": "Ivy",

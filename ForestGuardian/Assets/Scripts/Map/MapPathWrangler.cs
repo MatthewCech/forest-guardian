@@ -4,16 +4,6 @@ using UnityEngine;
 
 namespace forest
 {
-    public class ByHierarchyPosition : IComparer
-    {
-        public int Compare(object x, object y)
-        {
-            int xVal = (x as MapInteractionPoint).transform.GetSiblingIndex();
-            int yVal = (y as MapInteractionPoint).transform.GetSiblingIndex();
-            return xVal.CompareTo(yVal);
-        }
-    }
-
     public class MapPathWrangler : MonoBehaviour
     {
         [SerializeField] private LineRenderer referenceLineRenderer;
@@ -31,39 +21,65 @@ namespace forest
             RedrawConnectionLines();
         }
 
+        /// <summary>
+        /// Walk through all levels and see what is and isn't unlocked, then draw the unlock relationships accordingly.
+        /// NOTE: This is done with lists and nested loops instead of a hashset lookup or similar because I want to 
+        /// be able to ignore case and culture when comparing the level tags/names with the unlock tags/names. 
+        /// </summary>
         void RedrawConnectionLines()
         {
             // For now, one line though we'll use the list since we'll need it later for branching unlocks.
-            foreach(LineRenderer line in trackedLines)
+            foreach (LineRenderer line in trackedLines)
             {
                 GameObject.Destroy(line.gameObject);
             }
             trackedLines.Clear();
 
-            // Collect all MapVisibility objects and then sort them by order in hierarchy
+            // Collect all visible and active interaction points on the map 
             Object[] obj = FindObjectsByType(typeof(MapInteractionPoint), FindObjectsSortMode.InstanceID);
-            IComparer byHierarchyPosition = new ByHierarchyPosition();
-            System.Array.Sort(obj, byHierarchyPosition);
-
-            // Convert components to positions
-            List<Vector3> pos = new List<Vector3>();
+            List<MapInteractionPoint> activeInteractionPoints = new List<MapInteractionPoint>();
             foreach (Object o in obj)
             {
-                if(!((MapInteractionPoint)o).gameObject.activeInHierarchy)
+                MapInteractionPoint cur = o as MapInteractionPoint;
+                foreach (string unlock in Core.Instance.gameData.unlockedTags)
                 {
-                    continue;
+                    if (string.Equals(cur.TagLabel, unlock, System.StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        activeInteractionPoints.Add(cur);
+                        continue;
+                    }
                 }
-
-                Vector3 curPos = ((MapInteractionPoint)o).gameObject.transform.position;
-                pos.Add(new Vector3(curPos.x, 0, curPos.z));
             }
 
-            // Configure line as a single long item, this will need to be done differently once branching is added.
-            LineRenderer renderer = Instantiate(referenceLineRenderer, lineParent);
-            renderer.gameObject.SetActive(true);
-            renderer.positionCount = pos.Count;
-            renderer.SetPositions(pos.ToArray());
-            trackedLines.Add(renderer);
+            // Determine positions between active sections
+            List<KeyValuePair<Vector3, Vector3>> toDraw = new List<KeyValuePair<Vector3, Vector3>>();
+            foreach(MapInteractionPoint mapIP in activeInteractionPoints)
+            {
+                foreach (MapInteractionPoint source in activeInteractionPoints)
+                {
+                    foreach (string bestowedTag in source.TagsBestowed)
+                    {
+                        if (string.Equals(mapIP.TagLabel, bestowedTag, System.StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            // Line starts from parent position, goes to child
+                            toDraw.Add(new KeyValuePair<Vector3, Vector3>(
+                                new Vector3(source.transform.position.x, 0, source.transform.position.z),
+                                new Vector3(mapIP.transform.position.x, 0, mapIP.transform.position.z)));
+                        }
+                    }
+                }
+            }
+
+            // Build out lines by connecting our pairs of positions
+            foreach(var pair in toDraw)
+            {
+                LineRenderer renderer = Instantiate(referenceLineRenderer, lineParent);
+                renderer.gameObject.SetActive(true);
+                renderer.positionCount = 2;
+                renderer.SetPositions(new Vector3[2] { pair.Key, pair.Value });
+
+                trackedLines.Add(renderer);
+            }
         }
     }
 }
