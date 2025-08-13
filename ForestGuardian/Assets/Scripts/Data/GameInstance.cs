@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace forest
@@ -32,19 +33,29 @@ namespace forest
 
             completedLevelTags = new List<string>()
             {
-                "test",
-                "tutorial 1"
+                "tutorial",
+                "ivy-grove"
             };
 
-            UnitData guardian = lookup.GetUnitTemplateByName("Guardian").data;
-            if (guardian == null)
-            {
-                throw new System.Exception("OI! Where's the guardian?");
-            }
 
-            roster.Add(guardian);
+            AddToRoster(lookup, "Guardian");
+            AddToRoster(lookup, "BogWisp");
         }
 
+        /// <summary>
+        /// Look up specified name and attempt to add the default data to our roster
+        /// </summary>
+        private void AddToRoster(VisualLookup lookup, string name)
+        {
+            UnitData toAdd = lookup.GetUnitTemplateByName(name).data;
+            UnityEngine.Assertions.Assert.IsNotNull(toAdd, $"Unit template named '{name}' was not found! Check visual lookup.");
+            roster.Add(toAdd);
+        }
+
+        /// <summary>
+        /// Look up the specified unit name in the roster, ignoring case.
+        /// </summary>
+        /// <returns>Data associated with the requested name, or null if not found.</returns>
         public UnitData GetRosterEntry(string name)
         {
             return roster.Find(unit => string.Equals(unit.unitName, name, System.StringComparison.CurrentCultureIgnoreCase));

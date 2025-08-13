@@ -8,8 +8,8 @@ namespace forest
     {
         public int Compare(object x, object y)
         {
-            int xVal = (x as MapVisibility).transform.GetSiblingIndex();
-            int yVal = (y as MapVisibility).transform.GetSiblingIndex();
+            int xVal = (x as MapInteractionPoint).transform.GetSiblingIndex();
+            int yVal = (y as MapInteractionPoint).transform.GetSiblingIndex();
             return xVal.CompareTo(yVal);
         }
     }
@@ -41,7 +41,7 @@ namespace forest
             trackedLines.Clear();
 
             // Collect all MapVisibility objects and then sort them by order in hierarchy
-            Object[] obj = FindObjectsByType(typeof(MapVisibility), FindObjectsSortMode.InstanceID);
+            Object[] obj = FindObjectsByType(typeof(MapInteractionPoint), FindObjectsSortMode.InstanceID);
             IComparer byHierarchyPosition = new ByHierarchyPosition();
             System.Array.Sort(obj, byHierarchyPosition);
 
@@ -49,12 +49,12 @@ namespace forest
             List<Vector3> pos = new List<Vector3>();
             foreach (Object o in obj)
             {
-                if(!((MapVisibility)o).gameObject.activeInHierarchy)
+                if(!((MapInteractionPoint)o).gameObject.activeInHierarchy)
                 {
                     continue;
                 }
 
-                Vector3 curPos = ((MapVisibility)o).gameObject.transform.position;
+                Vector3 curPos = ((MapInteractionPoint)o).gameObject.transform.position;
                 pos.Add(new Vector3(curPos.x, 0, curPos.z));
             }
 

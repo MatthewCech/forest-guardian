@@ -794,13 +794,15 @@ MonoBehaviour:
     unitName: Guardian
     maxSize: 3
     speed: 2
+    level: 0
     moves:
-    - moveName: Swipe
+    - moveName: Bite
       moveDamage: 2
-      moveRange: 2
+      moveRange: 1
+      moveDescription: 
   head: {fileID: 334675950987140449}
   segmentLink: {fileID: 6897957375675128042}
-  uiIcon: {fileID: 21300000, guid: 92fc557f70adf4b45af7ce58ddba0eb9, type: 3}
+  uiIcon: {fileID: 21300000, guid: 760690c3843b2f34ca9231c94a362220, type: 3}
   associatedData:
     tag: 
     id: -1
@@ -811,6 +813,12 @@ MonoBehaviour:
     curMovesTaken: 0
     curMaxSize: 1
     curAttackRange: 1
+    rosterOverride:
+      unitName: UNNAMED
+      maxSize: 3
+      speed: 2
+      level: 0
+      moves: []
   gridPos: {x: 0, y: 0}
 --- !u!61 &7397799963576805088
 BoxCollider2D:

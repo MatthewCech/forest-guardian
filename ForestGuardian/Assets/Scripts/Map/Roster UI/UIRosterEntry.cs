@@ -34,7 +34,9 @@ namespace forest
             UpdateVisuals(visual);
         }
 
-        // Strip and track data. We can't assume there's nothing here, so clear anything that exists already.
+        /// <summary>
+        /// Strip and track data. We can't assume there's nothing here, so clear anything that exists already.
+        /// </summary>
         private void UpdateData(UnitData data)
         {
             unitInternalName = data.unitName;
@@ -64,10 +66,22 @@ namespace forest
             }
         }
 
-        // Strip and track visuals. While the visual may have some data, it's not guaranteed to be
-        // up to date (and often is only the initial values) so we should use it only for visual info.
+        /// <summary>
+        /// Strip and track visuals. While the visual may have some data, it's not guaranteed to be
+        /// up to date (and often is only the initial values) so we should use it only for visual info.
+        /// </summary>
         private void UpdateVisuals(Unit visual)
         {
+            if(visual == null)
+            {
+                Debug.LogWarning("Null visual");
+            }
+
+            if(visual.uiIcon == null)
+            {
+                Debug.LogWarning($"No icon specified in {visual.name}");
+            }
+
             unitIcon.sprite = visual.uiIcon;
         }
 

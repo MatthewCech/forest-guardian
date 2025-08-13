@@ -38,7 +38,7 @@ namespace forest
                 rosterEntry.UpdateAll(data, unitVisual);
 
                 rosterEntry.gameObject.SetActive(true);
-                trackedRosterEntries.Add(rosterEntry);
+                trackedRosterEntries.Add(rosterEntry); 
             }
         }
 

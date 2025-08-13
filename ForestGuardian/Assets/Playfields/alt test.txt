@@ -1,6 +1,6 @@
 {
   "tagLabel": "alt test",
-  "tagBestowed": "test",
+  "tagBestowed": "",
   "units": [
     {
       "tag": "Guardian",

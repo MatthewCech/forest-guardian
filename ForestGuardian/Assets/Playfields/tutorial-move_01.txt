@@ -1,30 +1,17 @@
 {
-  "tagLabel": "tutorial 1",
-  "tagBestowed" : "tutorial 1",
+  "tagLabel": "tutorial",
+  "tagBestowed": "test",
   "units": [
     {
       "tag": "Ivy",
-      "id": 90,
+      "id": 69,
       "team": 2,
       "locations": [
         {
-          "x": 2,
+          "x": 3,
           "y": 2,
-          "magnitude": 2.828427,
-          "sqrMagnitude": 8
-        }
-      ]
-    },
-    {
-      "tag": "Guardian",
-      "id": 91,
-      "team": 1,
-      "locations": [
-        {
-          "x": 5,
-          "y": 6,
-          "magnitude": 7.81025,
-          "sqrMagnitude": 61
+          "magnitude": 3.60555124,
+          "sqrMagnitude": 13
         }
       ]
     }
@@ -37,11 +24,11 @@
           "id": 1
         },
         {
-          "tag": "Nothing",
+          "tag": "Wall",
           "id": 2
         },
         {
-          "tag": "Nothing",
+          "tag": "Basic",
           "id": 3
         },
         {
@@ -49,28 +36,10 @@
           "id": 4
         },
         {
-          "tag": "Basic",
+          "tag": "Nothing",
           "id": 5
         },
         {
-          "tag": "Wall",
-          "id": 6
-        },
-        {
-          "tag": "Wall",
-          "id": 7
-        },
-        {
-          "tag": "Nothing",
-          "id": 8
-        },
-        {
-          "tag": "Nothing",
-          "id": 9
-        }
-      ],
-      [
-        {
           "tag": "Nothing",
           "id": 6
         },
@@ -83,33 +52,67 @@
           "id": 8
         },
         {
-          "tag": "Basic",
+          "tag": "Nothing",
           "id": 9
         },
         {
-          "tag": "Wall",
+          "tag": "Nothing",
           "id": 10
         },
         {
-          "tag": "Marsh",
-          "id": 14
-        },
-        {
-          "tag": "Wall",
-          "id": 15
-        },
-        {
-          "tag": "Wall",
-          "id": 16
-        },
-        {
           "tag": "Nothing",
-          "id": 18
+          "id": 11
         }
       ],
       [
         {
+          "tag": "Wall",
+          "id": 6
+        },
+        {
+          "tag": "Wall",
+          "id": 7
+        },
+        {
+          "tag": "Basic",
+          "id": 8
+        },
+        {
+          "tag": "Basic",
+          "id": 9
+        },
+        {
           "tag": "Nothing",
+          "id": 10
+        },
+        {
+          "tag": "Basic",
+          "id": 12
+        },
+        {
+          "tag": "Basic",
+          "id": 14
+        },
+        {
+          "tag": "Basic",
+          "id": 16
+        },
+        {
+          "tag": "Basic",
+          "id": 18
+        },
+        {
+          "tag": "Nothing",
+          "id": 20
+        },
+        {
+          "tag": "Nothing",
+          "id": 22
+        }
+      ],
+      [
+        {
+          "tag": "Wall",
           "id": 11
         },
         {
@@ -125,16 +128,16 @@
           "id": 14
         },
         {
-          "tag": "Marsh",
+          "tag": "Basic",
           "id": 15
         },
         {
-          "tag": "Marsh",
-          "id": 22
+          "tag": "Basic",
+          "id": 18
         },
         {
-          "tag": "Marsh",
-          "id": 23
+          "tag": "Basic",
+          "id": 21
         },
         {
           "tag": "Basic",
@@ -143,11 +146,19 @@
         {
           "tag": "Basic",
           "id": 27
+        },
+        {
+          "tag": "Basic",
+          "id": 30
+        },
+        {
+          "tag": "Nothing",
+          "id": 33
         }
       ],
       [
         {
-          "tag": "Basic",
+          "tag": "Wall",
           "id": 16
         },
         {
@@ -163,16 +174,16 @@
           "id": 19
         },
         {
-          "tag": "Marsh",
+          "tag": "Basic",
           "id": 20
         },
         {
-          "tag": "Marsh",
-          "id": 30
+          "tag": "Basic",
+          "id": 24
         },
         {
           "tag": "Basic",
-          "id": 31
+          "id": 28
         },
         {
           "tag": "Basic",
@@ -181,6 +192,14 @@
         {
           "tag": "Basic",
           "id": 36
+        },
+        {
+          "tag": "Basic",
+          "id": 40
+        },
+        {
+          "tag": "Basic",
+          "id": 44
         }
       ],
       [
@@ -197,20 +216,20 @@
           "id": 23
         },
         {
-          "tag": "Marsh",
+          "tag": "Basic",
           "id": 24
         },
         {
-          "tag": "Marsh",
+          "tag": "Basic",
           "id": 25
         },
         {
           "tag": "Basic",
-          "id": 38
+          "id": 30
         },
         {
           "tag": "Basic",
-          "id": 39
+          "id": 35
         },
         {
           "tag": "Basic",
@@ -219,29 +238,17 @@
         {
           "tag": "Basic",
           "id": 45
+        },
+        {
+          "tag": "Basic",
+          "id": 50
+        },
+        {
+          "tag": "Basic",
+          "id": 55
         }
       ],
       [
-        {
-          "tag": "Basic",
-          "id": 26
-        },
-        {
-          "tag": "Basic",
-          "id": 27
-        },
-        {
-          "tag": "Basic",
-          "id": 28
-        },
-        {
-          "tag": "Basic",
-          "id": 29
-        },
-        {
-          "tag": "Basic",
-          "id": 30
-        },
         {
           "tag": "Basic",
           "id": 46
@@ -256,136 +263,115 @@
         },
         {
           "tag": "Nothing",
+          "id": 49
+        },
+        {
+          "tag": "Nothing",
+          "id": 50
+        },
+        {
+          "tag": "Basic",
+          "id": 51
+        },
+        {
+          "tag": "Basic",
+          "id": 52
+        },
+        {
+          "tag": "Wall",
+          "id": 53
+        },
+        {
+          "tag": "Wall",
           "id": 54
+        },
+        {
+          "tag": "Basic",
+          "id": 60
+        },
+        {
+          "tag": "Basic",
+          "id": 66
         }
       ],
       [
         {
-          "tag": "Basic",
-          "id": 31
-        },
-        {
-          "tag": "Basic",
-          "id": 32
-        },
-        {
-          "tag": "Wall",
-          "id": 33
-        },
-        {
-          "tag": "Wall",
-          "id": 34
-        },
-        {
-          "tag": "Basic",
-          "id": 35
-        },
-        {
-          "tag": "Basic",
-          "id": 54
-        },
-        {
-          "tag": "Basic",
+          "tag": "Nothing",
           "id": 55
         },
         {
-          "tag": "Basic",
+          "tag": "Nothing",
           "id": 56
         },
         {
           "tag": "Nothing",
-          "id": 63
-        }
-      ],
-      [
+          "id": 57
+        },
         {
           "tag": "Nothing",
-          "id": 36
+          "id": 58
         },
         {
-          "tag": "Basic",
-          "id": 37
+          "tag": "Nothing",
+          "id": 59
         },
         {
-          "tag": "Basic",
-          "id": 38
+          "tag": "Nothing",
+          "id": 60
         },
         {
-          "tag": "Basic",
-          "id": 39
+          "tag": "Wall",
+          "id": 61
         },
         {
-          "tag": "Basic",
-          "id": 40
-        },
-        {
-          "tag": "Basic",
+          "tag": "Wall",
           "id": 62
         },
         {
-          "tag": "Basic",
+          "tag": "Wall",
           "id": 63
         },
         {
-          "tag": "Nothing",
-          "id": 64
-        },
-        {
-          "tag": "Nothing",
-          "id": 72
-        }
-      ],
-      [
-        {
-          "tag": "Nothing",
-          "id": 65
-        },
-        {
-          "tag": "Nothing",
-          "id": 66
-        },
-        {
-          "tag": "Nothing",
-          "id": 67
-        },
-        {
-          "tag": "Basic",
-          "id": 68
-        },
-        {
-          "tag": "Basic",
-          "id": 69
-        },
-        {
-          "tag": "Basic",
+          "tag": "Wall",
           "id": 70
         },
         {
-          "tag": "Basic",
-          "id": 71
-        },
-        {
           "tag": "Nothing",
-          "id": 72
-        },
-        {
-          "tag": "Nothing",
-          "id": 81
+          "id": 77
         }
       ]
     ]
   },
   "items": [],
   "portals": [],
-  "origins": [],
+  "origins": [
+    {
+      "id": 67,
+      "location": {
+        "x": 2,
+        "y": 7,
+        "magnitude": 7.28011,
+        "sqrMagnitude": 53
+      }
+    },
+    {
+      "id": 68,
+      "location": {
+        "x": 4,
+        "y": 7,
+        "magnitude": 8.062258,
+        "sqrMagnitude": 65
+      }
+    }
+  ],
   "exit": {
-    "id": 92,
+    "id": 78,
     "location": {
-      "x": 1,
-      "y": 1,
-      "magnitude": 1.41421354,
-      "sqrMagnitude": 2
+      "x": 5,
+      "y": 9,
+      "magnitude": 10.29563,
+      "sqrMagnitude": 106
     }
   },
-  "nextID": 93
+  "nextID": 79
 }
