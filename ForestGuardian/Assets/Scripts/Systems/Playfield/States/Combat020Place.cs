@@ -36,8 +36,8 @@ namespace forest
         {
             StateMachine.UI.startFloor.onClick.RemoveListener(TryStart);
 
-            selectIndicated = Postmaster.Instance.Subscribe<MsgRosterUnitIndicated>(UnitIndicated);
-            selectOrigin = Postmaster.Instance.Subscribe<MsgOriginPrimaryAction>(SelectOrigin);
+            selectIndicated.Dispose();
+            selectOrigin.Dispose();
         }
 
         private void UnitIndicated(Message raw)
@@ -75,7 +75,8 @@ namespace forest
                 }
                 else
                 {
-                    StateMachine.VisualPlayfield.FindOrigin(origin.location).SetHighlight(false);
+                    Origin toHide = StateMachine.VisualPlayfield.FindOrigin(origin.location);
+                    toHide.SetHighlight(false);
                 }
             }
         }
