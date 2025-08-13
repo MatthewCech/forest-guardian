@@ -12,5 +12,16 @@ namespace forest
         public int moveRange = 1;
 
         public string moveDescription = "";
+
+        public MoveData Clone()
+        {
+            MoveData clone = new MoveData();
+            clone.moveName = moveName;
+            clone.moveDamage = moveDamage;
+            clone.moveRange = moveRange;
+            clone.moveDescription = moveDescription;
+
+            return clone;
+        }
     }
 }

@@ -47,9 +47,12 @@ namespace forest
         /// </summary>
         private void AddToRoster(VisualLookup lookup, string name)
         {
-            UnitData toAdd = lookup.GetUnitTemplateByName(name).data;
-            UnityEngine.Assertions.Assert.IsNotNull(toAdd, $"Unit template named '{name}' was not found! Check visual lookup.");
-            roster.Add(toAdd);
+            // WARNING: This is a reference to the prefab data directly.
+            UnitData toReference = lookup.GetUnitTemplateByName(name).data;
+            UnityEngine.Assertions.Assert.IsNotNull(toReference, $"Unit template named '{name}' was not found! Check visual lookup.");
+
+            UnitData data = toReference.Clone();
+            roster.Add(data);
         }
 
         /// <summary>

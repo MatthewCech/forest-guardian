@@ -16,14 +16,28 @@ namespace forest
 
         public Combat020Place(PlayfieldCore stateMachine) : base(stateMachine) { }
 
+        private MessageSubscription selectOrigin; 
+        private MessageSubscription selectIndicated;
+
         public override void Start()
         {
             StateMachine.UI.SetSelectorVisibility(true);
 
-            Postmaster.Instance.Subscribe<MsgOriginPrimaryAction>(SelectOrigin);
-            Postmaster.Instance.Subscribe<MsgRosterUnitIndicated>(UnitIndicated);
+            selectOrigin = Postmaster.Instance.Subscribe<MsgOriginPrimaryAction>(SelectOrigin);
+            selectIndicated = Postmaster.Instance.Subscribe<MsgRosterUnitIndicated>(UnitIndicated);
+
             StateMachine.UI.startFloor.onClick.AddListener(TryStart);
             StateMachine.UI.startFloor.interactable = false;
+
+            StateMachine.VisualPlayfield.DisplayAll(StateMachine.Playfield);
+        }
+
+        public override void Shutdown()
+        {
+            StateMachine.UI.startFloor.onClick.RemoveListener(TryStart);
+
+            selectIndicated = Postmaster.Instance.Subscribe<MsgRosterUnitIndicated>(UnitIndicated);
+            selectOrigin = Postmaster.Instance.Subscribe<MsgOriginPrimaryAction>(SelectOrigin);
         }
 
         private void UnitIndicated(Message raw)
@@ -81,7 +95,6 @@ namespace forest
 
         private IEnumerator QueueUpNext()
         {
-            StateMachine.UI.startFloor.onClick.RemoveListener(TryStart);
             StateMachine.UI.SetSelectorVisibility(false);
 
             yield return new WaitForSeconds(StateMachine.turnDelay);

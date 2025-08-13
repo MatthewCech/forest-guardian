@@ -29,10 +29,14 @@ namespace forest
                 return false;
             }
 
+
             currentUnit = pendingUnits[0];
             pendingUnits.RemoveAt(0);
 
-            StateMachine.VisualPlayfield.DisplayIndicatorMovePreview(currentUnit, StateMachine.Playfield);
+            if (!CheckForShortCircuitStateJump(currentUnit))
+            {
+                StateMachine.VisualPlayfield.DisplayIndicatorMovePreview(currentUnit, StateMachine.Playfield);
+            }
             return true;
         }
 
@@ -95,7 +99,7 @@ namespace forest
             if (msg.indicator.type == IndicatorType.ImmediateMove)
             {
                 Utils.MoveUnitToLocation(StateMachine.Playfield, StateMachine.VisualPlayfield, unit, target);
-                ShortCircuitExitOrPortal(unit);
+                CheckForShortCircuitStateJump(unit);
                 if (unit.curMovementBudget == 0)
                 {
                     StateMachine.VisualPlayfield.DisplayIndicatorAttackPreview(unit, StateMachine.Playfield);
@@ -147,7 +151,7 @@ namespace forest
                 if (Utils.CanMovePlayfieldUnitTo(StateMachine.Playfield, controlledUnit, newMovement))
                 {
                     Utils.MoveUnitToLocation(StateMachine.Playfield, StateMachine.VisualPlayfield, controlledUnit, newMovement);
-                    ShortCircuitExitOrPortal(controlledUnit);
+                    CheckForShortCircuitStateJump(controlledUnit);
                 }
             }
         }
@@ -178,8 +182,7 @@ namespace forest
         /// Determine if we're in a situation where we need to make a jump to either an exit or to another level.
         /// In these situations, we're done here so we don't want to bother with enemy turns, etc.
         /// </summary>
-        /// <param name="controlledUnit"></param>
-        private void ShortCircuitExitOrPortal(PlayfieldUnit controlledUnit)
+        private bool CheckForShortCircuitStateJump(PlayfieldUnit controlledUnit)
         {
             Vector2Int head = controlledUnit.locations[PlayfieldUnit.HEAD_INDEX];
 
@@ -188,6 +191,7 @@ namespace forest
                 if (head == StateMachine.Playfield.exit.location)
                 {
                     StateMachine.SetState<Combat090Defeat>();
+                    return true;
                 }
             }
 
@@ -196,8 +200,19 @@ namespace forest
                 if (StateMachine.Playfield.TryGetPortalAt(head, out PlayfieldPortal portal))
                 {
                     StateMachine.SetState<Combat100PortalWarp>();
+                    return true;
                 }
             }
+            else
+            {
+                if (HasWinCondition())
+                {
+                    StateMachine.SetState<Combat080Victory>();
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

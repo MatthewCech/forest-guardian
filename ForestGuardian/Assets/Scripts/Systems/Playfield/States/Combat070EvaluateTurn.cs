@@ -60,7 +60,7 @@ namespace forest
             if (!didFindPortal)
             {
                 // If we have no portals, then exit if all items are collected.
-                if (StateMachine.Playfield.portals.Count == 0 && StateMachine.Playfield.items.Count == 0 && !HasEnemies())
+                if (HasWinCondition())
                 {
                     yield return null;
                     StateMachine.SetState<Combat080Victory>();

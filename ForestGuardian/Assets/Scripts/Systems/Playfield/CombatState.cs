@@ -31,5 +31,10 @@ namespace forest
 
             return false;
         }
+
+        protected bool HasWinCondition()
+        {
+            return StateMachine.Playfield.portals.Count == 0 && StateMachine.Playfield.items.Count == 0 && !HasEnemies();
+        }
     }
 }
