@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace forest
 {
+    /// <summary>
+    /// USAGE: Per turn
+    /// </summary>
     public class Combat050OpponentMove : CombatState
     {
         private bool firstStep = false;

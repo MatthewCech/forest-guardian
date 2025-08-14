@@ -417,7 +417,7 @@
   "portals": [
     {
       "id": 95,
-      "target": "ivy-grove_01",
+      "target": "ivy-grove_02",
       "location": {
         "x": 8,
         "y": 2,

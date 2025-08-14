@@ -5,6 +5,9 @@ using UnityEngine.UIElements;
 
 namespace forest
 {
+    /// <summary>
+    /// USAGE: One time
+    /// </summary>
     public class Combat080Victory : CombatState
     {
         private bool firstStep = false;

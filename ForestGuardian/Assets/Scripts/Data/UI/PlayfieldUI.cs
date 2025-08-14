@@ -12,6 +12,7 @@ namespace forest
 
         [Header("Public Links")]
         public Button buttonExit;
+        public Button buttonJumpToPortal;
         public TMPro.TextMeshProUGUI currentState;
         public TMPro.TextMeshProUGUI result;
 

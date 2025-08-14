@@ -5,6 +5,9 @@ using UnityEngine.UIElements;
 
 namespace forest
 {
+    /// <summary>
+    /// USAGE: One time
+    /// </summary>
     public class Combat010Startup : CombatState
     {
         private bool firstStep = false;
@@ -29,6 +32,10 @@ namespace forest
 
         private IEnumerator QueueUpNext()
         {
+            // Handle initial playfield configuration
+            yield return new WaitForSeconds(StateMachine.turnDelay);
+
+            // Determine if we're going to place or can go straight into simulating
             yield return new WaitForSeconds(StateMachine.turnDelay);
 
             int originCount = 0;
@@ -49,12 +56,12 @@ namespace forest
             if (originCount > 0)
             {
                 StateMachine.UI.SetSelectorVisibility(true);
-                StateMachine.SetState<Combat020Place>();
+                StateMachine.SetState<Combat015OptionalPlace>();
             }
             else
             {
                 StateMachine.UI.SetSelectorVisibility(false);
-                StateMachine.SetState<Combat030PrepareTurn>();
+                StateMachine.SetState<Combat020BuildPlayfield>();
             }
         }
     }

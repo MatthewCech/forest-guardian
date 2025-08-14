@@ -6,6 +6,9 @@ using UnityEngine.UIElements;
 
 namespace forest
 {
+    /// <summary>
+    /// USAGE: One time
+    /// </summary>
     public class Combat100PortalWarp : CombatState
     {
         private bool firstStep = false;
@@ -38,20 +41,28 @@ namespace forest
 
             // Assume we have a portal
             PlayfieldPortal targetPortal = null;
-            foreach(PlayfieldUnit unit in StateMachine.Playfield.units)
+
+            if (StateMachine.Playfield.portals.Count == 1)
             {
-                foreach(PlayfieldPortal portal in StateMachine.Playfield.portals)
+                targetPortal = StateMachine.Playfield.portals[0];
+            }
+            else
+            {
+                foreach (PlayfieldUnit unit in StateMachine.Playfield.units)
                 {
-                    if (portal.location == unit.locations[PlayfieldUnit.HEAD_INDEX])
+                    foreach (PlayfieldPortal portal in StateMachine.Playfield.portals)
                     {
-                        targetPortal = portal;
+                        if (portal.location == unit.locations[PlayfieldUnit.HEAD_INDEX])
+                        {
+                            targetPortal = portal;
+                            break;
+                        }
+                    }
+
+                    if (targetPortal != null)
+                    {
                         break;
                     }
-                }
-
-                if(targetPortal != null)
-                {
-                    break;
                 }
             }
 

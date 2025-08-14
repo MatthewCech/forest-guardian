@@ -5,6 +5,9 @@ using System.Linq;
 
 namespace forest
 {
+    /// <summary>
+    /// USAGE: Per turn
+    /// </summary>
     public class Combat070EvaluateTurn : CombatState
     {
         private bool firstStep = false;

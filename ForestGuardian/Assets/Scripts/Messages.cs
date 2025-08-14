@@ -49,7 +49,7 @@ namespace forest
 
     [MessageMetadata(
     friendlyName: "Tile Primary Action",
-    description: "A secondary action, such as a right-click, was performed over a playfield tile",
+    description: "A primary action, such as a left-click, was performed over a playfield tile",
     isVisible: true)]
     public class MsgTilePrimaryAction : Loam.Message
     {

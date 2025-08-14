@@ -8,13 +8,16 @@ using static Codice.Client.Commands.WkTree.WorkspaceTreeNode;
 
 namespace forest
 {
-    public class Combat020Place : CombatState
+    /// <summary>
+    /// USAGE: One time
+    /// </summary>
+    public class Combat015OptionalPlace : CombatState
     {
         private bool firstStep = false;
 
         private Origin selected = null;
 
-        public Combat020Place(PlayfieldCore stateMachine) : base(stateMachine) { }
+        public Combat015OptionalPlace(PlayfieldCore stateMachine) : base(stateMachine) { }
 
         private MessageSubscription selectOrigin; 
         private MessageSubscription selectIndicated;
@@ -24,7 +27,7 @@ namespace forest
             StateMachine.UI.SetSelectorVisibility(true);
 
             selectOrigin = Postmaster.Instance.Subscribe<MsgOriginPrimaryAction>(SelectOrigin);
-            selectIndicated = Postmaster.Instance.Subscribe<MsgRosterUnitIndicated>(UnitIndicated);
+            selectIndicated = Postmaster.Instance.Subscribe<MsgRosterUnitIndicated>(UnitFromRosterSelected);
 
             StateMachine.UI.startFloor.onClick.AddListener(TryStart);
             StateMachine.UI.startFloor.interactable = false;
@@ -40,7 +43,7 @@ namespace forest
             selectOrigin.Dispose();
         }
 
-        private void UnitIndicated(Message raw)
+        private void UnitFromRosterSelected(Message raw)
         {
             if(selected == null)
             {
@@ -81,8 +84,44 @@ namespace forest
             }
         }
 
+        /// <summary>
+        /// Writes and displays the origin units to the playfield
+        /// </summary>
+        private void WriteOriginUnitsToPlayfield()
+        {
+            if (StateMachine.Playfield.origins == null || StateMachine.Playfield.origins.Count == 0)
+            {
+                return;
+            }
+
+            foreach (PlayfieldOrigin origin in StateMachine.Playfield.origins)
+            {
+                if (origin.curRosterIndex == PlayfieldOrigin.ROSTER_NONE_SELECTED)
+                {
+                    continue;
+                }
+
+                UnitData unit = Core.Instance.gameData.roster[origin.curRosterIndex];
+
+                PlayfieldUnit unitToAdd = new PlayfieldUnit();
+                unitToAdd.tag = unit.unitName;
+                unitToAdd.id = StateMachine.Playfield.GetNextID();
+                unitToAdd.team = Team.Player;
+                unitToAdd.locations = new List<Vector2Int>() { origin.location };
+                unitToAdd.rosterOverride = unit;
+
+                StateMachine.Playfield.units.Add(unitToAdd);
+            }
+
+            StateMachine.Playfield.origins.Clear();
+
+            StateMachine.VisualPlayfield.DisplayUnits(StateMachine.Playfield);
+            StateMachine.VisualPlayfield.DisplayOrigins(StateMachine.Playfield);
+        }
+
         private void TryStart()
         {
+            WriteOriginUnitsToPlayfield();
             Loam.CoroutineObject.Instance.StartCoroutine(QueueUpNext());
         }
 
@@ -99,7 +138,7 @@ namespace forest
             StateMachine.UI.SetSelectorVisibility(false);
 
             yield return new WaitForSeconds(StateMachine.turnDelay);
-            StateMachine.SetState<Combat030PrepareTurn>();
+            StateMachine.SetState<Combat020BuildPlayfield>();
         }
     }
 }

@@ -9,6 +9,9 @@ using static UnityEngine.UI.CanvasScaler;
 
 namespace forest
 {
+    /// <summary>
+    /// USAGE: Per turn
+    /// </summary>
     public class Combat040PlayerMove : CombatState
     {
 
@@ -29,7 +32,6 @@ namespace forest
                 return false;
             }
 
-
             currentUnit = pendingUnits[0];
             pendingUnits.RemoveAt(0);
 
@@ -47,12 +49,9 @@ namespace forest
 
             // Collect player units
             pendingUnits = StateMachine.Playfield.units.Where((unit) => unit.team == Team.Player).ToList();
-            if (!SelectNextUnitToMove())
-            {
-                Debug.LogError("No pending player units, we shouldn't be entering a player move phase with none available. Attempting to exit/shut down.");
-                StateMachine.SetState<Combat200Shutdown>();
-                return;
-            }
+            UnityEngine.Assertions.Assert.IsTrue(pendingUnits.Count > 0, "It's impossible to start a player turn without units");
+
+            SelectNextUnitToMove();
         }
 
         public override void Update()
@@ -63,6 +62,8 @@ namespace forest
 
         public override void Shutdown()
         {
+            StateMachine.UI.buttonJumpToPortal.interactable = false;
+            StateMachine.UI.buttonJumpToPortal.onClick.RemoveAllListeners();
             subMoveTileClicked?.Dispose();
             subPlayerClicked?.Dispose();
         }

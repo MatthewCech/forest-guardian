@@ -5,7 +5,7 @@ using UnityEditor.Search;
 using UnityEngine;
 using UnityEngine.UIElements;
 using Loam;
-using static UnityEngine.UI.CanvasScaler;
+using UnityEditorInternal;
 
 namespace forest
 {
@@ -103,6 +103,12 @@ namespace forest
             // Connect relevant UI.
             UI.buttonExit.onClick.AddListener(Exit);
 
+            if (Playfield.portals?.Count == 1)
+            {
+                UI.buttonJumpToPortal.interactable = true;
+                UI.buttonJumpToPortal.onClick.AddListener(() => { SetState<Combat100PortalWarp>(); });
+            }
+
             // Pre-poke coroutine singleton by just doing some guaranteed function to force init.
             Loam.CoroutineObject.Instance.name.ToString();
 
@@ -112,6 +118,7 @@ namespace forest
 
         private void Exit()
         {
+            UI.buttonJumpToPortal.onClick.RemoveAllListeners();
             SetState<Combat200Shutdown>();
         }
 
@@ -133,8 +140,7 @@ namespace forest
             T instance = (T)System.Activator.CreateInstance(typeof(T), args: this);
             instance.Start();
             current?.Shutdown();
-            //modernUI.rootVisualElement.Q<Label>("bannerLabel").text = current?.GetType().Name;
-            UI.result.text = current?.GetType().Name;
+            UI.currentState.text = current?.GetType().Name;
             current = instance;
         }
     }
