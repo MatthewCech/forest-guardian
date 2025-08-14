@@ -35,6 +35,7 @@ namespace forest
             // Handle initial playfield configuration
             yield return new WaitForSeconds(StateMachine.turnDelay);
 
+            // At this point, we only have units 
             foreach (PlayfieldUnit unit in StateMachine.Playfield.units)
             {
                 UnityEngine.Assertions.Assert.IsFalse(unit.team == Team.DEFAULT, "A unit has an unassigned team. This needs to be updated in JSON, and likely represents an editor export issue.");
@@ -54,6 +55,40 @@ namespace forest
                 tile.curIsImpassable = template.isImpassable;
                 tile.curMoveDifficulty = template.moveDifficulty;
             }
+
+            // Try and auto-assign origin locations
+            List<PlayfieldOrigin> partyOrigins = StateMachine.Playfield.origins.FindAll(
+                origin => origin.partyIndex != PlayfieldOrigin.NO_INDEX_SELECTED);
+            if(partyOrigins.Count > 0)
+            {
+                List<PlayfieldUnit> units = Core.Instance.gameData.lastFloor.GetPlayerUnits();
+
+                foreach(PlayfieldOrigin origin in partyOrigins)
+                {
+                    int index = origin.partyIndex;
+                    if (index < units.Count)
+                    {
+                        // <carry over or omit party stats here>
+                        PlayfieldUnit unitToAdd = units[index];
+                        unitToAdd.locations.Clear();
+                        unitToAdd.locations.Add(origin.location);
+
+                        StateMachine.Playfield.units.Add(unitToAdd);
+                    }
+                }
+
+                // Redraw units because we made modifications.
+                StateMachine.VisualPlayfield.DisplayUnits(StateMachine.Playfield);
+            }
+            else
+            {
+                // This needs to be cleared a better way...
+                Core.Instance.gameData.lastFloor = null;
+            }
+
+            // Clear any origins left, nothing more we're going to use them for.
+            StateMachine.Playfield.origins.Clear();
+            StateMachine.VisualPlayfield.DisplayOrigins(StateMachine.Playfield);
 
             // We're done, lets get moving forward
             yield return new WaitForSeconds(StateMachine.turnDelay);

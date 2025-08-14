@@ -94,8 +94,14 @@ namespace forest
                 return;
             }
 
-            foreach (PlayfieldOrigin origin in StateMachine.Playfield.origins)
+            // List tracking removals done to avoid back to front, otherwise origin population is inverted with each floor.
+            List<int> toRemove = new List<int>(); 
+
+            for (int i = 0; i < StateMachine.Playfield.origins.Count; ++i)
             {
+                PlayfieldOrigin origin = StateMachine.Playfield.origins[i];
+
+                // If a player didn't specify someone to use, we're good.
                 if (origin.curRosterIndex == PlayfieldOrigin.NO_INDEX_SELECTED)
                 {
                     continue;
@@ -111,10 +117,17 @@ namespace forest
                 unitToAdd.rosterOverride = unit;
 
                 StateMachine.Playfield.units.Add(unitToAdd);
+                toRemove.Add(i);
             }
 
-            StateMachine.Playfield.origins.Clear();
-
+            // Ok, so this is still back to front because we know the list is populated front to back, but if we
+            // go through and remove indexes from front to back we still get the same issue as if we did it in the
+            // initial loop. So we have to still do that count offset here.
+            for(int i = toRemove.Count - 1; i >= 0; --i)
+            {
+                StateMachine.Playfield.origins.RemoveAt(i);
+            }
+            
             StateMachine.VisualPlayfield.DisplayUnits(StateMachine.Playfield);
             StateMachine.VisualPlayfield.DisplayOrigins(StateMachine.Playfield);
         }

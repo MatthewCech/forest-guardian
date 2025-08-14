@@ -376,5 +376,26 @@ namespace forest
             Playfield parsed = JsonConvert.DeserializeObject<Playfield>(toParse);
             return parsed;
         }
+
+        /// <summary>
+        /// NOTE: This makes a few assumptions:
+        /// 1. That the core is online and usable
+        /// 2. It's ok that this data is NOT being copied
+        /// </summary>
+        /// <returns></returns>
+        public List<PlayfieldUnit> GetPlayerUnits()
+        {
+            List<PlayfieldUnit> toReturn = new List<PlayfieldUnit>();
+
+            foreach(PlayfieldUnit unit in units)
+            {
+                if(unit.team == Team.Player)
+                {
+                    toReturn.Add(unit);
+                }
+            }
+
+            return toReturn;
+        }
     }
 }

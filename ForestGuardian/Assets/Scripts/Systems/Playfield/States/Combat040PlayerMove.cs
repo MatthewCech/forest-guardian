@@ -62,8 +62,6 @@ namespace forest
 
         public override void Shutdown()
         {
-            StateMachine.UI.buttonJumpToPortal.interactable = false;
-            StateMachine.UI.buttonJumpToPortal.onClick.RemoveAllListeners();
             subMoveTileClicked?.Dispose();
             subPlayerClicked?.Dispose();
         }

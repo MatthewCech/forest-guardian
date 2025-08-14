@@ -38,22 +38,21 @@ namespace forest
             // Determine if we're going to place or can go straight into simulating
             yield return new WaitForSeconds(StateMachine.turnDelay);
 
-            int originCount = 0;
+            int originsNeedingAssignment = 0;
             
             if (StateMachine.Playfield.origins != null)
             {
-                originCount = StateMachine.Playfield.origins.Count;
-
                 foreach (PlayfieldOrigin origin in StateMachine.Playfield.origins)
                 {
-                    if (origin.curSelectionPreComplete)
+                    // This means we need the player to specify since we're not going to try and auto-pull from the party.
+                    if (origin.partyIndex == PlayfieldOrigin.NO_INDEX_SELECTED)
                     {
-                        originCount--;
+                        originsNeedingAssignment++;
                     }
                 }
             }
 
-            if (originCount > 0)
+            if (originsNeedingAssignment > 0)
             {
                 StateMachine.UI.SetSelectorVisibility(true);
                 StateMachine.SetState<Combat015OptionalPlace>();
