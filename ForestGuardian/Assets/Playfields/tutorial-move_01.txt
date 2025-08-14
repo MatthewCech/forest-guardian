@@ -355,7 +355,8 @@
         "y": 7,
         "magnitude": 7.28011,
         "sqrMagnitude": 53
-      }
+      },
+      "partyIndex": -1
     },
     {
       "id": 68,
@@ -364,7 +365,8 @@
         "y": 7,
         "magnitude": 8.062258,
         "sqrMagnitude": 65
-      }
+      },
+      "partyIndex": -1
     }
   ],
   "exit": {

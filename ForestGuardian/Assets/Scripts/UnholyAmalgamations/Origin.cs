@@ -1,6 +1,7 @@
 using Loam;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace forest
@@ -40,5 +41,21 @@ namespace forest
                 Postmaster.Instance.Send(msg);
             }
         }
+
+#if UNITY_EDITOR
+        private void OnDrawGizmos()
+        {
+            if (associatedData == null)
+            {
+                return;
+            }
+
+            GUIStyle style = new GUIStyle();
+            style.normal.textColor = Color.magenta;
+            style.alignment = TextAnchor.MiddleCenter;
+
+            Handles.Label(this.transform.position + new Vector3(-0.1f, 0.1f, 0), $"Party Index: \"{associatedData.partyIndex}\"", style);
+        }
+#endif
     }
 }

@@ -64,7 +64,9 @@ namespace forest
         private string previewTag;
         private PlayfieldEditorSelectionType previewType;
 
+        // NOTE: Can combine these if there's a common base class.
         private PlayfieldPortal selectedPortal;
+        private PlayfieldOrigin selectedOrigin;
         private bool isShowingMetadataPanel = false;
 
         public void Start()
@@ -89,7 +91,7 @@ namespace forest
             uiTagBestowedEntryField.onValueChanged.AddListener(TagBestowedChange);
             uiTagLabelEntryField.onValueChanged.AddListener(TagLabelChange);
 
-            inputMetadataPanel.onValueChanged.AddListener(PortalLabelModified);
+            inputMetadataPanel.onValueChanged.AddListener(PlayfieldObjectMetadataModified);
 
             uiWidthEntryField.text = uiWidthSlider.value.ToString();
             uiHeightEntryField.text = uiHeightSlider.value.ToString();
@@ -145,14 +147,25 @@ namespace forest
             labelObj.gameObject.SetActive(true);
         }
 
-        private void PortalLabelModified(string value)
+        private void PlayfieldObjectMetadataModified(string value)
         {
-            if(selectedPortal == null)
+            if(selectedPortal != null)
             {
+                selectedPortal.target = value;
                 return;
             }
-
-            selectedPortal.target = value;
+            else if(selectedOrigin != null)
+            {
+                if(int.TryParse(value.Trim(), out int parsed))
+                {
+                    selectedOrigin.partyIndex = parsed;
+                }
+                else
+                {
+                    Debug.LogWarning("Invalid number provided, but that's fine if typing was still happening");
+                }
+                return;
+            }
         }
 
         /// <summary>
@@ -265,22 +278,36 @@ namespace forest
             metadataPanel.blocksRaycasts = false;
 
             selectedPortal = null;
+            selectedOrigin = null;
 
             isShowingMetadataPanel = false;
             visuals.DisplayAll(workingPlayfield);
         }
 
+        private void ShowMetadataPanel(PlayfieldOrigin origin)
+        {
+            selectedOrigin = origin;
+            selectedPortal = null;
+            BaseShowMetadataPanel("Origin", selectedOrigin.location, origin.partyIndex.ToString());
+        }
+
         private void ShowMetadataPanel(PlayfieldPortal portal)
+        { 
+            selectedOrigin = null;
+            selectedPortal = portal;
+            BaseShowMetadataPanel("Portal", selectedPortal.location, selectedPortal.target);
+        }
+
+        private void BaseShowMetadataPanel(string label, Vector2Int highlightPos, string startValue)
         {
             metadataPanel.alpha = 1;
             metadataPanel.interactable = true;
             metadataPanel.blocksRaycasts = true;
 
-            selectedPortal = portal;
-            inputMetadataPanel.text = portal.target;
+            inputMetadataPanel.text = startValue;
 
-            metadataPanelLabel.text = $"Portal @ ({portal.location.x},{portal.location.y})";
-            visuals.DisplayIndicatorAt(portal.location.x, portal.location.y, workingPlayfield, lookup.movePreviewTemplate);
+            metadataPanelLabel.text = $"{label} @ ({highlightPos.x},{highlightPos.y})";
+            visuals.DisplayIndicatorAt(highlightPos.x, highlightPos.y, workingPlayfield, lookup.movePreviewTemplate);
 
             isShowingMetadataPanel = true;
         }
@@ -306,6 +333,20 @@ namespace forest
                         else
                         {
                             ShowMetadataPanel(portal);
+                        }
+                    }
+                }
+                else if (previewType == PlayfieldEditorSelectionType.Origin)
+                {
+                    if(workingPlayfield.TryGetOriginAt(position, out PlayfieldOrigin origin))
+                    {
+                        if(isShowingMetadataPanel)
+                        {
+                            HideMetadataPanel();
+                        }
+                        else
+                        {
+                            ShowMetadataPanel(origin);
                         }
                     }
                 }
@@ -363,6 +404,13 @@ namespace forest
             }
             else if (previewType == PlayfieldEditorSelectionType.Portal)
             {
+                // No placing at the same spot as an Origin or Exit
+                if (workingPlayfield.TryGetOriginAt(position, out PlayfieldOrigin _)
+                    || workingPlayfield.TryGetExitAt(position, out PlayfieldExit _))
+                {
+                    return;
+                }
+
                 if (!workingPlayfield.TryGetPortalAt(position, out PlayfieldPortal portal))
                 {
                     PlayfieldPortal newPortal = new PlayfieldPortal();
@@ -376,6 +424,13 @@ namespace forest
             }
             else if (previewType == PlayfieldEditorSelectionType.Origin)
             {
+                // No placing at the same spot as a Portal or Exit
+                if(workingPlayfield.TryGetPortalAt(position, out PlayfieldPortal _)
+                    || workingPlayfield.TryGetExitAt(position, out PlayfieldExit _))
+                {
+                    return;
+                }
+
                 if (!workingPlayfield.TryGetOriginAt(position, out PlayfieldOrigin origin))
                 {
                     PlayfieldOrigin newOrigin = new PlayfieldOrigin();
@@ -384,10 +439,19 @@ namespace forest
 
                     workingPlayfield.origins.Add(newOrigin);
                 }
+
+                HideMetadataPanel();
             }
             else if (previewType == PlayfieldEditorSelectionType.Exit)
             {
-                if(workingPlayfield.exit != null)
+                // No placing at the same spot as a Portal or Origin
+                if (workingPlayfield.TryGetPortalAt(position, out PlayfieldPortal _)
+                    || workingPlayfield.TryGetOriginAt(position, out PlayfieldOrigin _))
+                {
+                    return;
+                }
+
+                if (workingPlayfield.exit != null)
                 {
                     workingPlayfield.exit = null;
                 }

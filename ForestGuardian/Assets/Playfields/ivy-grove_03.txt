@@ -18,19 +18,6 @@
       ]
     },
     {
-      "tag": "Guardian",
-      "id": 91,
-      "team": 1,
-      "locations": [
-        {
-          "x": 5,
-          "y": 6,
-          "magnitude": 7.81025,
-          "sqrMagnitude": 61
-        }
-      ]
-    },
-    {
       "tag": "Ivy",
       "id": 93,
       "team": 2,
@@ -392,7 +379,28 @@
   },
   "items": [],
   "portals": [],
-  "origins": [],
+  "origins": [
+    {
+      "id": 94,
+      "location": {
+        "x": 5,
+        "y": 6,
+        "magnitude": 7.81025,
+        "sqrMagnitude": 61
+      },
+      "partyIndex": 0
+    },
+    {
+      "id": 95,
+      "location": {
+        "x": 4,
+        "y": 7,
+        "magnitude": 8.062258,
+        "sqrMagnitude": 65
+      },
+      "partyIndex": 1
+    }
+  ],
   "exit": {
     "id": 92,
     "location": {
@@ -402,5 +410,5 @@
       "sqrMagnitude": 2
     }
   },
-  "nextID": 94
+  "nextID": 96
 }

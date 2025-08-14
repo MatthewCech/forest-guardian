@@ -96,7 +96,7 @@ namespace forest
 
             foreach (PlayfieldOrigin origin in StateMachine.Playfield.origins)
             {
-                if (origin.curRosterIndex == PlayfieldOrigin.ROSTER_NONE_SELECTED)
+                if (origin.curRosterIndex == PlayfieldOrigin.NO_INDEX_SELECTED)
                 {
                     continue;
                 }

@@ -639,7 +639,7 @@ namespace forest
             instance.transform.position = new Vector3(x, -y, -lookup.unitZPriority);
             originTracking.Add(instance);
 
-            if(data.curRosterIndex != PlayfieldOrigin.ROSTER_NONE_SELECTED)
+            if(data.curRosterIndex != PlayfieldOrigin.NO_INDEX_SELECTED)
             {
                 UnitData unitDat = Core.Instance.gameData.roster[data.curRosterIndex];
                 instance.unitIcon.sprite = lookup.GetUnitTemplateByName(unitDat.unitName).uiIcon;

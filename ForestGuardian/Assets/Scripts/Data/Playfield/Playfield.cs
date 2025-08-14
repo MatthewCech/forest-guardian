@@ -200,21 +200,16 @@ namespace forest
         /// <returns></returns>
         public bool TryGetExitAt(Vector2Int pos, out PlayfieldExit theExit)
         {
-            if (exit == null)
+            if (exit == null || exit.location != pos)
             {
                 theExit = null;
                 return false;
             }
-
-            if (exit.location != pos)
+            else
             {
-                theExit = null;
-                Debug.LogError("Exit location is not at the specified position.");
-                return false;
+                theExit = exit;
+                return true;
             }
-
-            theExit = exit;
-            return true;
         }
 
         /// <summary>
@@ -225,9 +220,10 @@ namespace forest
         /// <returns></returns>
         public bool TryGetPortalAt(Vector2Int pos, out PlayfieldPortal portal)
         {
+            portal = null;
+
             if (portals == null)
             {
-                portal = null;
                 return false;
             }
 
@@ -240,7 +236,6 @@ namespace forest
                 }
             }
 
-            portal = null;
             return false;
         }
 

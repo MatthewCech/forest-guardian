@@ -13,14 +13,15 @@ namespace forest
     [JsonObject(MemberSerialization.OptIn)]
     public class PlayfieldOrigin
     {
-        public const int ROSTER_NONE_SELECTED = -1;
+        public const int NO_INDEX_SELECTED = -1;
 
         [JsonProperty] public int id = Playfield.NO_ID; // The playfield-unique ID for this.
         [JsonProperty] public Vector2Int location = Vector2Int.zero;
+        [JsonProperty] public int partyIndex = NO_INDEX_SELECTED; // Index to draw from automatically for previous units
 
         // Per turn variables
         // Tunable tile data based on lookup information, etc
-        public int curRosterIndex = ROSTER_NONE_SELECTED;
+        public int curRosterIndex = NO_INDEX_SELECTED;
 
         // If we are pre-writing the contents or indicating we're going to potentially skip player choice,
         // we can set this to true. If every origin is flagged true, then we skip the placement phase.

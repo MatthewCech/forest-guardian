@@ -34,6 +34,7 @@ namespace forest
             }
         }
 
+#if UNITY_EDITOR
         private void OnDrawGizmos()
         {
             if (associatedData == null)
@@ -47,5 +48,6 @@ namespace forest
 
             Handles.Label(this.transform.position + new Vector3(0, 0.1f, 0), $"Target: \"{associatedData.target}\"", style);
         }
+#endif
     }
 }

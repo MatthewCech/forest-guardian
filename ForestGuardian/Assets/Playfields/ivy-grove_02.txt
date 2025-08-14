@@ -3,19 +3,6 @@
   "tagsBestowed": null,
   "units": [
     {
-      "tag": "Guardian",
-      "id": 77,
-      "team": 1,
-      "locations": [
-        {
-          "x": 3,
-          "y": 6,
-          "magnitude": 6.708204,
-          "sqrMagnitude": 45
-        }
-      ]
-    },
-    {
       "tag": "Ivy",
       "id": 74,
       "team": 2,
@@ -365,7 +352,28 @@
       }
     }
   ],
-  "origins": [],
+  "origins": [
+    {
+      "id": 79,
+      "location": {
+        "x": 3,
+        "y": 6,
+        "magnitude": 6.708204,
+        "sqrMagnitude": 45
+      },
+      "partyIndex": 0
+    },
+    {
+      "id": 80,
+      "location": {
+        "x": 4,
+        "y": 7,
+        "magnitude": 8.062258,
+        "sqrMagnitude": 65
+      },
+      "partyIndex": 1
+    }
+  ],
   "exit": null,
-  "nextID": 79
+  "nextID": 81
 }
