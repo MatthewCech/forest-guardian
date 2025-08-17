@@ -47,3 +47,6 @@ TagManager:
   - name: Indicator
     uniqueID: 1249695165
     locked: 0
+  - name: Tutorial
+    uniqueID: 3168329575
+    locked: 0

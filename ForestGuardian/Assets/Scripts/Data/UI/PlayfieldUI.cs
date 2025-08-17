@@ -25,6 +25,8 @@ namespace forest
 
         private List<PlayfieldUISelectionEntry> trackedEntries;
 
+        public List<PlayfieldUISelectionEntry> RosterEntries { get { return trackedEntries; } }
+
         private void Awake()
         {
             trackedEntries = new List<PlayfieldUISelectionEntry>();

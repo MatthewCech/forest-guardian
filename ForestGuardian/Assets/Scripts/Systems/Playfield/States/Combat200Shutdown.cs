@@ -25,7 +25,12 @@ namespace forest
             if (!firstStep)
             {
                 firstStep = true;
-                StateMachine.UI.result.gameObject.SetActive(false);
+
+                if (StateMachine.UI != null && StateMachine.UI.result != null)
+                {
+                    StateMachine.UI.result.gameObject.SetActive(false);
+                }
+
                 Core.Instance.LoadLevelMap();
             }
         }

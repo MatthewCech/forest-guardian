@@ -34,6 +34,7 @@ namespace forest
         public VisualLookup VisualLookup { get; private set; }
         public PlayfieldLookup PlayfieldLookup { get; private set; }
         public PlayfieldUI UI { get; private set; }
+        public string PlayfieldName { get; private set; }
 
         // Internal
         private Playfield playfield;
@@ -49,7 +50,7 @@ namespace forest
             if (!TrySelectLevel(out TextAsset toLoad))
             {
                 Debug.LogError("No playfield specified! Attempting to exit.");
-                SetState<Combat200Shutdown>();
+                Exit();
                 return;
             }
 
@@ -59,9 +60,37 @@ namespace forest
 
             Utils.CenterCamera(mainCam, visualizerPlayfield);
 
-            ConfigureInitialState();
+            // Internal property setup
+            PlayfieldName = toLoad.name;
+            Playfield = playfield;
+            VisualPlayfield = visualizerPlayfield;
+            VisualLookup = visualLookup;
+            PlayfieldLookup = playfieldLookup;
+            UI = ui;
+
+            // Connect up any global UI
+            UI.buttonExit.onClick.AddListener(Exit);
+            if (Playfield.portals?.Count == 1)
+            {
+                UI.buttonJumpToPortal.interactable = true;
+                UI.buttonJumpToPortal.onClick.AddListener(() => { SetState<Combat100PortalWarp>(); });
+            }
+
+            // Pre-poke coroutine singleton by just doing some guaranteed function to force init.
+            Loam.CoroutineObject.Instance.name.ToString();
+
+            // State config
+            SetState<Combat010Startup>();
         }
 
+        /// <summary>
+        /// Spin down the current playfield by setting the appropriate state and 
+        /// </summary>
+        private void Exit()
+        {
+            UI?.buttonJumpToPortal?.onClick.RemoveAllListeners();
+            SetState<Combat200Shutdown>();
+        }
         private bool TrySelectLevel(out TextAsset selected)
         {
             selected = null;
@@ -89,40 +118,6 @@ namespace forest
         }
 
         /// <summary>
-        /// Set properties and configure state for playing
-        /// </summary>
-        private void ConfigureInitialState()
-        {
-            // Internal links
-            Playfield = playfield;
-            VisualPlayfield = visualizerPlayfield;
-            VisualLookup = visualLookup;
-            PlayfieldLookup = playfieldLookup;
-            UI = ui;
-
-            // Connect relevant UI.
-            UI.buttonExit.onClick.AddListener(Exit);
-
-            if (Playfield.portals?.Count == 1)
-            {
-                UI.buttonJumpToPortal.interactable = true;
-                UI.buttonJumpToPortal.onClick.AddListener(() => { SetState<Combat100PortalWarp>(); });
-            }
-
-            // Pre-poke coroutine singleton by just doing some guaranteed function to force init.
-            Loam.CoroutineObject.Instance.name.ToString();
-
-            // State config
-            SetState<Combat010Startup>();
-        }
-
-        private void Exit()
-        {
-            UI.buttonJumpToPortal.onClick.RemoveAllListeners();
-            SetState<Combat200Shutdown>();
-        }
-
-        /// <summary>
         /// Perform general tick-over of various systems, from current state to postmaster and onward.
         /// </summary>
         private void Update()
@@ -140,7 +135,12 @@ namespace forest
             T instance = (T)System.Activator.CreateInstance(typeof(T), args: this);
             instance.Start();
             current?.Shutdown();
-            UI.currentState.text = current?.GetType().Name;
+
+            if (UI != null && UI.currentState != null)
+            {
+                UI.currentState.text = current?.GetType().Name;
+            }
+
             current = instance;
         }
     }

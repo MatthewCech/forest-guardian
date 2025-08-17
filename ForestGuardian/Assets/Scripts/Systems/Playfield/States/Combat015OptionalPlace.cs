@@ -135,6 +135,7 @@ namespace forest
         private void TryStart()
         {
             WriteOriginUnitsToPlayfield();
+            Loam.Postmaster.Instance.Send(new MsgFloorStarted());
             Loam.CoroutineObject.Instance.StartCoroutine(QueueUpNext());
         }
 

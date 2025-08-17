@@ -16,12 +16,12 @@ namespace forest
     }
 
     [MessageMetadata(
-    friendlyName: "Collectable Acquired",
-    description: "Indicates that a collectable was interacted with",
+    friendlyName: "Collectible Acquired",
+    description: "Indicates that a Collectible was interacted with",
     isVisible: true)]
-    public class MsgCollectableGrabbed : Loam.Message
+    public class MsgCollectibleGrabbed : Loam.Message
     {
-        public Item collectable;
+        public Item collectible;
     }
 
     [MessageMetadata(
@@ -42,6 +42,14 @@ namespace forest
     public class MsgRosterUnitIndicated : Loam.Message
     {
         public int rosterIndex;
+    }
+
+    [MessageMetadata(
+    friendlyName: "Start Floor Requested",
+    description: "A player is entering the main loop of the playfield via an explicit request (button, etc)",
+    isVisible: true)]
+    public class MsgFloorStarted : Loam.Message
+    {
     }
 
     // Direct input style interactions with playfield stuff
