@@ -93,11 +93,15 @@ namespace forest
         {
             MsgIndicatorClicked msg = raw as MsgIndicatorClicked;
             PlayfieldUnit unit = msg.indicator.ownerUnit;
+            Unit visualUnit = StateMachine.VisualPlayfield.FindUnit(unit);
             Vector2Int target = msg.indicator.overlaidPosition;
 
             if (msg.indicator.type == IndicatorType.ImmediateMove)
             {
                 Utils.MoveUnitToLocation(StateMachine.Playfield, StateMachine.VisualPlayfield, unit, target);
+
+                Postmaster.Instance.Send(new MsgUnitMoved { unit = visualUnit });
+
                 CheckForShortCircuitStateJump(unit);
                 if (unit.curMovementBudget == 0)
                 {
@@ -111,6 +115,8 @@ namespace forest
                 {
                     StateMachine.VisualPlayfield.DamageUnit(unit, targetUnit, StateMachine.Playfield);
                 }
+
+                Postmaster.Instance.Send(new MsgUnitAttack { unit = visualUnit });
 
                 StateMachine.VisualPlayfield.HideIndicators();
 

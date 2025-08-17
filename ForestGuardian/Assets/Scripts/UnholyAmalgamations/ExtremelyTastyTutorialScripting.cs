@@ -10,12 +10,16 @@ namespace forest
     {
         public enum TutorialState
         {
+            // General
+            Disable = -2,
+            Startup = -1,
+
             // Error state
             NONE = 0,
 
             // Lore stuff
-            Intro_01,
-            Intro_02,
+            ProvidingContext_01,
+            ProvidingContext_02,
 
             // Walking through setup
             SelectFirstOrigin,
@@ -25,12 +29,15 @@ namespace forest
             SelectStartButton,
 
             // Walking through a regular player turn
-            // #TODO: Fill out
+            SelectMovement,
+            SelectAttack,
+            AttackEnemy,
 
-            // General
-            Startup,
-            Waiting,
-            Disable
+            // Success
+            EnemyDestroyed,
+
+            // Meta
+            COUNT
         }
 
         [Header("Things to stare at and reach into")]
@@ -155,7 +162,7 @@ namespace forest
                 case TutorialState.Startup:
                     if (string.Equals(playfieldCore.PlayfieldName, levelToMatch.name))
                     {
-                        SetState(TutorialState.Intro_01);
+                        SetState(TutorialState.ProvidingContext_01);
                     }
                     else
                     {
@@ -164,18 +171,18 @@ namespace forest
 
                     break;
 
-                case TutorialState.Intro_01:
+                case TutorialState.ProvidingContext_01:
                     if (TryConsumeStateInit())
                     {
                         ShowMessage("Welcome to your first <forest battle>?! What you see here is an <overgrown grove>?\n\n(Press next to continue...)");
                     }
                     if (TryConsumeProceedToNextRequest())
                     {
-                        SetState(TutorialState.Intro_02);
+                        SetState(TutorialState.ProvidingContext_02);
                     }
                     break;
 
-                case TutorialState.Intro_02:
+                case TutorialState.ProvidingContext_02:
                     if (TryConsumeStateInit())
                     {
                         ShowMessage("To <grow into and rebalance>? a space, we first need to select what <plants/units>? to use.");
@@ -311,14 +318,118 @@ namespace forest
 
                     if (TryConsumeProceedToNextRequest())
                     {
-                        // #TODO: Fill out
-                        SetState(TutorialState.Waiting);
+                        SetState(TutorialState.SelectMovement);
                     }
 
                     break;
 
-                case TutorialState.Waiting:
-                    // This area intentionally left blank
+                case TutorialState.SelectMovement:
+                    if(TryConsumeStateInit())
+                    {
+                        PlayfieldUnit guardian = null;
+                        foreach(PlayfieldUnit unit in playfieldCore.Playfield.units)
+                        {
+                            if(string.Equals(unit.tag, GameInstance.PLAYER_UNIT_DEFAULT, System.StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                guardian = unit;
+                                break;
+                            }
+                        }
+
+                        void UnitMoved(Loam.Message raw)
+                        {
+                            MsgUnitMoved msg = raw as MsgUnitMoved;
+
+                            playfieldIndicator.gameObject.transform.position =
+                                msg.unit.transform.position + Vector3.up * 2;
+
+                            if (msg.unit.associatedData.curMovementBudget == 0)
+                            {
+                                isNextStateRequested = true;
+                            }
+                        }
+
+                        next.gameObject.SetActive(false);
+                        playfieldIndicator.gameObject.SetActive(true);
+
+                        playfieldIndicator.gameObject.transform.position =
+                            playfieldCore.VisualPlayfield.FindUnit(guardian).transform.position + Vector3.up;
+
+                        stateOnlyMsgHandle_01 = Loam.Postmaster.Instance.Subscribe<MsgUnitMoved>(UnitMoved);
+
+                        ShowMessage("You can move a <plant/unit>? by clicking on the movement range squares.\n\nNotice how you get a trail behind you - this is your <health>?!");
+                    }
+
+                    if(TryConsumeProceedToNextRequest())
+                    {
+                        SetState(TutorialState.SelectAttack);
+                    }
+                    break;
+
+                case TutorialState.SelectAttack:
+                    if (TryConsumeStateInit())
+                    {
+                        PlayfieldUnit guardian = null;
+                        foreach (PlayfieldUnit unit in playfieldCore.Playfield.units)
+                        {
+                            if (string.Equals(unit.tag, GameInstance.PLAYER_UNIT_DEFAULT, System.StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                guardian = unit;
+                                break;
+                            }
+                        }
+
+                        void UnitAttacks(Loam.Message raw)
+                        {
+                            isNextStateRequested = true;
+                        }
+
+                        next.gameObject.SetActive(false);
+                        playfieldIndicator.gameObject.SetActive(true);
+
+                        playfieldIndicator.gameObject.transform.position =
+                        playfieldCore.VisualPlayfield.FindUnit(guardian).transform.position + Vector3.up;
+
+                        stateOnlyMsgHandle_01 = Loam.Postmaster.Instance.Subscribe<MsgUnitAttack>(UnitAttacks);
+
+                        ShowMessage("When you're done moving, you can use one attack. You don't have to travel your " +
+                            "maximum distance to do so, clicking on the head of the <unit/plant> also lets you attack whenever.");
+                    }
+
+                    if (TryConsumeProceedToNextRequest())
+                    {
+                        SetState(TutorialState.AttackEnemy);
+                    }
+                    break;
+
+                case TutorialState.AttackEnemy:
+                    if (TryConsumeStateInit())
+                    {
+                        next.gameObject.SetActive(false);
+                        playfieldIndicator.gameObject.SetActive(true);
+
+                        ShowMessage("Now, try moving towards the <enemy> and attack them to <restore>? the area!");
+                    }
+
+                    PlayfieldUnit opponent = playfieldCore.Playfield.units.Find(unit => unit.team == Team.Opponent);
+                    if (opponent != null)
+                    {
+                        playfieldIndicator.gameObject.transform.position =
+                            playfieldCore.VisualPlayfield.FindUnit(opponent).transform.position;
+                    }
+
+                    if (opponent == null)
+                    {
+                        SetState(TutorialState.EnemyDestroyed);
+                    }
+                    break;
+
+                case TutorialState.EnemyDestroyed:
+                    if (TryConsumeStateInit())
+                    {
+                        next.gameObject.SetActive(false);
+                        ShowMessage("You've <restored>? the area!\n\n Now go, help the forest!");
+                    }
                     break;
 
                 case TutorialState.Disable:

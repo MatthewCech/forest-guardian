@@ -45,13 +45,31 @@ namespace forest
     }
 
     [MessageMetadata(
+    friendlyName: "Player Unit Moved",
+    description: "When a player indicates a unit has moved",
+    isVisible: true)]
+    public class MsgUnitMoved : Loam.Message
+    {
+        public Unit unit;
+    }
+
+    [MessageMetadata(
+    friendlyName: "Player Unit Attacking",
+    description: "When a player has a unit attack or use a move",
+    isVisible: true)]
+    public class MsgUnitAttack : Loam.Message
+    {
+        public Unit unit;
+    }
+
+
+    [MessageMetadata(
     friendlyName: "Start Floor Requested",
     description: "A player is entering the main loop of the playfield via an explicit request (button, etc)",
     isVisible: true)]
     public class MsgFloorStarted : Loam.Message
     {
     }
-
     // Direct input style interactions with playfield stuff
     // -------------------------------------------------------------------------------------------------------------
 
