@@ -9,8 +9,7 @@ namespace forest
     public class MapUIMenu : MonoBehaviour
     {
         [Header("Debug")]
-        [SerializeField] private TMPro.TextMeshProUGUI instanceState;
-        [SerializeField] private float timeBetweenUpdates = 0.25f;
+        [SerializeField] private Button dumpGameInstanceState;
 
         [Header("Links")]
         [SerializeField] private TMPro.TextMeshProUGUI currencyDisplay;
@@ -19,44 +18,26 @@ namespace forest
         [SerializeField] private Button rosterButton;
         [SerializeField] private UIRoster roster;
 
-
-        // Internal
-        private float timeSoFar = 0;
-
-        private void Start()
-        {
-            timeSoFar = timeBetweenUpdates;
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-            timeSoFar += Time.deltaTime;
-
-            if (timeSoFar > timeBetweenUpdates)
-            {
-                if (Core.Instance != null)
-                {
-                    instanceState.text = JsonUtility.ToJson(Core.Instance.gameData, true);
-                }
-
-                timeSoFar = 0;
-            }
-        }
-
         private void OnEnable()
         {
             rosterButton.onClick.AddListener(ToggleRosterVisibility);
+            dumpGameInstanceState.onClick.AddListener(DumpInstanceStateToConsole);
         }
 
         private void OnDisable()
         {
+            dumpGameInstanceState.onClick.RemoveListener(DumpInstanceStateToConsole);
             rosterButton.onClick.RemoveListener(ToggleRosterVisibility);
         }
 
         private void ToggleRosterVisibility()
         {
             roster.SetVisibility(!roster.IsVisible);
+        }
+
+        private void DumpInstanceStateToConsole()
+        {
+            Debug.Log("Game Instance State:\n" + JsonUtility.ToJson(Core.Instance.gameData, true));
         }
     }
 }

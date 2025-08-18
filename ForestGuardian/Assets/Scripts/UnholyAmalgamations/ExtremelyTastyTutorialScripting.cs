@@ -98,6 +98,7 @@ namespace forest
             {
                 uiIndicator.gameObject.transform.SetParent(playfieldCore.UI.transform);
                 uiIndicator.gameObject.transform.position = Vector3.zero;
+                playfieldCore.UI.startFloor.interactable = false;
             }
 
             next.gameObject.SetActive(true);
@@ -309,7 +310,7 @@ namespace forest
 
                         next.gameObject.SetActive(false);
                         uiIndicator.gameObject.SetActive(true);
-
+                        playfieldCore.UI.startFloor.interactable = true;
                         stateOnlyMsgHandle_01 = Loam.Postmaster.Instance.Subscribe<MsgFloorStarted>(FloorStartRequest);
                         uiIndicator.gameObject.transform.SetParent(playfieldCore.UI.startFloor.transform);
                         uiIndicator.gameObject.transform.localPosition = new Vector3(70, -10, 0);

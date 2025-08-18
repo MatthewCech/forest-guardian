@@ -18,7 +18,7 @@
     {
       "tag": "Ivy",
       "id": 45,
-      "team": 0,
+      "team": 2,
       "locations": [
         {
           "x": 5,
@@ -217,6 +217,7 @@
   },
   "items": [],
   "portals": [],
+  "origins": [],
   "exit": {
     "tag": "Exit",
     "id": 46,
