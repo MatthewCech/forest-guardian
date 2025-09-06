@@ -147,6 +147,7 @@ namespace forest
                 Postmaster.Instance.Send(new MsgUnitMoved { unit = visualUnit });
 
                 CheckForShortCircuitStateJump(indicatorOwnerUnit);
+
                 if (indicatorOwnerUnit.curMovementBudget == 0)
                 {
                     StateMachine.VisualPlayfield.DisplayIndicatorAttackPreview(indicatorOwnerUnit, StateMachine.Playfield);
@@ -155,25 +156,44 @@ namespace forest
                 return;
             }
 
-            // Attacking, friend or foe. Indicator no longer needed, but mark that we're 
-            // done with the turn
+            // Attacking, friend or foe. Indicator no longer needed, but mark that we're done with the turn.
             if (msg.indicator.type == IndicatorType.Attack)
             {
-                if (StateMachine.Playfield.TryGetUnitAt(target, out PlayfieldUnit targetUnit))
+                void WrapUpAttack()
                 {
-                    StateMachine.VisualPlayfield.DamageUnit(indicatorOwnerUnit, targetUnit, StateMachine.Playfield);
+                    Postmaster.Instance.Send(new MsgUnitAttack { unit = visualUnit });
+                    StateMachine.VisualPlayfield.HideIndicators();
+                    indicatorOwnerUnit.curHasPerformedActions = true;
+
+                    if (!SelectNextUnitToMove())
+                    {
+                        StateMachine.SetState<Combat050OpponentMove>();
+                    }
                 }
 
-                Postmaster.Instance.Send(new MsgUnitAttack { unit = visualUnit });
-
-                StateMachine.VisualPlayfield.HideIndicators();
-
-                indicatorOwnerUnit.curHasPerformedActions = true;
-
-                if (!SelectNextUnitToMove())
+                bool isValidTarget = StateMachine.Playfield.TryGetUnitAt(target, out PlayfieldUnit targetUnit);
+                if (isValidTarget)
                 {
-                    StateMachine.SetState<Combat050OpponentMove>();
+                    if (targetUnit.team == Team.Player)
+                    {
+                        Core.Instance.uiCore.DisplayCoDA("fr?", () =>
+                        {
+                            StateMachine.VisualPlayfield.DamageUnit(indicatorOwnerUnit, targetUnit, StateMachine.Playfield);
+                            WrapUpAttack();
+                        });
+
+                        return;
+                    }
+                    else
+                    {
+                        StateMachine.VisualPlayfield.DamageUnit(indicatorOwnerUnit, targetUnit, StateMachine.Playfield);
+                        WrapUpAttack();
+
+                        return;
+                    }
                 }
+
+                WrapUpAttack();
 
                 return;
             }

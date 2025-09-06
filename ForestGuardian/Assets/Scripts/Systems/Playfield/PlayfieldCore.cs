@@ -135,13 +135,12 @@ namespace forest
             T instance = (T)System.Activator.CreateInstance(typeof(T), args: this);
             instance.Start();
             current?.Shutdown();
+            current = instance;
 
             if (UI != null && UI.currentState != null)
             {
                 UI.currentState.text = current?.GetType().Name;
             }
-
-            current = instance;
         }
     }
 }

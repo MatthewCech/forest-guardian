@@ -31,6 +31,7 @@ namespace forest
 
         public GameInstance gameData { get; private set; }
         public AudioCore audioCore { get; private set; }
+        public UICore uiCore { get; private set; }
         public VisualLookup visualLookup { get; private set; }
 
         /// <summary>
@@ -86,6 +87,21 @@ namespace forest
             coreToRegister.transform.position = Vector3.zero;
 
             audioCore = coreToRegister;
+        }
+
+        public void TryRegisterUICore(UICore coreToRegister)
+        {
+            if (uiCore != null)
+            {
+                Debug.Log("Ignoring extra UI core registration attempt. Not necessarily anything wrong, just noting it.");
+                return;
+            }
+
+            DontDestroyOnLoad(coreToRegister);
+            coreToRegister.transform.SetParent(this.transform);
+            coreToRegister.transform.position = Vector3.zero;
+
+            uiCore = coreToRegister;
         }
 
         public void LoadLevelPlayfield()
