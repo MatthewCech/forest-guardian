@@ -61,6 +61,10 @@ namespace forest
 
         // read only data with roster override info
         public UnitData rosterOverride = null;
+
+        // Runtime data for the turn to essentially determine if the turn is complete or not.
+        // Specifically, this is "have all actions been performed with this unit".
+        public bool curHasPerformedActions = false;
     }
 }
 

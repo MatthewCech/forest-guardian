@@ -29,6 +29,7 @@ namespace forest
 
             foreach (PlayfieldUnit unit in StateMachine.Playfield.units)
             {
+                unit.curHasPerformedActions = false;
                 unit.curMovementBudget = unit.curMaxMovementBudget;
                 unit.curMovesTaken = 0;
             }

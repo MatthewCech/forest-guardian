@@ -6,6 +6,7 @@ using UnityEditorInternal;
 using UnityEngine;
 using System.Linq;
 using static UnityEngine.UI.CanvasScaler;
+using Codice.Client.BaseCommands.BranchExplorer.Layout;
 
 namespace forest
 {
@@ -14,42 +15,64 @@ namespace forest
     /// </summary>
     public class Combat040PlayerMove : CombatState
     {
-
         private MessageSubscription subMoveTileClicked = null;
         private MessageSubscription subPlayerClicked = null;
 
-        private List<PlayfieldUnit> pendingUnits = null;
         private PlayfieldUnit currentUnit = null;
 
         public Combat040PlayerMove(PlayfieldCore stateMachine) : base(stateMachine) { }
 
-        // Pop the head to get to the next available unit
         public bool SelectNextUnitToMove()
         {
-            if (pendingUnits == null || pendingUnits.Count == 0)
+            List<PlayfieldUnit> units = GetAvailablePlayerUnits();
+
+            if (units == null || units.Count == 0)
             {
                 currentUnit = null;
                 return false;
             }
 
-            currentUnit = pendingUnits[0];
-            pendingUnits.RemoveAt(0);
+            currentUnit = units[0];
+            DisplayPlayerUnitAction(currentUnit);
 
-            if (!CheckForShortCircuitStateJump(currentUnit))
-            {
-                StateMachine.VisualPlayfield.DisplayIndicatorMovePreview(currentUnit, StateMachine.Playfield);
-            }
             return true;
+        }
+
+        /// <summary>
+        /// Depending on how many moves are allowed for the unit and the state of the unit, display the
+        /// appropriate indicator preview. 
+        /// 
+        /// NOTE: Unsure if this conditional will create edge cases if, say, a player unit is surrounded
+        /// and has movement options free but doesn't have have space to do so.
+        /// </summary>
+        /// <param name="toShowActionOf"></param>
+        private void DisplayPlayerUnitAction(PlayfieldUnit toShowActionOf)
+        {
+            if (toShowActionOf.curMovementBudget <= 0)
+            {
+                // Can't move or no movement? Try and attack.
+                StateMachine.VisualPlayfield.DisplayIndicatorAttackPreview(toShowActionOf, StateMachine.Playfield);
+            }
+            else
+            {
+                // If we have the movement available, try and keep moving
+                StateMachine.VisualPlayfield.DisplayIndicatorMovePreview(toShowActionOf, StateMachine.Playfield);
+            }
+        }
+
+        public List<PlayfieldUnit> GetAvailablePlayerUnits()
+        {
+            return StateMachine.Playfield.units.Where((unit) => 
+                unit.team == Team.Player && 
+                unit.curHasPerformedActions == false).ToList();
         }
 
         public override void Start()
         {
-            subMoveTileClicked = Postmaster.Instance.Subscribe<MsgIndicatorClicked>(PlayerMove_MsgMoveTileClicked);
-            subPlayerClicked = Postmaster.Instance.Subscribe<MsgUnitPrimaryAction>(PlayerMove_MsgFriendlyUnitClicked);
+            UnityEngine.Assertions.Assert.IsTrue(GetAvailablePlayerUnits().Count > 0, "It's impossible to start a player turn without units");
 
-            // Collect player units
-            pendingUnits = StateMachine.Playfield.units.Where((unit) => unit.team == Team.Player).ToList();
-            UnityEngine.Assertions.Assert.IsTrue(pendingUnits.Count > 0, "It's impossible to start a player turn without units");
+            subMoveTileClicked = Postmaster.Instance.Subscribe<MsgIndicatorClicked>(PlayerMoveAttack_MsgInteractionClicked);
+            subPlayerClicked = Postmaster.Instance.Subscribe<MsgUnitPrimaryAction>(PlayerSelect_MsgUnitClicked);
 
             SelectNextUnitToMove();
         }
@@ -66,7 +89,7 @@ namespace forest
             subPlayerClicked?.Dispose();
         }
 
-        void PlayerMove_MsgFriendlyUnitClicked(Message raw)
+        void PlayerSelect_MsgUnitClicked(Message raw)
         {
             MsgUnitPrimaryAction msg = raw as MsgUnitPrimaryAction;
 
@@ -77,9 +100,20 @@ namespace forest
             bool isHead = gridPosClicked == clickedUnitHeadPos;
             if (isHead)
             {
-                unit.curMovementBudget = 0;
-                StateMachine.VisualPlayfield.HideIndicators();
-                StateMachine.VisualPlayfield.DisplayIndicatorAttackPreview(unit, StateMachine.Playfield);
+                if (unit.team == Team.Player)
+                {
+                    if (!unit.curHasPerformedActions)
+                    {
+                        StateMachine.VisualPlayfield.HideIndicators();
+                        DisplayPlayerUnitAction(unit);
+                    }
+                }
+                else
+                {
+                    StateMachine.VisualPlayfield.HideIndicators();
+                    StateMachine.VisualPlayfield.DisplayIndicatorAttackPreview(unit, StateMachine.Playfield);
+                }
+
                 return;
             }
         }
@@ -89,38 +123,54 @@ namespace forest
         /// In the event of an attack, we then handle damage and impact of the unit.
         /// </summary>
         /// <param name="raw"></param>
-        void PlayerMove_MsgMoveTileClicked(Message raw)
+        void PlayerMoveAttack_MsgInteractionClicked(Message raw)
         {
             MsgIndicatorClicked msg = raw as MsgIndicatorClicked;
-            PlayfieldUnit unit = msg.indicator.ownerUnit;
-            Unit visualUnit = StateMachine.VisualPlayfield.FindUnit(unit);
+            PlayfieldUnit indicatorOwnerUnit = msg.indicator.ownerUnit;
+            Unit visualUnit = StateMachine.VisualPlayfield.FindUnit(indicatorOwnerUnit);
             Vector2Int target = msg.indicator.overlaidPosition;
 
+            // We're probably just previewing an attack, but either way we won't
+            // allow any interaction here so just hide and reselect next player unit.
+            if(indicatorOwnerUnit.team != Team.Player)
+            {
+                StateMachine.VisualPlayfield.HideIndicators();
+                SelectNextUnitToMove();
+                return;
+            }
+
+            // Move the unit about, but don't do an explicit clear of the preview - Instead just redraw.
             if (msg.indicator.type == IndicatorType.ImmediateMove)
             {
-                Utils.MoveUnitToLocation(StateMachine.Playfield, StateMachine.VisualPlayfield, unit, target);
+                Utils.MoveUnitToLocation(StateMachine.Playfield, StateMachine.VisualPlayfield, indicatorOwnerUnit, target);
 
                 Postmaster.Instance.Send(new MsgUnitMoved { unit = visualUnit });
 
-                CheckForShortCircuitStateJump(unit);
-                if (unit.curMovementBudget == 0)
+                CheckForShortCircuitStateJump(indicatorOwnerUnit);
+                if (indicatorOwnerUnit.curMovementBudget == 0)
                 {
-                    StateMachine.VisualPlayfield.DisplayIndicatorAttackPreview(unit, StateMachine.Playfield);
+                    StateMachine.VisualPlayfield.DisplayIndicatorAttackPreview(indicatorOwnerUnit, StateMachine.Playfield);
                 }
+
+                return;
             }
 
+            // Attacking, friend or foe. Indicator no longer needed, but mark that we're 
+            // done with the turn
             if (msg.indicator.type == IndicatorType.Attack)
             {
                 if (StateMachine.Playfield.TryGetUnitAt(target, out PlayfieldUnit targetUnit))
                 {
-                    StateMachine.VisualPlayfield.DamageUnit(unit, targetUnit, StateMachine.Playfield);
+                    StateMachine.VisualPlayfield.DamageUnit(indicatorOwnerUnit, targetUnit, StateMachine.Playfield);
                 }
 
                 Postmaster.Instance.Send(new MsgUnitAttack { unit = visualUnit });
 
                 StateMachine.VisualPlayfield.HideIndicators();
 
-                if(!SelectNextUnitToMove())
+                indicatorOwnerUnit.curHasPerformedActions = true;
+
+                if (!SelectNextUnitToMove())
                 {
                     StateMachine.SetState<Combat050OpponentMove>();
                 }
