@@ -936,7 +936,11 @@ MonoBehaviour:
     - moveName: Bite
       moveDamage: 2
       moveRange: 1
-      moveDescription: 
+      moveDescription: Chomp!
+    - moveName: Throw
+      moveDamage: 1
+      moveRange: 2
+      moveDescription: Throw a stick or rock
   head: {fileID: 334675950987140449}
   segmentLink: {fileID: 6897957375675128042}
   uiIcon: {fileID: 21300000, guid: 760690c3843b2f34ca9231c94a362220, type: 3}
@@ -956,6 +960,7 @@ MonoBehaviour:
       speed: 2
       level: 0
       moves: []
+    curHasPerformedActions: 0
   gridPos: {x: 0, y: 0}
 --- !u!61 &7397799963576805088
 BoxCollider2D:

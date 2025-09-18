@@ -388,7 +388,7 @@ MonoBehaviour:
   data:
     unitName: BogWisp
     maxSize: 2
-    speed: 1
+    speed: 2
     level: 0
     moves:
     - moveName: Flare
@@ -414,6 +414,7 @@ MonoBehaviour:
       speed: 2
       level: 0
       moves: []
+    curHasPerformedActions: 0
   gridPos: {x: 0, y: 0}
 --- !u!61 &7397799963576805088
 BoxCollider2D:
