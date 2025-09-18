@@ -21,6 +21,7 @@ namespace forest
         public Transform moveEntryParent;
 
         private string unitInternalName;
+        private UnitData originalDataDEBUG;
         private List<UIRosterMoveEntry> trackedMoveEntries = new List<UIRosterMoveEntry>();
 
         private void Awake()
@@ -39,6 +40,7 @@ namespace forest
         /// </summary>
         private void UpdateData(UnitData data)
         {
+            originalDataDEBUG = data;
             unitInternalName = data.unitName;
             unitName.text = data.unitName;
             unitSize.text = data.maxSize.ToString();

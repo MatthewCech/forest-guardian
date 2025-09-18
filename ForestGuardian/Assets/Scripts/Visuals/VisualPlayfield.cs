@@ -1,10 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
-using UnityEditor.UIElements;
 using UnityEngine;
 using Loam;
-using static UnityEditor.Progress;
 using static UnityEngine.UI.CanvasScaler;
 
 namespace forest
@@ -107,8 +105,11 @@ namespace forest
         {
             ClearMonoBehaviourList(indicatorTracking);
 
+            Unit visualInstance = FindUnit(unit);
+            MoveData moveData = visualInstance.data.moves[unit.curSelectedMove];
+
             Vector2Int headLocation = unit.locations[PlayfieldUnit.HEAD_INDEX];
-            DisplayIndicatorDiamond(unit, unit.curAttackRange, playfield, headLocation, lookup.attackPreview);
+            DisplayIndicatorDiamond(unit, moveData.moveRange, playfield, headLocation, lookup.attackPreview);
         }
 
         private void MoveFlood(PlayfieldUnit unit, int range, Playfield playfield, Indicator indicator)
@@ -279,7 +280,7 @@ namespace forest
             return originTracking.Find((cur) => cur.associatedPos == location);
         }
 
-        public void DamageUnit(PlayfieldUnit attackingUnit, PlayfieldUnit defendingUnit, Playfield playfield)
+        public void DamageUnit(MoveData moveUsed, PlayfieldUnit attackingUnit, PlayfieldUnit defendingUnit, Playfield playfield)
         {
             if (attackingUnit.id == defendingUnit.id)
             {
@@ -289,7 +290,7 @@ namespace forest
             Unit attacking = FindUnit(attackingUnit);
             Unit defending = FindUnit(defendingUnit);
 
-            int damage = attacking.data.moves[0].moveDamage;
+            int damage = moveUsed.moveDamage;
             if (damage <= 0)
             {
                 return;

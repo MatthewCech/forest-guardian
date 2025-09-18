@@ -57,7 +57,7 @@ namespace forest
                 origin.curRosterIndex = msg.rosterIndex;
                 UnitData data = Core.Instance.gameData.roster[origin.curRosterIndex];
                 Unit visual = StateMachine.VisualLookup.GetUnitTemplateByName(data.unitName);
-                StateMachine.UI.unitDetails.ShowDetails(data, visual);
+                StateMachine.UI.unitDetails.ShowDetails(data, visual, ShowExtras.Hide); // Roster has to be player
 
                 StateMachine.UI.startFloor.interactable = true;
             }

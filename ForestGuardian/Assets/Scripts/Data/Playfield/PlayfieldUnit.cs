@@ -56,8 +56,8 @@ namespace forest
         // buffer or tweak the max length based on various gameplay elements. 
         public int curMaxSize = 1;
 
-        // This is basically the same move situation, but rehashed.
-        public int curAttackRange = 1;
+        // Which attack/move is currently selected for the unit
+        public int curSelectedMove = 0;
 
         // read only data with roster override info
         public UnitData rosterOverride = null;

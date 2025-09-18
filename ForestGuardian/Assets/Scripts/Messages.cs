@@ -5,7 +5,6 @@ using Loam;
 
 namespace forest
 {
-
     [MessageMetadata(
     friendlyName: "Indicator Hit",
     description: "A movement indicator tile was pressed. This message contains the associated indicator.",
@@ -70,125 +69,29 @@ namespace forest
     public class MsgFloorStarted : Loam.Message
     {
     }
-    // Direct input style interactions with playfield stuff
-    // -------------------------------------------------------------------------------------------------------------
 
     [MessageMetadata(
-    friendlyName: "Tile Primary Action",
-    description: "A primary action, such as a left-click, was performed over a playfield tile",
+    friendlyName: "Do No Action",
+    description: "A 'no action' has been selected during combat",
     isVisible: true)]
-    public class MsgTilePrimaryAction : Loam.Message
+    public class MsgNoAction_UI : Loam.Message
     {
-        public Tile tileTweaked;
-        public Vector2Int tilePosition;
     }
 
     [MessageMetadata(
-    friendlyName: "Tile Secondary Action",
-    description: "A secondary action, such as a right-click, was performed over a playfield tile",
+    friendlyName: "Move Selected",
+    description: "The specified following move was selected from the specified unit, clone of the data",
     isVisible: true)]
-    public class MsgTileSecondaryAction : Loam.Message
+    public class MsgMoveSelected_UI : Loam.Message
     {
-        public Tile tile;
-        public Vector2Int position;
+        public MoveData moveSelected;
     }
 
     [MessageMetadata(
-    friendlyName: "Unit Primary Action",
-    description: "A primary action, such as a left-click, was performed over a playfield unit. This takes precedence over a playfield tile.",
+    friendlyName: "Movement button Selected",
+    description: "Swap to try and movements and continue moving",
     isVisible: true)]
-    public class MsgUnitPrimaryAction : Loam.Message
+    public class MsgMove_UI : Loam.Message
     {
-        public Unit unit;
-        public Vector2Int position;
-    }
-
-    [MessageMetadata(
-    friendlyName: "Unit Secondary Action",
-    description: "A secondary action, such as a right-click, was performed over a playfield unit. This takes precedence over a playfield tile.",
-    isVisible: true)]
-    public class MsgUnitSecondaryAction : Loam.Message
-    {
-        public Unit unit;
-        public Vector2Int position;
-    }
-
-    [MessageMetadata(
-    friendlyName: "Item Primary Action",
-    description: "A primary action, such as a left-click, was performed over a playfield item. This takes precedence over a playfield tile.",
-    isVisible: true)]
-    public class MsgItemPrimaryAction : Loam.Message
-    {
-        public Item item;
-        public Vector2Int position;
-    }
-
-    [MessageMetadata(
-    friendlyName: "Item Secondary Action",
-    description: "A secondary action, such as a right-click, was performed over a playfield item. This takes precedence over a playfield tile.",
-    isVisible: true)]
-    public class MsgItemSecondaryAction : Loam.Message
-    {
-        public Item item;
-        public Vector2Int position;
-    }
-
-    [MessageMetadata(
-    friendlyName: "Portal Primary Action",
-    description: "A primary action, such as a left-click, was performed over playfield portal. This takes precedence over a playfield tile.",
-    isVisible: true)]
-    public class MsgPortalPrimaryAction : Loam.Message
-    {
-        public Portal item;
-        public Vector2Int position;
-    }
-
-    [MessageMetadata(
-    friendlyName: "Portal Secondary Action",
-    description: "A secondary action, such as a right-click, was performed over a playfield portal. This takes precedence over a playfield tile.",
-    isVisible: true)]
-    public class MsgPortalSecondaryAction : Loam.Message
-    {
-        public Portal item;
-        public Vector2Int position;
-    }
-    [MessageMetadata(
-    friendlyName: "Origin Primary Action",
-    description: "A primary action, such as a left-click, was performed over playfield Origin. This takes precedence over a playfield tile.",
-    isVisible: true)]
-    public class MsgOriginPrimaryAction : Loam.Message
-    {
-        public Origin origin;
-        public Vector2Int position;
-    }
-
-    [MessageMetadata(
-    friendlyName: "Origin Secondary Action",
-    description: "A secondary action, such as a right-click, was performed over a playfield Origin. This takes precedence over a playfield tile.",
-    isVisible: true)]
-    public class MsgOriginSecondaryAction : Loam.Message
-    {
-        public Origin origin;
-        public Vector2Int position;
-    }
-
-    [MessageMetadata(
-    friendlyName: "Exit Primary Action",
-    description: "A primary action, such as a left-click, was performed over playfield exit. This takes precedence over a playfield tile.",
-    isVisible: true)]
-    public class MsgExitPrimaryAction : Loam.Message
-    {
-        public Exit item;
-        public Vector2Int position;
-    }
-
-    [MessageMetadata(
-    friendlyName: "Exit Secondary Action",
-    description: "A secondary action, such as a right-click, was performed over a playfield exit. This takes precedence over a playfield tile.",
-    isVisible: true)]
-    public class MsgExitSecondaryAction : Loam.Message
-    {
-        public Exit item;
-        public Vector2Int position;
     }
 }

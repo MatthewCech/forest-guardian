@@ -1,12 +1,9 @@
 using Loam;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Hardware;
-using UnityEditorInternal;
 using UnityEngine;
 using System.Linq;
 using static UnityEngine.UI.CanvasScaler;
-using Codice.Client.BaseCommands.BranchExplorer.Layout;
 
 namespace forest
 {
@@ -17,10 +14,13 @@ namespace forest
     {
         private MessageSubscription subMoveTileClicked = null;
         private MessageSubscription subPlayerClicked = null;
-
-        private PlayfieldUnit currentUnit = null;
+        private MessageSubscription subNoActionClicked = null;
+        private MessageSubscription subMoveSelected = null;
+        private MessageSubscription subMove = null;
 
         public Combat040PlayerMove(PlayfieldCore stateMachine) : base(stateMachine) { }
+
+        private PlayfieldUnit selectedUnit;
 
         public bool SelectNextUnitToMove()
         {
@@ -28,12 +28,11 @@ namespace forest
 
             if (units == null || units.Count == 0)
             {
-                currentUnit = null;
                 return false;
             }
 
-            currentUnit = units[0];
-            DisplayPlayerUnitAction(currentUnit);
+            PlayfieldUnit nextUnit = units[0];
+            DisplayPlayerUnitAction(nextUnit);
 
             return true;
         }
@@ -48,6 +47,13 @@ namespace forest
         /// <param name="toShowActionOf"></param>
         private void DisplayPlayerUnitAction(PlayfieldUnit toShowActionOf)
         {
+            UnityEngine.Assertions.Assert.IsNotNull(toShowActionOf);
+
+            selectedUnit = toShowActionOf;
+            Unit unitVisual = StateMachine.VisualPlayfield.FindUnit(toShowActionOf);
+            StateMachine.UI.unitDetails.ShowDetailsOfInstance(unitVisual, ShowExtras.Show);
+            StateMachine.UI.unitDetails.PhantomSelectMove(unitVisual.data.moves[toShowActionOf.curSelectedMove]);
+
             if (toShowActionOf.curMovementBudget <= 0)
             {
                 // Can't move or no movement? Try and attack.
@@ -73,6 +79,9 @@ namespace forest
 
             subMoveTileClicked = Postmaster.Instance.Subscribe<MsgIndicatorClicked>(PlayerMoveAttack_MsgInteractionClicked);
             subPlayerClicked = Postmaster.Instance.Subscribe<MsgUnitPrimaryAction>(PlayerSelect_MsgUnitClicked);
+            subNoActionClicked = Postmaster.Instance.Subscribe<MsgNoAction_UI>(PlayerSelect_NoAction);
+            subMoveSelected = Postmaster.Instance.Subscribe<MsgMoveSelected_UI>(PlayerSelect_MoveSelected);
+            subMove = Postmaster.Instance.Subscribe<MsgMove_UI>(PlayerSelect_Move);
 
             SelectNextUnitToMove();
         }
@@ -80,13 +89,58 @@ namespace forest
         public override void Update()
         {
             PlayfieldUnit toProcess = StateMachine.Playfield.units[0];
-            ProcessKeyboardInput(toProcess);
+            ProcessKeyboardInput(selectedUnit);
         }
 
         public override void Shutdown()
         {
             subMoveTileClicked?.Dispose();
             subPlayerClicked?.Dispose();
+            subNoActionClicked?.Dispose();
+            subMoveSelected?.Dispose();
+            subMove?.Dispose();
+        }
+
+        void PlayerSelect_NoAction(Message raw)
+        {
+            MsgNoAction_UI msg = raw as MsgNoAction_UI;
+
+            StateMachine.VisualPlayfield.HideIndicators();
+            selectedUnit.curHasPerformedActions = true;
+            selectedUnit.curMovesTaken = selectedUnit.curMovementBudget;
+            selectedUnit.curMovementBudget = 0;
+
+            if (!SelectNextUnitToMove())
+            {
+                StateMachine.SetState<Combat050OpponentMove>();
+            }
+        }
+
+        void PlayerSelect_Move(Message raw)
+        {
+            MsgMove_UI msg = raw as MsgMove_UI;
+
+            StateMachine.VisualPlayfield.HideIndicators();
+            DisplayPlayerUnitAction(selectedUnit);
+        }
+
+        void PlayerSelect_MoveSelected(Message raw)
+        {
+            MsgMoveSelected_UI msg = raw as MsgMoveSelected_UI;
+
+            Unit visualUnit = StateMachine.VisualPlayfield.FindUnit(selectedUnit);
+            
+            for(int i = 0; i < visualUnit.data.moves.Count; ++i)
+            {
+                MoveData currentMove = visualUnit.data.moves[i];
+                if (currentMove.moveName.Equals(msg.moveSelected.moveName, System.StringComparison.InvariantCultureIgnoreCase))
+                {
+                    selectedUnit.curSelectedMove = i;
+                    break;
+                }
+            }
+
+            StateMachine.VisualPlayfield.DisplayIndicatorAttackPreview(selectedUnit, StateMachine.Playfield);
         }
 
         void PlayerSelect_MsgUnitClicked(Message raw)
@@ -110,8 +164,14 @@ namespace forest
                 }
                 else
                 {
+                    // Show data for enemy unit
+                    Unit unitVisual = StateMachine.VisualPlayfield.FindUnit(unit);
+                    StateMachine.UI.unitDetails.ShowDetailsOfInstance(unitVisual, ShowExtras.ViewOnly);
+                    StateMachine.UI.unitDetails.PhantomSelectMove(unitVisual.data.moves[unit.curSelectedMove]);
+
                     StateMachine.VisualPlayfield.HideIndicators();
                     StateMachine.VisualPlayfield.DisplayIndicatorAttackPreview(unit, StateMachine.Playfield);
+                    selectedUnit = unit;
                 }
 
                 return;
@@ -174,19 +234,26 @@ namespace forest
                 bool isValidTarget = StateMachine.Playfield.TryGetUnitAt(target, out PlayfieldUnit targetUnit);
                 if (isValidTarget)
                 {
+                    MoveData selectedMove = visualUnit.data.moves[indicatorOwnerUnit.curSelectedMove];
+
                     if (targetUnit.team == Team.Player)
                     {
+                        if (targetUnit.id == indicatorOwnerUnit.id)
+                        {
+                            return;
+                        }
+
                         Core.Instance.uiCore.DisplayCoDA("fr?", () =>
                         {
-                            StateMachine.VisualPlayfield.DamageUnit(indicatorOwnerUnit, targetUnit, StateMachine.Playfield);
+                            StateMachine.VisualPlayfield.DamageUnit(selectedMove, indicatorOwnerUnit, targetUnit, StateMachine.Playfield);
                             WrapUpAttack();
                         });
-
+                        
                         return;
                     }
                     else
                     {
-                        StateMachine.VisualPlayfield.DamageUnit(indicatorOwnerUnit, targetUnit, StateMachine.Playfield);
+                        StateMachine.VisualPlayfield.DamageUnit(selectedMove, indicatorOwnerUnit, targetUnit, StateMachine.Playfield);
                         WrapUpAttack();
 
                         return;
@@ -194,7 +261,6 @@ namespace forest
                 }
 
                 WrapUpAttack();
-
                 return;
             }
         }
@@ -237,7 +303,7 @@ namespace forest
         /// <param name="controlledUnit"></param>
         private void ProcessKeyboardInput(PlayfieldUnit controlledUnit)
         {
-            if (controlledUnit.curMovementBudget == 0)
+            if (controlledUnit.team != Team.Player || controlledUnit.curMovementBudget == 0)
             {
                 return;
             }

@@ -78,11 +78,15 @@ namespace forest
                 Vector2Int head = curOpponentToMove.locations[PlayfieldUnit.HEAD_INDEX];
                 Vector2Int closest = GetClosestOpponentPosition(curOpponentToMove);
 
-                if (head.GridDistance(closest) <= curOpponentToMove.curAttackRange)
+                int attackIndexTouse = curOpponentToMove.curSelectedMove;
+                Unit instance = StateMachine.VisualPlayfield.FindUnit(curOpponentToMove);
+                MoveData moveToUse = instance.data.moves[attackIndexTouse];
+
+                if (head.GridDistance(closest) <= moveToUse.moveRange)
                 {
                     if (StateMachine.Playfield.TryGetUnitAt(closest, out PlayfieldUnit targetPlayerUnit))
                     {
-                        StateMachine.VisualPlayfield.DamageUnit(curOpponentToMove, targetPlayerUnit, StateMachine.Playfield);
+                        StateMachine.VisualPlayfield.DamageUnit(moveToUse, curOpponentToMove, targetPlayerUnit, StateMachine.Playfield);
                     }
                 }
 

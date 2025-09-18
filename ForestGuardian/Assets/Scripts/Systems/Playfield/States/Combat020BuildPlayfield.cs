@@ -45,8 +45,7 @@ namespace forest
                 unit.curMaxMovementBudget = template.data.speed;
                 unit.curMovesTaken = 0;
                 unit.curMaxSize = template.data.maxSize;
-
-                unit.curAttackRange = template.data.moves[0].moveRange;
+                unit.curSelectedMove = 0;
             }
 
             foreach (PlayfieldTile tile in StateMachine.Playfield.world)

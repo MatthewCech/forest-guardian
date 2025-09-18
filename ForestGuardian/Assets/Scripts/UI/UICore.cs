@@ -16,9 +16,12 @@ namespace forest
         private System.Action onYes;
         private System.Action onNo;
 
+        public bool IsWorldInteractable { get; private set; } = true;
+
         private void Awake()
         {
             Core.Instance.TryRegisterUICore(this);
+            canvasGroupCoDA.gameObject.SetActive(true);
             SetCoDAVisibility(false);
         }
 
@@ -51,6 +54,8 @@ namespace forest
             canvasGroupCoDA.alpha = isVisible ? 1 : 0;
             canvasGroupCoDA.interactable = isVisible;
             canvasGroupCoDA.blocksRaycasts = isVisible;
+
+            IsWorldInteractable = !isVisible; // If visible, not enabled.
         }
 
         public void DisplayCoDA(string message = "fr?", System.Action onYes = null, System.Action onNo = null)

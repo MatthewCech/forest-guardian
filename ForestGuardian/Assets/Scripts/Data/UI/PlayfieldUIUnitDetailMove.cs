@@ -10,6 +10,7 @@ namespace forest
     {
         [SerializeField] public Button move;
         [SerializeField] private TMPro.TextMeshProUGUI moveText;
+        [SerializeField] public Image highlight;
 
         private MoveData associatedMoveData;
 

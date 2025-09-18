@@ -40,6 +40,12 @@ namespace forest
 
         private void OnMouseDown()
         {
+            // MOVE TO INTERNAL CHECKING FOR UNSUB/RESUB OR EVENT PAUSING?
+            if (!Core.HasInstance || !Core.Instance.uiCore.IsWorldInteractable)
+            {
+                return;
+            }
+
             MsgIndicatorClicked msg = new MsgIndicatorClicked();
             msg.indicator = this;
             Postmaster.Instance.Send(msg);
