@@ -13,6 +13,7 @@ namespace forest
 
         [Header("Links")]
         [SerializeField] private TMPro.TextMeshProUGUI currencyDisplay;
+        [SerializeField] public Transform cameraPivot;
 
         [Header("Roster")]
         [SerializeField] private Button rosterButton;

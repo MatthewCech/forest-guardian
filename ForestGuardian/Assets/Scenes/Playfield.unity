@@ -2070,7 +2070,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 70, y: -10}
-  m_SizeDelta: {x: 200, y: 20}
+  m_SizeDelta: {x: 400, y: 20}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &655560140
 MonoBehaviour:
@@ -7266,7 +7266,7 @@ PrefabInstance:
     - target: {fileID: 1285525200247335279, guid: 8c75ae87fd7db0242b67a4ae2166b5e4, type: 3}
       propertyPath: levelOverride
       value: 
-      objectReference: {fileID: 4900000, guid: 93511d0eb55939a4f8394730b375805a, type: 3}
+      objectReference: {fileID: 0}
     - target: {fileID: 1285525200247335279, guid: 8c75ae87fd7db0242b67a4ae2166b5e4, type: 3}
       propertyPath: TEMPlevelAssets.Array.size
       value: 3

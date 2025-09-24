@@ -94,4 +94,22 @@ namespace forest
     public class MsgMove_UI : Loam.Message
     {
     }
+
+    [MessageMetadata(
+    friendlyName: "Show Level Info",
+    description: "Request showing the specified level info",
+    isVisible: true)]
+    public class MsgShowLevelInfo : Loam.Message
+    {
+        public MapInteractionPoint mapInteractionPoint;
+    }
+
+    [MessageMetadata(
+    friendlyName: "Hide Level Info",
+    description: "Request hiding the specified level",
+    isVisible: true)]
+    public class MsgHideLevelInfo : Loam.Message
+    {
+        public MapInteractionPoint mapInteractionPoint;
+    }
 }
