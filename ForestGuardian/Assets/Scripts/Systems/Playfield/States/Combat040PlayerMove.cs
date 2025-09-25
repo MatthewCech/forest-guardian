@@ -33,6 +33,7 @@ namespace forest
 
             PlayfieldUnit nextUnit = units[0];
             DisplayPlayerUnitAction(nextUnit);
+            CheckForShortCircuitStateJump(nextUnit);
 
             return true;
         }

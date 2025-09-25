@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Loam;
-using static Codice.Client.Commands.WkTree.WorkspaceTreeNode;
 
 namespace forest
 {
@@ -13,8 +12,9 @@ namespace forest
         [SerializeField] private SpriteRenderer highlight;
         [SerializeField] private SpriteRenderer shadow;
 
-        [Space]
         // TODO: Much easier to do automatically with addressables, for proof of concept for now just provide it manually.
+        [Header("Should be Auto-populated probably")]
+        [Tooltip("Player-facing name of the level")][SerializeField] private string visibleName = "UNNAMED";
         [Tooltip("Number of associated floors, the size of the dungeon")][SerializeField] private int depth = 1;
 
         [Header("Auto-populated")]
@@ -29,7 +29,7 @@ namespace forest
         public string TagLabel { get { return tagLabel; } }
         public List<string> TagsBestowed { get { return tagsBestowed; } }
         public TextAsset LevelData { get { return levelData; } }
-        public string LevelName { get; private set; }
+        public string LevelName { get { return visibleName; } }
         public int LevelDepth { get { return depth; } }
 
 #if UNITY_EDITOR
@@ -44,8 +44,6 @@ namespace forest
                 this.gameObject.name = $"Dungeon '{pf.tagLabel}' (unlocks '{pf.GetBestowedList()}')";
                 this.tagLabel = pf.tagLabel;
                 this.tagsBestowed = pf.tagsBestowed;
-
-                LevelName = pf.tagLabel;
             }
         }
 #endif
