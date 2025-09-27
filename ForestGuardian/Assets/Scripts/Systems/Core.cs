@@ -7,8 +7,24 @@ namespace forest
 {
     public class Core : MonoBehaviour
     {
+        /// <summary>
+        /// Refers to a menu. While related to scene layout, this refers to conceptual levels whereas
+        /// scenes refer more to memory. Since this is a small game, the venn diagram is near-circle here.
+        /// </summary>
+        public enum ForestLevel
+        {
+            DEFAULT = 0,
+
+            MainMenu,
+            Map,
+            Playfield,
+            Editor
+        }
+
         public const string SCENE_NAME_PLAYFIELD = "Playfield";
         public const string SCENE_NAME_MAP = "Map";
+        public const string SCENE_NAME_MAINMENU = "MainMenu";
+        public const string SCENE_NAME_PLAYFIELDEDITOR = "PlayfieldEditor";
 
         // Singleton setup
         private static Core instance = null;
@@ -104,20 +120,36 @@ namespace forest
             uiCore = coreToRegister;
         }
 
-        public void LoadLevelPlayfield()
-        {
-            SceneManager.LoadScene(SCENE_NAME_PLAYFIELD);
-        }
-
-        public void LoadLevelPlayfield(TextAsset levelToLoad)
+        public void SetPlayfieldAndLoad(TextAsset levelToLoad)
         {
             gameData.currentPlayfield = levelToLoad;
-            SceneManager.LoadScene(SCENE_NAME_PLAYFIELD);
+            LoadLevel(ForestLevel.Playfield);
         }
 
-        public void LoadLevelMap()
+        public void LoadLevel(ForestLevel level)
         {
-            SceneManager.LoadScene(SCENE_NAME_MAP);
+            switch (level)
+            {
+                case ForestLevel.MainMenu:
+                    SceneManager.LoadScene(SCENE_NAME_MAINMENU);
+                    break;
+
+                case ForestLevel.Map:
+                    SceneManager.LoadScene(SCENE_NAME_MAP);
+                    break;
+
+                case ForestLevel.Playfield:
+                    SceneManager.LoadScene(SCENE_NAME_PLAYFIELD);
+                    break;
+
+                case ForestLevel.Editor:
+                    SceneManager.LoadScene(SCENE_NAME_PLAYFIELDEDITOR);
+                    break;
+
+                case ForestLevel.DEFAULT:
+                default:
+                    throw new System.Exception("No level specified to load for this button! You must select a NON-DEFAULT from the enum in the inspector.");
+            }
         }
     }
 }

@@ -31,7 +31,7 @@ namespace forest
                     StateMachine.UI.result.gameObject.SetActive(false);
                 }
 
-                Core.Instance.LoadLevelMap();
+                Core.Instance.LoadLevel(Core.ForestLevel.Map);
             }
         }
     }

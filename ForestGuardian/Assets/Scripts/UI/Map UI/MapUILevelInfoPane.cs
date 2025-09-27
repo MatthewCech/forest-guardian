@@ -105,7 +105,7 @@ namespace forest
             TextAsset levelData = interactionPoint.LevelData;
             UnityEngine.Assertions.Assert.IsNotNull(levelData, "Level data must be specified!");
             Debug.Log($"Attempting to load {levelData.name}...");
-            Core.Instance.LoadLevelPlayfield(levelData);
+            Core.Instance.SetPlayfieldAndLoad(levelData);
         }
 
         // Update is called once per frame

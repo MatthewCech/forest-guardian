@@ -726,7 +726,7 @@ GameObject:
   - component: {fileID: 9118195748585111490}
   - component: {fileID: 4637853876753667268}
   m_Layer: 5
-  m_Name: Start
+  m_Name: (Button) Start
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -981,7 +981,7 @@ GameObject:
   - component: {fileID: 1243688997445730819}
   - component: {fileID: 4877025851715716453}
   m_Layer: 5
-  m_Name: Exit
+  m_Name: (Button) Exit
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1809,3 +1809,4 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   lerpTime: 0.35
+  exitRange: 0.5

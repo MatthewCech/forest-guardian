@@ -69,7 +69,7 @@ namespace forest
 
             if (StateMachine.PlayfieldLookup.TryGetPlayfieldByName(targetPortal.target, out TextAsset levelAsset))
             {
-                Core.Instance.LoadLevelPlayfield(levelAsset);
+                Core.Instance.SetPlayfieldAndLoad(levelAsset);
             }
             else
             {
