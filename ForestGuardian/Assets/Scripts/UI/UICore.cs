@@ -3,11 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Loam.Convo;
 
 namespace forest 
 {
     public class UICore : MonoBehaviour
     {
+        [Header("Dialog")]
+        [SerializeField] private ConvoBasicCore convoCore;
+
         [Header("Confirmation of Destructive Action dialogue")]
         [SerializeField] private CanvasGroup canvasGroupCoDA;
         [SerializeField] private TMPro.TextMeshProUGUI dialogueCoDA;
@@ -21,7 +25,10 @@ namespace forest
         private void Awake()
         {
             Core.Instance.TryRegisterUICore(this);
+            
             canvasGroupCoDA.gameObject.SetActive(true);
+            convoCore.gameObject.SetActive(true);
+
             SetCoDAVisibility(false);
         }
 
