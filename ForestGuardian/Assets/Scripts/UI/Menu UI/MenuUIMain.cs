@@ -37,7 +37,7 @@ namespace forest
 
         private void Quit()
         {
-            Core.Instance.uiCore.DisplayCoDA("Quit fr?", () => { Application.Quit(); }, null);
+            Core.Instance.UICore.DisplayCoDA("Quit fr?", () => { Application.Quit(); }, null);
         }
     }
 }

@@ -9,6 +9,7 @@ namespace forest
     {
         [Header("Links")]
         [SerializeField] private TextAsset levelData;
+        [SerializeField] private GameObject visibilityRoot;
         [SerializeField] private SpriteRenderer highlight;
         [SerializeField] private SpriteRenderer shadow;
 
@@ -24,6 +25,7 @@ namespace forest
         // Internal
         private MessageSubscription handleMsgShowLevelInfo;
         private MessageSubscription handleMsgHideLevelInfo;
+        private MessageSubscription handleMsgRefreshVisibility;
 
         // Properties
         public string TagLabel { get { return tagLabel; } }
@@ -50,26 +52,47 @@ namespace forest
 
         private void OnMouseUpAsButton()
         {
+            // Prevent clicking through UI to change map level info
+            if(Core.Instance.UICore.IsMouseOverUIElement())
+            {
+                return;
+            }
+
+            // If not visible, don't allow interactions
+            if(!visibilityRoot.activeInHierarchy)
+            {
+                return;
+            }
+
             Loam.Postmaster.Instance.Send(new MsgShowLevelInfo() { mapInteractionPoint = this });
         }
 
         private void Start()
         {
+            CheckLevelVisibility();
+
+            handleMsgShowLevelInfo = Postmaster.Instance.Subscribe<MsgShowLevelInfo>(LevelShow);
+            handleMsgHideLevelInfo = Postmaster.Instance.Subscribe<MsgHideLevelInfo>(LevelHide);
+            handleMsgRefreshVisibility = Postmaster.Instance.Subscribe<MsgLevelUnlockAdded>((_) => { CheckLevelVisibility(); });
+        }
+
+        public void CheckLevelVisibility()
+        {
             bool didSetActive = false;
 
             // Don't proceed if we have no level tags.
-            if (Core.Instance.gameData.unlockedTags == null)
+            if (Core.Instance.GameData.unlockedTags == null)
             {
-                this.gameObject.SetActive(false);
+                visibilityRoot.SetActive(false);
                 return;
             }
 
-            for (int i = 0; i < Core.Instance.gameData.unlockedTags.Count; ++i)
+            for (int i = 0; i < Core.Instance.GameData.unlockedTags.Count; ++i)
             {
-                string curTag = Core.Instance.gameData.unlockedTags[i];
+                string curTag = Core.Instance.GameData.unlockedTags[i];
                 if (string.Equals(tagLabel, curTag, System.StringComparison.InvariantCultureIgnoreCase))
                 {
-                    this.gameObject.SetActive(true);
+                    visibilityRoot.SetActive(true);
                     didSetActive = true;
                     break;
                 }
@@ -77,11 +100,8 @@ namespace forest
 
             if (!didSetActive)
             {
-                this.gameObject.SetActive(false);
+                visibilityRoot.SetActive(false);
             }
-
-            handleMsgShowLevelInfo = Postmaster.Instance.Subscribe<MsgShowLevelInfo>(LevelShow);
-            handleMsgHideLevelInfo = Postmaster.Instance.Subscribe<MsgHideLevelInfo>(LevelHide);
         }
 
         private void OnDestroy()

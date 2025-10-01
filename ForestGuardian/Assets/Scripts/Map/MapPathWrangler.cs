@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Loam;
 
 namespace forest
 {
@@ -11,12 +12,25 @@ namespace forest
 
         List<LineRenderer> trackedLines = new List<LineRenderer>();
 
+        private MessageSubscription subRedraw;
+
         private void Awake()
         {
             referenceLineRenderer.gameObject.SetActive(false);
         }
 
-        void Start()
+        private void Start()
+        {
+            RedrawConnectionLines();
+            subRedraw = Postmaster.Instance.Subscribe<MsgLevelUnlockAdded>(CheckLevelUnlock);
+        }
+
+        private void OnDestroy()
+        {
+            subRedraw.Dispose();
+        }
+
+        private void CheckLevelUnlock(Message msg)
         {
             RedrawConnectionLines();
         }
@@ -26,7 +40,7 @@ namespace forest
         /// NOTE: This is done with lists and nested loops instead of a hashset lookup or similar because I want to 
         /// be able to ignore case and culture when comparing the level tags/names with the unlock tags/names. 
         /// </summary>
-        void RedrawConnectionLines()
+        public void RedrawConnectionLines()
         {
             // For now, one line though we'll use the list since we'll need it later for branching unlocks.
             foreach (LineRenderer line in trackedLines)
@@ -41,7 +55,7 @@ namespace forest
             foreach (Object o in obj)
             {
                 MapInteractionPoint cur = o as MapInteractionPoint;
-                foreach (string unlock in Core.Instance.gameData.unlockedTags)
+                foreach (string unlock in Core.Instance.GameData.unlockedTags)
                 {
                     if (string.Equals(cur.TagLabel, unlock, System.StringComparison.CurrentCultureIgnoreCase))
                     {

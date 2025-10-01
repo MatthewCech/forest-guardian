@@ -104,13 +104,13 @@ namespace forest
             }
 
             // Try and collect level information from the game instance
-            TextAsset coreValue = Core.Instance.gameData.currentPlayfield;
+            TextAsset coreValue = Core.Instance.GameData.currentPlayfield;
             if (coreValue != null)
             {
                 selected = coreValue;
 
                 // Note: Consume this data.
-                Core.Instance.gameData.currentPlayfield = null;
+                Core.Instance.GameData.currentPlayfield = null;
                 return true;
             }
 

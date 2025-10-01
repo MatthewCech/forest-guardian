@@ -731,7 +731,7 @@ GameObject:
   - component: {fileID: 3558895963327001814}
   - component: {fileID: 1634959845320036696}
   - component: {fileID: 1077217391853028686}
-  - component: {fileID: 3288201403577481588}
+  - component: {fileID: 8958013187541430229}
   m_Layer: 5
   m_Name: UI Core
   m_TagString: Untagged
@@ -835,12 +835,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec112aca925c56447bd68cd775043b11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  convoCore: {fileID: 3288201403577481588}
+  convoCore: {fileID: 8958013187541430229}
   canvasGroupCoDA: {fileID: 6921096411551972926}
   dialogueCoDA: {fileID: 7149220942786667294}
   dialogueCoDAYes: {fileID: 4660541189156517004}
   dialogueCoDANo: {fileID: 1352759803675345002}
---- !u!114 &3288201403577481588
+--- !u!114 &8958013187541430229
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -849,14 +849,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 2914445793216242938}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2a702942869bc245a97123870296316, type: 3}
+  m_Script: {fileID: 11500000, guid: acb616c188eb89a48ad288ccc5f60429, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _debugConvo: {fileID: 0}
-  _debugStartButton: {fileID: 0}
   _dialog: {fileID: 5083071013452344775}
   _logConvoMessages: 1
-  _conversations: []
+  _conversations:
+  - {fileID: 4900000, guid: 047274a10a6d89247959a9ba1b024a5d, type: 3}
 --- !u!1 &2982060759638436810
 GameObject:
   m_ObjectHideFlags: 0
@@ -1973,10 +1972,10 @@ RectTransform:
   - {fileID: 4573077396253714856}
   m_Father: {fileID: 3707319951125285594}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 30}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 240, y: -15}
+  m_SizeDelta: {x: 480, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5505833619331559725
 MonoBehaviour:
@@ -2479,7 +2478,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2779480165890626109
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2508,9 +2507,9 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9113277905311421888}
   m_Enabled: 1
-  m_Alpha: 0
-  m_Interactable: 0
-  m_BlocksRaycasts: 0
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
 --- !u!114 &5083071013452344775
 MonoBehaviour:

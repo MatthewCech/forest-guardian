@@ -48,10 +48,10 @@ namespace forest
                 string toUnlock = StateMachine.Playfield.tagsBestowed[i];
                 if (!string.IsNullOrWhiteSpace(toUnlock))
                 {
-                    bool tagAlreadyUnlocked = Core.Instance.gameData.unlockedTags.Contains(toUnlock);
+                    bool tagAlreadyUnlocked = Core.Instance.GameData.unlockedTags.Contains(toUnlock);
                     if (!tagAlreadyUnlocked)
                     {
-                        Core.Instance.gameData.unlockedTags.Add(toUnlock);
+                        Core.Instance.GameData.unlockedTags.Add(toUnlock);
                     }
                 }
             }

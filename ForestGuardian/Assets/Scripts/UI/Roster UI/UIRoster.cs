@@ -29,7 +29,7 @@ namespace forest
 
         private void Start()
         {
-            List<UnitData> roster = Core.Instance.gameData.roster;
+            List<UnitData> roster = Core.Instance.GameData.roster;
 
             foreach (UnitData data in roster)
             {

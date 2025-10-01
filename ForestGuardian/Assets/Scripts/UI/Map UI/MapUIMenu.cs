@@ -38,7 +38,7 @@ namespace forest
 
         private void DumpInstanceStateToConsole()
         {
-            Debug.Log("Game Instance State:\n" + JsonUtility.ToJson(Core.Instance.gameData, true));
+            Debug.Log("Game Instance State:\n" + JsonUtility.ToJson(Core.Instance.GameData, true));
         }
     }
 }

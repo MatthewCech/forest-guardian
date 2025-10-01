@@ -101,14 +101,14 @@ namespace forest
 
         private void IncreaseUnitSize()
         {
-            UnitData unit = Core.Instance.gameData.GetRosterEntry(unitInternalName);
+            UnitData unit = Core.Instance.GameData.GetRosterEntry(unitInternalName);
             ++unit.maxSize;
             UpdateData(unit);
         }
 
         private void IncreaseUnitSpeed()
         {
-            UnitData unit = Core.Instance.gameData.GetRosterEntry(unitInternalName);
+            UnitData unit = Core.Instance.GameData.GetRosterEntry(unitInternalName);
             ++unit.speed;
             UpdateData(unit);
         }

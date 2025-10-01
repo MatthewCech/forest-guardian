@@ -112,4 +112,41 @@ namespace forest
     {
         public MapInteractionPoint mapInteractionPoint;
     }
+
+    [MessageMetadata(
+    friendlyName: "Start Convo",
+    description: "Attempts to display the specified conversation dialog",
+    isVisible: true)]
+    public class MsgConvoStart : Loam.Message
+    {
+        // The name of the text asset
+        public string convoName;
+    }
+
+    [MessageMetadata(
+    friendlyName: "Convo Message",
+    description: "An interaction in a dialog sending a message",
+    isVisible: true)]
+    public class MsgConvoMessage : Loam.Message
+    {
+        public string message;
+    }
+
+    [MessageMetadata(
+    friendlyName: "Add unlock tag",
+    description: "Add a tag for unlocking",
+    isVisible: true)]
+    public class MsgUnlockLevel : Loam.Message
+    {
+        public string tagToAdd;
+    }
+
+    [MessageMetadata(
+    friendlyName: "New level unlocked",
+    description: "",
+    isVisible: true)]
+    public class MsgLevelUnlockAdded : Loam.Message
+    {
+        public string newUnlock;
+    }
 }

@@ -4,53 +4,57 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Loam;
 
-public class MapCameraMovement : MonoBehaviour
+namespace forest
 {
-    private bool isDown;
-    private Vector2 startMousePos;
-    private Vector3 startTransform;
-
-    [SerializeField] private float boundaryRadius = 10;
-    [SerializeField] private Camera cam;
-
-    Vector2 GetInputPos()
+    public class MapCameraMovement : MonoBehaviour
     {
-        return Input.mousePosition;
-    }
+        private bool isDown;
+        private Vector2 startMousePos;
+        private Vector3 startTransform;
 
-    void Update()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            isDown = true;
-            startMousePos = GetInputPos();
-            startTransform = this.transform.position;
-        };
+        [SerializeField] private float boundaryRadius = 10;
+        [SerializeField] private Camera cam;
 
-        if(Input.GetMouseButtonUp(0))
+        Vector2 GetInputPos()
         {
-            isDown = false;
+            return Input.mousePosition;
         }
 
-        if(isDown)
+        void Update()
         {
-            Vector2 currentPos = GetInputPos();
-            Vector2 diff = currentPos - startMousePos;
-
-            diff /= Screen.dpi;
-            diff *= -1;
-
-            // Apply XY mouse delta on XZ plane, which is why there's some 
-            float newX = startTransform.x + diff.x;
-            float newZ = startTransform.z + diff.y;
-            Vector2 flat = new Vector2(newX, newZ);
-            
-            if (flat.magnitude > boundaryRadius)
+            bool isClickStartedInWorld = Input.GetMouseButtonDown(0) && !Core.Instance.UICore.IsMouseOverUIElement();
+            if (isClickStartedInWorld)
             {
-                flat = flat.normalized * boundaryRadius;
+                isDown = true;
+                startMousePos = GetInputPos();
+                startTransform = this.transform.position;
+            };
+
+            if (Input.GetMouseButtonUp(0))
+            {
+                isDown = false;
             }
 
-            this.transform.position = new Vector3(flat.x, this.transform.position.y, flat.y);
+            if (isDown)
+            {
+                Vector2 currentPos = GetInputPos();
+                Vector2 diff = currentPos - startMousePos;
+
+                diff /= Screen.dpi;
+                diff *= -1;
+
+                // Apply XY mouse delta on XZ plane, which is why there's some 
+                float newX = startTransform.x + diff.x;
+                float newZ = startTransform.z + diff.y;
+                Vector2 flat = new Vector2(newX, newZ);
+
+                if (flat.magnitude > boundaryRadius)
+                {
+                    flat = flat.normalized * boundaryRadius;
+                }
+
+                this.transform.position = new Vector3(flat.x, this.transform.position.y, flat.y);
+            }
         }
     }
 }

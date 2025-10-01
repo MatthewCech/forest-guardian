@@ -55,7 +55,7 @@ namespace forest
             if(StateMachine.Playfield.TryGetOriginAt(selected.associatedPos, out PlayfieldOrigin origin))
             {
                 origin.curRosterIndex = msg.rosterIndex;
-                UnitData data = Core.Instance.gameData.roster[origin.curRosterIndex];
+                UnitData data = Core.Instance.GameData.roster[origin.curRosterIndex];
                 Unit visual = StateMachine.VisualLookup.GetUnitTemplateByName(data.unitName);
                 StateMachine.UI.unitDetails.ShowDetails(data, visual, ShowExtras.Hide); // Roster has to be player
 
@@ -107,7 +107,7 @@ namespace forest
                     continue;
                 }
 
-                UnitData unit = Core.Instance.gameData.roster[origin.curRosterIndex];
+                UnitData unit = Core.Instance.GameData.roster[origin.curRosterIndex];
 
                 PlayfieldUnit unitToAdd = new PlayfieldUnit();
                 unitToAdd.tag = unit.unitName;

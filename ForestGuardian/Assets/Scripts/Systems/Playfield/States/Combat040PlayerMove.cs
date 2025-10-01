@@ -244,7 +244,7 @@ namespace forest
                             return;
                         }
 
-                        Core.Instance.uiCore.DisplayCoDA("fr?", () =>
+                        Core.Instance.UICore.DisplayCoDA("fr?", () =>
                         {
                             StateMachine.VisualPlayfield.DamageUnit(selectedMove, indicatorOwnerUnit, targetUnit, StateMachine.Playfield);
                             WrapUpAttack();

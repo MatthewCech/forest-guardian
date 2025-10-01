@@ -14,17 +14,17 @@ namespace forest
 
         void Start()
         {
-            if (Core.HasInstance && Core.Instance.audioCore != null)
+            if (Core.HasInstance && Core.Instance.AudioCore != null)
             {
-                Core.Instance.audioCore.TryPlay(tagToPlay, isLooping, out audioHandle);
+                Core.Instance.AudioCore.TryPlay(tagToPlay, isLooping, out audioHandle);
             }
         }
 
         private void OnDestroy()
         {
-            if (stopOnDestroy && Core.HasInstance && Core.Instance.audioCore != null)
+            if (stopOnDestroy && Core.HasInstance && Core.Instance.AudioCore != null)
             {
-                Core.Instance.audioCore.TryStop(audioHandle);
+                Core.Instance.AudioCore.TryStop(audioHandle);
             }
         }
     }

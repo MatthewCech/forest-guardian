@@ -129,7 +129,7 @@ namespace forest
             if (unit.team == Team.Player && playfield.TryGetItemAt(target, out PlayfieldItem item))
             {
                 // NOTE: Assume all items are currency at this time
-                ++Core.Instance.gameData.currency;
+                ++Core.Instance.GameData.currency;
                 playfield.RemoveItemAt(target);
             }
 

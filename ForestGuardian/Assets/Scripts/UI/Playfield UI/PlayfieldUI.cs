@@ -51,7 +51,7 @@ namespace forest
 
         void Start()
         {
-            List<UnitData> roster = Core.Instance.gameData.roster;
+            List<UnitData> roster = Core.Instance.GameData.roster;
             for(int i = 0; i < roster.Count; ++i)
             {
                 UnitData rosterEntry = roster[i];

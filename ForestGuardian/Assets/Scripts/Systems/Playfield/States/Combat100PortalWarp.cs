@@ -38,7 +38,7 @@ namespace forest
             UnityEngine.Assertions.Assert.IsTrue(StateMachine.Playfield.portals.Count > 0, "There must be portals to parse this state.");
             
             StateMachine.SetState<Combat200Shutdown>();
-            Core.Instance.gameData.lastFloor = StateMachine.Playfield;
+            Core.Instance.GameData.lastFloor = StateMachine.Playfield;
 
             // Assume we have a portal
             PlayfieldPortal targetPortal = null;

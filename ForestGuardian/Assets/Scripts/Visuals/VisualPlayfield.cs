@@ -642,7 +642,7 @@ namespace forest
 
             if(data.curRosterIndex != PlayfieldOrigin.NO_INDEX_SELECTED)
             {
-                UnitData unitDat = Core.Instance.gameData.roster[data.curRosterIndex];
+                UnitData unitDat = Core.Instance.GameData.roster[data.curRosterIndex];
                 instance.unitIcon.sprite = lookup.GetUnitTemplateByName(unitDat.unitName).uiIcon;
             }
         }

@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace forest
 {
-
     public class ExtremelyTastyTutorialScripting : MonoBehaviour
     {
         public enum TutorialState

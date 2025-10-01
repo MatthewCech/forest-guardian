@@ -45,10 +45,10 @@ namespace forest
             }
         }
 
-        public GameInstance gameData { get; private set; }
-        public AudioCore audioCore { get; private set; }
-        public UICore uiCore { get; private set; }
-        public VisualLookup visualLookup { get; private set; }
+        public GameInstance GameData { get; private set; }
+        public AudioCore AudioCore { get; private set; }
+        public UICore UICore { get; private set; }
+        public VisualLookup VisualLookup { get; private set; }
 
         /// <summary>
         /// Pre-awake initialization and singleton setup
@@ -73,26 +73,26 @@ namespace forest
         private void OnGameInstanceInitConditionsMet()
         {
             // Data Initialization
-            gameData = new GameInstance();
-            gameData.PopulateDefaults(visualLookup);
+            GameData = new GameInstance();
+            GameData.PopulateDefaults(VisualLookup);
         }
 
         public void TryRegisterVisualLookup(VisualLookup lookup)
         {
-            if(visualLookup != null)
+            if(VisualLookup != null)
             {
                 Debug.Log("Ignoring visual lookup registration attempt. Not a huge deal, just noted.");
                 return;
             }
 
-            visualLookup = lookup;
+            VisualLookup = lookup;
 
             OnGameInstanceInitConditionsMet();
         }
 
         public void TryRegisterAudioCore(AudioCore coreToRegister)
         {
-            if(audioCore != null)
+            if(AudioCore != null)
             {
                 Debug.Log("Ignoring audio core registration attempt. Not necessarily anything wrong, just noting it.");
                 return;
@@ -102,12 +102,12 @@ namespace forest
             coreToRegister.transform.SetParent(this.transform);
             coreToRegister.transform.position = Vector3.zero;
 
-            audioCore = coreToRegister;
+            AudioCore = coreToRegister;
         }
 
         public void TryRegisterUICore(UICore coreToRegister)
         {
-            if (uiCore != null)
+            if (UICore != null)
             {
                 Debug.Log("Ignoring extra UI core registration attempt. Not necessarily anything wrong, just noting it.");
                 return;
@@ -117,12 +117,12 @@ namespace forest
             coreToRegister.transform.SetParent(this.transform);
             coreToRegister.transform.position = Vector3.zero;
 
-            uiCore = coreToRegister;
+            UICore = coreToRegister;
         }
 
         public void SetPlayfieldAndLoad(TextAsset levelToLoad)
         {
-            gameData.currentPlayfield = levelToLoad;
+            GameData.currentPlayfield = levelToLoad;
             LoadLevel(ForestLevel.Playfield);
         }
 

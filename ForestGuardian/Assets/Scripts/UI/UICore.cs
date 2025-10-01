@@ -4,21 +4,26 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Loam.Convo;
+using UnityEngine.EventSystems;
 
 namespace forest 
 {
     public class UICore : MonoBehaviour
     {
+        public const string UI_LAYER_NAME = "UI";
+
         [Header("Dialog")]
-        [SerializeField] private ConvoBasicCore convoCore;
+        [SerializeField] private DialogueUICore convoCore;
 
         [Header("Confirmation of Destructive Action dialogue")]
         [SerializeField] private CanvasGroup canvasGroupCoDA;
         [SerializeField] private TMPro.TextMeshProUGUI dialogueCoDA;
         [SerializeField] private Button dialogueCoDAYes;
         [SerializeField] private Button dialogueCoDANo;
+        
         private System.Action onYes;
         private System.Action onNo;
+        private int layerUI;
 
         public bool IsWorldInteractable { get; private set; } = true;
 
@@ -27,9 +32,37 @@ namespace forest
             Core.Instance.TryRegisterUICore(this);
             
             canvasGroupCoDA.gameObject.SetActive(true);
-            convoCore.gameObject.SetActive(true);
+
+            convoCore.Initialize();
 
             SetCoDAVisibility(false);
+        }
+
+        private void Start()
+        {
+            layerUI = LayerMask.NameToLayer(UI_LAYER_NAME);
+        }
+
+        /// <summary>
+        /// Check if anything under the cursor is tagged as UI via event system raycast.
+        /// NOTE: Leans on EventSystem, so may not work in certain situations.
+        /// TODO: Consider caching if this ends up getting used a lot.
+        /// </summary>
+        public bool IsMouseOverUIElement()
+        {
+            EventSystem eventSystem = EventSystem.current;
+            List<RaycastResult> raycastResults = new List<RaycastResult>();
+
+            eventSystem.RaycastAll(new PointerEventData(eventSystem) { position = Input.mousePosition }, raycastResults);
+            foreach(RaycastResult result in raycastResults)
+            {
+                if(result.gameObject.layer == layerUI)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void OnEnable()

@@ -60,7 +60,7 @@ namespace forest
                 origin => origin.partyIndex != PlayfieldOrigin.NO_INDEX_SELECTED);
             if(partyOrigins.Count > 0)
             {
-                List<PlayfieldUnit> units = Core.Instance.gameData.lastFloor.GetPlayerUnits();
+                List<PlayfieldUnit> units = Core.Instance.GameData.lastFloor.GetPlayerUnits();
 
                 foreach(PlayfieldOrigin origin in partyOrigins)
                 {
@@ -82,7 +82,7 @@ namespace forest
             else
             {
                 // This needs to be cleared a better way...
-                Core.Instance.gameData.lastFloor = null;
+                Core.Instance.GameData.lastFloor = null;
             }
 
             // Clear any origins left, nothing more we're going to use them for.

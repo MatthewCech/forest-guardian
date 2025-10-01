@@ -32,11 +32,13 @@ namespace forest
         {
             currency = 0;
 
+            /*
             unlockedTags = new List<string>()
             {
                 "tutorial",
                 "ivy-grove"
             };
+            */
 
             AddToRoster(lookup, "Guardian");
             AddToRoster(lookup, "BogWisp");
@@ -62,6 +64,15 @@ namespace forest
         public UnitData GetRosterEntry(string name)
         {
             return roster.Find(unit => string.Equals(unit.unitName, name, System.StringComparison.CurrentCultureIgnoreCase));
+        }
+
+        /// <summary>
+        /// Adds the provided unlock name
+        /// </summary>
+        public void UnlockLevel(string toAdd)
+        {
+            unlockedTags.Add(toAdd);
+            Loam.Postmaster.Instance.Send<MsgLevelUnlockAdded>(new MsgLevelUnlockAdded() { newUnlock = toAdd });
         }
     }
 }
