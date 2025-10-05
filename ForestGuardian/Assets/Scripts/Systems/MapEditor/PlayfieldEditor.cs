@@ -13,7 +13,7 @@ namespace forest
 {
     public class PlayfieldEditor : MonoBehaviour
     {
-        public const string LEVEL_FILE_EXTENSION = "txt";
+        public const string LEVEL_FILE_EXTENSION = "json"; // do not include the dot
 
         [Header("Editor Settings")]
         [SerializeField] private KeyCode mainModifier = KeyCode.LeftShift;
@@ -69,6 +69,8 @@ namespace forest
         private PlayfieldOrigin selectedOrigin;
         private bool isShowingMetadataPanel = false;
 
+        private List<MessageSubscription> subs = new List<MessageSubscription>();
+
         public void Start()
         {
             previewObject = null;
@@ -101,19 +103,19 @@ namespace forest
             visuals.DisplayAll(workingPlayfield);
             Utils.CenterCamera(displayingCamera, visuals);
 
-            Postmaster.Instance.Subscribe<MsgTilePrimaryAction>(TilePrimaryAction);
-            Postmaster.Instance.Subscribe<MsgItemPrimaryAction>(ItemPrimaryAction);
-            Postmaster.Instance.Subscribe<MsgUnitPrimaryAction>(UnitPrimaryAction);
-            Postmaster.Instance.Subscribe<MsgPortalPrimaryAction>(PortalPrimaryAction);
-            Postmaster.Instance.Subscribe<MsgExitPrimaryAction>(ExitPrimaryAction);
-            Postmaster.Instance.Subscribe<MsgOriginPrimaryAction>(OriginPrimaryAction);
+            subs.Add(Postmaster.Instance.Subscribe<MsgTilePrimaryAction>(TilePrimaryAction));
+            subs.Add(Postmaster.Instance.Subscribe<MsgItemPrimaryAction>(ItemPrimaryAction));
+            subs.Add(Postmaster.Instance.Subscribe<MsgUnitPrimaryAction>(UnitPrimaryAction));
+            subs.Add(Postmaster.Instance.Subscribe<MsgPortalPrimaryAction>(PortalPrimaryAction));
+            subs.Add(Postmaster.Instance.Subscribe<MsgExitPrimaryAction>(ExitPrimaryAction));
+            subs.Add(Postmaster.Instance.Subscribe<MsgOriginPrimaryAction>(OriginPrimaryAction));
 
-            Postmaster.Instance.Subscribe<MsgUnitSecondaryAction>(UnitSecondaryAction);
-            Postmaster.Instance.Subscribe<MsgTileSecondaryAction>(TileSecondaryAction);
-            Postmaster.Instance.Subscribe<MsgItemSecondaryAction>(ItemSecondaryAction);
-            Postmaster.Instance.Subscribe<MsgPortalSecondaryAction>(PortalSecondaryAction);
-            Postmaster.Instance.Subscribe<MsgExitSecondaryAction>(ExitSecondaryAction);
-            Postmaster.Instance.Subscribe<MsgOriginSecondaryAction>(OriginSecondaryAction);
+            subs.Add(Postmaster.Instance.Subscribe<MsgUnitSecondaryAction>(UnitSecondaryAction));
+            subs.Add(Postmaster.Instance.Subscribe<MsgTileSecondaryAction>(TileSecondaryAction));
+            subs.Add(Postmaster.Instance.Subscribe<MsgItemSecondaryAction>(ItemSecondaryAction));
+            subs.Add(Postmaster.Instance.Subscribe<MsgPortalSecondaryAction>(PortalSecondaryAction));
+            subs.Add(Postmaster.Instance.Subscribe<MsgExitSecondaryAction>(ExitSecondaryAction));
+            subs.Add(Postmaster.Instance.Subscribe<MsgOriginSecondaryAction>(OriginSecondaryAction));
 
             CreateSelectableButtons();
 
@@ -126,6 +128,14 @@ namespace forest
             Tile tile = lookup.tileTemplates[1];
             SetPreview(tile.gameObject, tile.name, PlayfieldEditorSelectionType.Tile);
 
+        }
+
+        private void OnDestroy()
+        {
+            foreach(var sub in subs)
+            {
+                sub.Dispose();
+            }
         }
 
         private void TilePrimaryAction(Message raw) { ProcessPrimaryAction((raw as MsgTilePrimaryAction).tilePosition); }
@@ -696,7 +706,7 @@ namespace forest
                     string toPrint = JsonConvert.SerializeObject(workingPlayfield, Formatting.Indented);
                     writer.Write(toPrint);
                 }
-            }, () => { }, FileBrowser.PickMode.Files, allowMultiSelection: false, Application.dataPath, "level.json", "Save Level JSON");
+            }, () => { }, FileBrowser.PickMode.Files, allowMultiSelection: false, Application.dataPath, $"level.{LEVEL_FILE_EXTENSION}", "Save Level JSON");
         }
 
         private void LoadCreatedPlayfield()

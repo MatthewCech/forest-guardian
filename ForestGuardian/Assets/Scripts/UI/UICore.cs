@@ -29,7 +29,10 @@ namespace forest
 
         private void Awake()
         {
-            Core.Instance.TryRegisterUICore(this);
+            if(!Core.Instance.TryRegisterUICore(this))
+            {
+                return;
+            }
             
             canvasGroupCoDA.gameObject.SetActive(true);
 

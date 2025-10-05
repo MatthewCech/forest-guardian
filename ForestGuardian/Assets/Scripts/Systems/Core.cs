@@ -1,3 +1,4 @@
+using Loam;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -70,6 +71,14 @@ namespace forest
 
         }
 
+        /// <summary>
+        /// Perform global level upkeep since this runs everywhere
+        /// </summary>
+        private void Update()
+        {
+            Postmaster.Instance.Upkeep();
+        }
+
         private void OnGameInstanceInitConditionsMet()
         {
             // Data Initialization
@@ -105,12 +114,13 @@ namespace forest
             AudioCore = coreToRegister;
         }
 
-        public void TryRegisterUICore(UICore coreToRegister)
+        public bool TryRegisterUICore(UICore coreToRegister)
         {
             if (UICore != null)
             {
                 Debug.Log("Ignoring extra UI core registration attempt. Not necessarily anything wrong, just noting it.");
-                return;
+                GameObject.Destroy(coreToRegister.gameObject);
+                return false;
             }
 
             DontDestroyOnLoad(coreToRegister);
@@ -118,6 +128,7 @@ namespace forest
             coreToRegister.transform.position = Vector3.zero;
 
             UICore = coreToRegister;
+            return true;
         }
 
         public void SetPlayfieldAndLoad(TextAsset levelToLoad)

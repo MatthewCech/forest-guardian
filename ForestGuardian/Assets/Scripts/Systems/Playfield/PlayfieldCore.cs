@@ -120,7 +120,6 @@ namespace forest
         private void Update()
         {
             current?.Update();
-            Postmaster.Instance.Upkeep();
         }
 
         /// <summary>

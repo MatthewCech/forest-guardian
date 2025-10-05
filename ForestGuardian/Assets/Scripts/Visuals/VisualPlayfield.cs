@@ -471,10 +471,15 @@ namespace forest
         /// <param name="toDisplay"></param>
         public void DisplayAll(Playfield toDisplay)
         {
+            DestroyAll();
+
+            if(toDisplay == null)
+            {
+                return;
+            }
+
             int width = toDisplay.world.GetWidth();
             int height = toDisplay.world.GetHeight();
-
-            DestroyAll();
 
             for (int x = 0; x < width; ++x)
             {

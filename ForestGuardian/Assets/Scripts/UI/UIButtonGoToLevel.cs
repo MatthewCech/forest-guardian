@@ -9,6 +9,7 @@ namespace forest
     {
         [SerializeField] private Core.ForestLevel levelToLoad;
         [SerializeField] private Button target;
+        [SerializeField] private bool confirmAction = false;
 
 #if UNITY_EDITOR
         private void OnValidate()
@@ -32,7 +33,17 @@ namespace forest
 
         void TryLoad()
         {
-            Core.Instance.LoadLevel(levelToLoad);
+            if(confirmAction)
+            {
+                Core.Instance.UICore.DisplayCoDA($"Really head to {levelToLoad.ToString()}?", () =>
+                {
+                    Core.Instance.LoadLevel(levelToLoad);
+                });
+            }
+            else
+            {
+                Core.Instance.LoadLevel(levelToLoad);
+            }
         }
     }
 }
