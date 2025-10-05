@@ -29,6 +29,7 @@ namespace forest
 
                 StateMachine.UI.result.gameObject.SetActive(true);
                 StateMachine.UI.result.text = "Area Cleared - Victory!";
+                Core.Instance.GameData.FinishLevel(StateMachine.Playfield.tagLabel);
                 Loam.CoroutineObject.Instance.StartCoroutine(ScreenDelay());
             }
         }

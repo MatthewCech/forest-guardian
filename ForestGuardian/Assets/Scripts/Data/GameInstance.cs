@@ -26,6 +26,7 @@ namespace forest
         // Data
         [JsonProperty] public int currency = 0;
         [JsonProperty] public List<string> unlockedTags = new List<string>();
+        [JsonProperty] public List<string> finishedTags = new List<string>();
         [JsonProperty] public List<UnitData> roster = new List<UnitData>();
         [JsonProperty] private bool[] progressFlags = new bool[FLAG_COUNT];
 
@@ -39,14 +40,6 @@ namespace forest
         public void PopulateDefaults(VisualLookup lookup)
         {
             currency = 0;
-
-            /*
-            unlockedTags = new List<string>()
-            {
-                "tutorial",
-                "ivy-grove"
-            };
-            */
 
             AddToRoster(lookup, "Guardian");
             AddToRoster(lookup, "BogWisp");
@@ -79,8 +72,24 @@ namespace forest
         /// </summary>
         public void UnlockLevel(string toAdd)
         {
+            if(unlockedTags.Contains(toAdd))
+            {
+                return;
+            }
+
             unlockedTags.Add(toAdd);
-            Loam.Postmaster.Instance.Send<MsgLevelUnlockAdded>(new MsgLevelUnlockAdded() { newUnlock = toAdd });
+            Loam.Postmaster.Instance.Send(new MsgLevelUnlockAdded() { newUnlock = toAdd });
+        }
+
+        public void FinishLevel(string toAdd)
+        {
+            if(finishedTags.Contains(toAdd))
+            {
+                return;
+            }
+
+            finishedTags.Add(toAdd);
+            Loam.Postmaster.Instance.Send(new MsgLevelFinishedAdded() { newFinishedLevel = toAdd });
         }
 
         public void SetFlag(int flag)

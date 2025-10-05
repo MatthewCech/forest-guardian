@@ -34,8 +34,8 @@
 			"text":"Jeez, you're really out of it... aaand you're covered in moss. Alright heyheyhey, don't worry, I've got my camp nearby, you can come hang out with me for a bit to get your bearings."
 		},
 		{
-			"speaker":"NAME",
-			"text":"I'm <b>NAME</b> by the way, just traveling through. I used to live nearby but the forest's been shifting a lot lately, it's not good to stay in one place for too long."
+			"speaker":"Soot",
+			"text":"I'm <b>Soot</b> by the way, just traveling through. I used to live nearby but the forest's been shifting a lot lately, it's not good to stay in one place for too long."
 		},
 		{
 			"speaker":"Player",
@@ -59,24 +59,24 @@
 			"notes":"False choice w/ flavor options only"
 		},
 		{
-			"speaker":"NAME",
+			"speaker":"Soot",
 			"text":"Well, I don't imagine you'd have really seen much, but some of the plants have gotten more... active. They're unhappy, and lashing out at folks that travel through or that they seem to think are threats.",
 			"label":"forestProblems"
 		},
 		{
-			"speaker":"NAME",
+			"speaker":"Soot",
 			"text":"It's been going on for a few winters now, I'm not sure why but some of my friends in the nearby village have theories. I just know I need to keep a low profile.",
 			"label":"forestProblems2",
 			"jump":"options"
 		},
 		{
-			"speaker":"NAME",
+			"speaker":"Soot",
 			"text":"I've got a potato soup cooking on the fire back at the camp. Can't imagine you've had anything to eat for a while!",
 			"label":"askForFood",
 			"jump":"options"
 		},
 		{
-			"speaker":"NAME",
+			"speaker":"Soot",
 			"text":"Woah, steady on your feet-- don't worry, I'll help you along.",
 			"label":"headToCamp",
 			"jump":"end"

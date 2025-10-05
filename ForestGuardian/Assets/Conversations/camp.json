@@ -6,12 +6,12 @@
 	"lines":
 	[
 		{
-			"speaker":"NAME",
-			"text":"Welcome to camp!"
+			"speaker":"Soot",
+			"text":"Welcome to camp! Not much, sometimes need a lil' cleanup, but this is home for the moment."
 		},
 		{
-			"speaker":"NAME",
-			"text":"Woah, steady on your feet-- don't worry, I'll help you along.",
+			"speaker":"Soot",
+			"text":"Should be safe now. I've got some info about a nearby grove that's been taken over by ivy, that may be a good place to start.",
 			"jump":"end"
 		}
 	],

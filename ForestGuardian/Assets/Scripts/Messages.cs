@@ -149,4 +149,9 @@ namespace forest
     {
         public string newUnlock;
     }
+
+    public class MsgLevelFinishedAdded : Loam.Message
+    {
+        public string newFinishedLevel;
+    }
 }

@@ -953,7 +953,7 @@ MonoBehaviour:
     curMaxMovementBudget: 0
     curMovesTaken: 0
     curMaxSize: 1
-    curAttackRange: 1
+    curSelectedMove: 0
     rosterOverride:
       unitName: UNNAMED
       maxSize: 3

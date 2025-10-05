@@ -12,6 +12,7 @@ namespace forest
         [SerializeField] private GameObject visibilityRoot;
         [SerializeField] private SpriteRenderer highlight;
         [SerializeField] private SpriteRenderer shadow;
+        [SerializeField] private SpriteRenderer unfinished;
 
         // TODO: Much easier to do automatically with addressables, for proof of concept for now just provide it manually.
         [Header("Should be Auto-populated probably")]
@@ -25,6 +26,7 @@ namespace forest
         // Internal
         private MessageSubscription handleMsgShowLevelInfo;
         private MessageSubscription handleMsgHideLevelInfo;
+        private MessageSubscription handleMsgLevelFinished;
         private MessageSubscription handleMsgRefreshVisibility;
 
         // Properties
@@ -73,13 +75,12 @@ namespace forest
 
             handleMsgShowLevelInfo = Postmaster.Instance.Subscribe<MsgShowLevelInfo>(LevelShow);
             handleMsgHideLevelInfo = Postmaster.Instance.Subscribe<MsgHideLevelInfo>(LevelHide);
+            handleMsgLevelFinished = Postmaster.Instance.Subscribe<MsgLevelFinishedAdded>(LevelFinished);
             handleMsgRefreshVisibility = Postmaster.Instance.Subscribe<MsgLevelUnlockAdded>((_) => { CheckLevelVisibility(); });
         }
 
         public void CheckLevelVisibility()
         {
-            bool didSetActive = false;
-
             // Don't proceed if we have no level tags.
             if (Core.Instance.GameData.unlockedTags == null)
             {
@@ -87,18 +88,12 @@ namespace forest
                 return;
             }
 
-            for (int i = 0; i < Core.Instance.GameData.unlockedTags.Count; ++i)
+            bool didSetActive = UpdateVisible();
+            if (didSetActive)
             {
-                string curTag = Core.Instance.GameData.unlockedTags[i];
-                if (string.Equals(tagLabel, curTag, System.StringComparison.InvariantCultureIgnoreCase))
-                {
-                    visibilityRoot.SetActive(true);
-                    didSetActive = true;
-                    break;
-                }
+                UpdateFinished();
             }
-
-            if (!didSetActive)
+            else
             {
                 visibilityRoot.SetActive(false);
             }
@@ -108,6 +103,8 @@ namespace forest
         {
             handleMsgShowLevelInfo.Dispose();
             handleMsgHideLevelInfo.Dispose();
+            handleMsgLevelFinished.Dispose();
+            handleMsgRefreshVisibility.Dispose();
         }
 
         private void LevelShow(Message raw)
@@ -126,10 +123,55 @@ namespace forest
             SetHighlight(false);
         }
 
+        private bool UpdateVisible()
+        {
+            for (int i = 0; i < Core.Instance.GameData.unlockedTags.Count; ++i)
+            {
+                string curTag = Core.Instance.GameData.unlockedTags[i];
+                if (string.Equals(tagLabel, curTag, System.StringComparison.InvariantCultureIgnoreCase))
+                {
+                    visibilityRoot.SetActive(true);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private bool UpdateFinished()
+        {
+            for (int i = 0; i < Core.Instance.GameData.finishedTags.Count; ++i)
+            {
+                string curTag = Core.Instance.GameData.finishedTags[i];
+                if (string.Equals(tagLabel, curTag, System.StringComparison.InvariantCultureIgnoreCase))
+                {
+                    SetFinished(true);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private void LevelFinished(Message raw)
+        {
+            MsgLevelFinishedAdded msg = raw as MsgLevelFinishedAdded;
+            string interactable = msg.newFinishedLevel;
+
+            CheckLevelVisibility();
+
+            SetHighlight(false);
+        }
+
         private void SetHighlight(bool isHighlighted)
         {
             highlight.gameObject.SetActive(isHighlighted);
             shadow.gameObject.SetActive(!isHighlighted);
+        }
+
+        private void SetFinished(bool isUnlocked)
+        {
+            unfinished.gameObject.SetActive(!isUnlocked);
         }
     }
 }
