@@ -11,11 +11,11 @@
 		},
 		{
 			"speaker":"???",
-			"text":"A--HHH! Y-ou j.ust b-link-ed agai.n! Wo.ah! I thought you were a statue, I've been coming by here for years."
+			"text":"A--HHH! Y-ou j.ust b-link-ed agai.n! Wo.ah! I thought you were a statue, I've been coming by here for years.\n\nCan you hear me? Are you ok?"
 		},
 		{
 			"speaker":"Player",
-			"text":"Can you hear me? Are you ok?",
+			"text":"<i>Choose an option</i>",
 			"options":
 			[
 				{

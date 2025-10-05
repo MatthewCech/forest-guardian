@@ -51,6 +51,7 @@ namespace forest
             Postmaster.Instance.Send(msg);
         }
 
+#if UNITY_EDITOR
         private void OnDrawGizmos()
         {
             if(associatedTile == null)
@@ -70,5 +71,6 @@ namespace forest
 
             Handles.Label(transform.position + Vector3.left * lOffset + Vector3.up * (vOffset), "id@>" + id, style);
         }
+#endif
     }
 }

@@ -2,14 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-//using UnityEngine.UIElements;
 using UnityEngine.UI;
 using Loam;
 using System.IO;
 using Newtonsoft.Json;
-using UnityEngine.Events;
-using UnityEditor.Experimental.GraphView;
 using System.Linq;
+using SimpleFileBrowser;
 
 namespace forest
 {
@@ -37,8 +35,10 @@ namespace forest
         [SerializeField] private TMPro.TextMeshProUGUI uiStatus;
         [SerializeField] private TMPro.TextMeshProUGUI uiLayer;
         [SerializeField] private TMPro.TMP_InputField uiTagLabelEntryField;
+        [SerializeField] private TMPro.TMP_InputField uiDescriptionField;
         [SerializeField] private TMPro.TMP_InputField uiTagBestowedEntryField;
         [SerializeField] private TMPro.TextMeshProUGUI uiTagLabelValue;
+        [SerializeField] private TMPro.TextMeshProUGUI uiDescriptionValue;
         [SerializeField] private TMPro.TextMeshProUGUI uiTagBestowedValue;
         [SerializeField] private Toggle uiIsPlayerTeam;
         [SerializeField] private Toggle uiIsEnemyTeam;
@@ -89,6 +89,7 @@ namespace forest
             uiWidthSlider.onValueChanged.AddListener(SizeChange);
             uiHeightSlider.onValueChanged.AddListener(SizeChange);
             uiTagBestowedEntryField.onValueChanged.AddListener(TagBestowedChange);
+            uiDescriptionField.onValueChanged.AddListener(DescriptionChanged);
             uiTagLabelEntryField.onValueChanged.AddListener(TagLabelChange);
 
             inputMetadataPanel.onValueChanged.AddListener(PlayfieldObjectMetadataModified);
@@ -119,6 +120,7 @@ namespace forest
             // Set tags as default
             TagLabelChange("");
             TagBestowedChange("");
+            DescriptionChanged("");
 
             // Basic tile
             Tile tile = lookup.tileTemplates[1];
@@ -671,6 +673,12 @@ namespace forest
             uiTagBestowedValue.text = workingPlayfield.GetBestowedList();
         }
 
+        private void DescriptionChanged(string value)
+        {
+            workingPlayfield.description = value;
+            uiDescriptionValue.text = workingPlayfield.description;
+        }
+
         private void TagLabelChange(string value)
         {
             workingPlayfield.tagLabel = value;
@@ -679,58 +687,59 @@ namespace forest
 
         private void SaveCreatedPlayfield()
         {
-
-#if UNITY_EDITOR
-            string path = UnityEditor.EditorUtility.SaveFilePanel("Select a place to save the level", Application.dataPath, "NewPlayfield", LEVEL_FILE_EXTENSION);
-            if(path == null || path.Length == 0)
+            FileBrowser.ShowSaveDialog((paths) =>
             {
-                return;
-            }
-
-            JsonSerializer serializer = new JsonSerializer();
-            using (StreamWriter writer = new StreamWriter(path))
-            {
-                string toPrint = JsonConvert.SerializeObject(workingPlayfield, Formatting.Indented);
-                writer.Write(toPrint);
-            }
-#endif
+                string path = paths[0];
+                JsonSerializer serializer = new JsonSerializer();
+                using (StreamWriter writer = new StreamWriter(path))
+                {
+                    string toPrint = JsonConvert.SerializeObject(workingPlayfield, Formatting.Indented);
+                    writer.Write(toPrint);
+                }
+            }, () => { }, FileBrowser.PickMode.Files, allowMultiSelection: false, Application.dataPath, "level.json", "Save Level JSON");
         }
 
         private void LoadCreatedPlayfield()
         {
-#if UNITY_EDITOR
-            string path = UnityEditor.EditorUtility.OpenFilePanel("Select a level to load", Application.dataPath, LEVEL_FILE_EXTENSION);
-            if(path == null || path.Length == 0)
+            FileBrowser.ShowLoadDialog((paths) =>
             {
-                Debug.LogWarning("Undefined path selected");
-                return;
-            }
-
-            JsonSerializer serializer = new JsonSerializer();
-            using (StreamReader reader = new StreamReader(path))
-            {
-                string all = reader.ReadToEnd();
-                Playfield field = JsonConvert.DeserializeObject<Playfield>(all);
-
-                workingPlayfield = field;
-                if(!workingPlayfield.Validate())
+                string path = paths[0];
+                JsonSerializer serializer = new JsonSerializer();
+                using (StreamReader reader = new StreamReader(path))
                 {
-                    Debug.LogError("Mis-configured playfield");
+                    string all = reader.ReadToEnd();
+                    Playfield field = JsonConvert.DeserializeObject<Playfield>(all);
+
+                    AssignPlayfield(field);
                 }
+            }, () => { }, FileBrowser.PickMode.Files, allowMultiSelection: false, Application.dataPath);
+        }
 
-                uiTagBestowedValue.text = field.GetBestowedList();
-                uiTagBestowedEntryField.text = uiTagBestowedValue.text;
-                uiTagLabelValue.text = field.tagLabel;
-                uiTagLabelEntryField.text = uiTagLabelValue.text;
-
-                uiWidthSlider.SetValueWithoutNotify(workingPlayfield.world.GetWidth());
-                uiWidthEntryField.SetTextWithoutNotify(workingPlayfield.world.GetWidth().ToString());
-                uiHeightSlider.SetValueWithoutNotify(workingPlayfield.world.GetHeight());
-                uiHeightEntryField.SetTextWithoutNotify(workingPlayfield.world.GetHeight().ToString());
-
-                visuals.DisplayAll(workingPlayfield);
+        /// <summary>
+        /// Assign and redraw the content of the provided playfield. Useful for loading, etc.
+        /// </summary>
+        /// <param name="field"></param>
+        private void AssignPlayfield(Playfield field)
+        {
+            workingPlayfield = field;
+            if (!workingPlayfield.Validate())
+            {
+                Debug.LogError("Mis-configured playfield");
             }
-#endif
+
+            uiTagBestowedValue.text = field.GetBestowedList();
+            uiTagBestowedEntryField.text = uiTagBestowedValue.text;
+            uiTagLabelValue.text = field.tagLabel;
+            uiTagLabelEntryField.text = uiTagLabelValue.text;
+            uiDescriptionValue.text = field.description;
+            uiDescriptionField.text = uiDescriptionValue.text;
+
+            uiWidthSlider.SetValueWithoutNotify(workingPlayfield.world.GetWidth());
+            uiWidthEntryField.SetTextWithoutNotify(workingPlayfield.world.GetWidth().ToString());
+            uiHeightSlider.SetValueWithoutNotify(workingPlayfield.world.GetHeight());
+            uiHeightEntryField.SetTextWithoutNotify(workingPlayfield.world.GetHeight().ToString());
+
+            visuals.DisplayAll(workingPlayfield);
         }
     }
 }

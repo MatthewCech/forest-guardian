@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
 
 
 namespace forest
@@ -18,6 +17,7 @@ namespace forest
         public PlayfieldTile associatedData; // Note: Could be replaced w/ ID later if needed
         public Vector2Int associatedPos;
 
+#if UNITY_EDITOR
         private void OnDrawGizmos()
         {
             if (associatedData == null)
@@ -41,6 +41,7 @@ namespace forest
             Handles.Label(transform.position + Vector3.left * lOffset + Vector3.up * (vOffset + vSpace), "mov$: " + movCost);
             Handles.Label(transform.position + Vector3.left * lOffset + Vector3.up * (vOffset + vSpace * 2), "imp?: " + (isImpass ? "Y" : "N"));
         }
+#endif
 
         private void OnMouseOver()
         {
