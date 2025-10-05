@@ -9,15 +9,40 @@ namespace forest
     {
         // Inspector
         [SerializeField] private string initialDialog = "intro";
+        [SerializeField] private string campDialog = "camp";
 
         // Internal
-        private bool didFirstUpdate = false;
         private MessageSubscription subIntroFinished;
+        private bool hasFoundFlag = false;
+        private float messageStartDelay = 0.25f;
 
         void Start()
         {
             subIntroFinished = Postmaster.Instance.Subscribe<MsgConvoMessage>(ParseConvoMessage);
-            StartCoroutine(DelayedStart(waitTime: 1f));
+
+            TryRunAll();
+        }
+
+        private void TryRunAll()
+        {
+            StartFirstAvailable(GameInstance.FLAG_STORY_INTRO);
+        }
+
+        /// <summary>
+        /// Run this so long as no other run to this point has found a not-yet-flipped flag.
+        /// </summary>
+        private void StartFirstAvailable(int flagToCheck)
+        {
+            if (hasFoundFlag)
+            {
+                return;
+            }
+
+            if (!Core.Instance.GameData.GetFlag(flagToCheck))
+            {
+                hasFoundFlag = true;
+                StartCoroutine(DelayedStart(waitTime: messageStartDelay));
+            }
         }
 
         private IEnumerator DelayedStart(float waitTime)
@@ -40,15 +65,15 @@ namespace forest
             switch (convoMessage)
             {
                 case "introdone":
-                    UnlockTutorial();
+                    UnlockTutorialAndInitialLevels();
                     break;
             }
         }
 
-        private void UnlockTutorial()
+        private void UnlockTutorialAndInitialLevels()
         {
-            Core.Instance.GameData.UnlockLevel("tutorial");
-            Core.Instance.GameData.UnlockLevel("ivy-grove");
+            Core.Instance.GameData.UnlockLevel(GameInstance.LEVEL_TUTORIAL);
+            Core.Instance.GameData.SetFlag(GameInstance.FLAG_STORY_INTRO);
         }
     }
 }

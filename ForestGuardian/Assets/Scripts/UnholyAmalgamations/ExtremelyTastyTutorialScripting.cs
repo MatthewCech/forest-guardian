@@ -174,7 +174,7 @@ namespace forest
                 case TutorialState.ProvidingContext_01:
                     if (TryConsumeStateInit())
                     {
-                        ShowMessage("Welcome to your first <forest battle>?! What you see here is an <overgrown grove>?\n\n(Press next to continue...)");
+                        ShowMessage("Woah, looks like we have a visitor at camp! Looks like a little bit of overgrowth, let me show you what we're dealing with...\n\n(Press next to continue...)");
                     }
                     if (TryConsumeProceedToNextRequest())
                     {
@@ -185,7 +185,7 @@ namespace forest
                 case TutorialState.ProvidingContext_02:
                     if (TryConsumeStateInit())
                     {
-                        ShowMessage("To <grow into and rebalance>? a space, we first need to select what <plants/units>? to use.");
+                        ShowMessage("To grow into and rebalance a space, we first need to select what creatures to use.");
                     }
                     if (TryConsumeProceedToNextRequest())
                     {

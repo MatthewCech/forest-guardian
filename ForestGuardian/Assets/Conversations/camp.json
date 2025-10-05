@@ -1,0 +1,22 @@
+{
+	"metadata":
+	{
+		"version":1
+	},
+	"lines":
+	[
+		{
+			"speaker":"NAME",
+			"text":"Welcome to camp!"
+		},
+		{
+			"speaker":"NAME",
+			"text":"Woah, steady on your feet-- don't worry, I'll help you along.",
+			"jump":"end"
+		}
+	],
+	"end":
+	{
+		"message":"introDone"
+	}
+}

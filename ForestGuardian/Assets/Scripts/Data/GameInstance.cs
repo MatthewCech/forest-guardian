@@ -14,17 +14,25 @@ namespace forest
     public class GameInstance
     {
         // Defines
+        public const int FLAG_COUNT = 1;
+        public const int FLAG_STORY_INTRO = 0;
+
+        public const string LEVEL_TUTORIAL = "tutorial";
+        public const string LEVEL_1_1 = "ivy-grove";
+
+        // Defines
         [System.NonSerialized] public const string PLAYER_UNIT_DEFAULT = "Guardian";
 
         // Data
         [JsonProperty] public int currency = 0;
         [JsonProperty] public List<string> unlockedTags = new List<string>();
         [JsonProperty] public List<UnitData> roster = new List<UnitData>();
+        [JsonProperty] private bool[] progressFlags = new bool[FLAG_COUNT];
 
         // Runtime Data Only
         [System.NonSerialized] public TextAsset currentPlayfield = null;
         [System.NonSerialized] public Playfield lastFloor = null; // for use during multi-floor dungeons
-
+        
         /// <summary>
         /// Provides defaults. Arguments and construction can and should be reworked 
         /// </summary>
@@ -73,6 +81,16 @@ namespace forest
         {
             unlockedTags.Add(toAdd);
             Loam.Postmaster.Instance.Send<MsgLevelUnlockAdded>(new MsgLevelUnlockAdded() { newUnlock = toAdd });
+        }
+
+        public void SetFlag(int flag)
+        {
+            progressFlags[flag] = true;
+        }
+
+        public bool GetFlag(int flag)
+        {
+            return progressFlags[flag];
         }
     }
 }

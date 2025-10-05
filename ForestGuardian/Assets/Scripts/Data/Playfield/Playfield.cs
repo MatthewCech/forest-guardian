@@ -3,9 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
-using System.Linq;
-using static UnityEditor.FilePathAttribute;
-using static UnityEngine.UI.CanvasScaler;
 
 namespace forest
 {
@@ -18,6 +15,7 @@ namespace forest
 
         // Data about the playfield
         [JsonProperty] public string tagLabel;
+        [JsonProperty] public string description;
         [JsonProperty] public List<string> tagsBestowed;
 
         // Contents of the playfield
