@@ -326,6 +326,12 @@ namespace forest
 
         private void ProcessPrimaryAction(Vector2Int position)
         {
+            if(UICore.IsMouseOverUIElement())
+            {
+                Debug.Log("Skipping primary action to avoid duped UI interaction");
+                return;
+            }
+
             if(IsMainInputModifierDown())
             {
                 ProcessSecondaryAction(position);
@@ -479,6 +485,12 @@ namespace forest
 
         private void ProcessSecondaryAction(Vector2Int position)
         {
+            if (UICore.IsMouseOverUIElement())
+            {
+                Debug.Log("Skipping secondary action to avoid duped UI interaction");
+                return;
+            }
+
             if (previewType == PlayfieldEditorSelectionType.Tile)
             {
                 PlayfieldTile tile = workingPlayfield.world.Get(position);

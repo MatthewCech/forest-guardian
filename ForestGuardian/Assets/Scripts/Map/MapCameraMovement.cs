@@ -22,7 +22,7 @@ namespace forest
 
         void Update()
         {
-            bool isClickStartedInWorld = Input.GetMouseButtonDown(0) && !Core.Instance.UICore.IsMouseOverUIElement();
+            bool isClickStartedInWorld = Input.GetMouseButtonDown(0) && !UICore.IsMouseOverUIElement();
             if (isClickStartedInWorld)
             {
                 isDown = true;

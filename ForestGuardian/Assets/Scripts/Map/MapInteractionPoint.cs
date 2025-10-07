@@ -55,7 +55,7 @@ namespace forest
         private void OnMouseUpAsButton()
         {
             // Prevent clicking through UI to change map level info
-            if(Core.Instance.UICore.IsMouseOverUIElement())
+            if(UICore.IsMouseOverUIElement())
             {
                 return;
             }

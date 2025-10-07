@@ -11,6 +11,7 @@ namespace forest
     public class UICore : MonoBehaviour
     {
         public const string UI_LAYER_NAME = "UI";
+        public const int LAYER_UNDEFINED = -1;
 
         [Header("Dialog")]
         [SerializeField] private DialogueUICore convoCore;
@@ -23,7 +24,7 @@ namespace forest
         
         private System.Action onYes;
         private System.Action onNo;
-        private int layerUI;
+        private static int layerUI = LAYER_UNDEFINED;
 
         public bool IsWorldInteractable { get; private set; } = true;
 
@@ -41,18 +42,19 @@ namespace forest
             SetCoDAVisibility(false);
         }
 
-        private void Start()
-        {
-            layerUI = LayerMask.NameToLayer(UI_LAYER_NAME);
-        }
 
         /// <summary>
         /// Check if anything under the cursor is tagged as UI via event system raycast.
         /// NOTE: Leans on EventSystem, so may not work in certain situations.
         /// TODO: Consider caching if this ends up getting used a lot.
         /// </summary>
-        public bool IsMouseOverUIElement()
+        public static bool IsMouseOverUIElement()
         {
+            if (layerUI == LAYER_UNDEFINED)
+            {
+                layerUI = LayerMask.NameToLayer(UI_LAYER_NAME);
+            }
+
             EventSystem eventSystem = EventSystem.current;
             List<RaycastResult> raycastResults = new List<RaycastResult>();
 
