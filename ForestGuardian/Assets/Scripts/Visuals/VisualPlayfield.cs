@@ -546,6 +546,13 @@ namespace forest
             EnsureParentObjectExists();
 
             Unit template = lookup.GetUnitTemplateByName(data.tag);
+
+            if(template == null)
+            {
+                Debug.LogError($"Could not find template with name: {data.tag} - check the 'Unit name' field on the unit prefab to confirm the tag being looked up.");
+                return;
+            }
+
             for (int i = 0; i < data.locations.Count; ++i)
             {
                 Vector2Int curLocation = data.locations[i];

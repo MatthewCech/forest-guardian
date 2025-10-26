@@ -535,7 +535,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data:
-    unitName: Ivy
+    unitName: Corrupt Ivy
     maxSize: 4
     speed: 2
     level: 1
