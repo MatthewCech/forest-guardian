@@ -129,8 +129,8 @@ LineRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 0.08235294, g: 0.35686275, b: 0.38823533, a: 0.5882353}
-      key1: {r: 0.08235294, g: 0.35686275, b: 0.38823533, a: 0.5882353}
+      key0: {r: 0.8196079, g: 0.48235297, b: 0.23529413, a: 0.5882353}
+      key1: {r: 0.8196079, g: 0.48235297, b: 0.23529413, a: 0.5882353}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
       key4: {r: 0, g: 0, b: 0, a: 0}
@@ -194,8 +194,8 @@ Transform:
   m_GameObject: {fileID: 3164275203228602570}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.06, z: 0}
-  m_LocalScale: {x: 1.15, y: 1.15, z: 1.15}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 2430559273022296223}
@@ -241,12 +241,12 @@ SpriteRenderer:
   m_SortingLayerID: 672056711
   m_SortingLayer: 1
   m_SortingOrder: 4
-  m_Sprite: {fileID: 21300000, guid: 078032ec4e55c7b4facbae5449eae303, type: 3}
+  m_Sprite: {fileID: 21300000, guid: bd974981b91820e4a8cd62817307087b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 2.56, y: 2.56}
+  m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -326,7 +326,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 2
   m_Sprite: {fileID: -5177388603050735206, guid: 8884154dfe85442a3a3578be807dbcdf, type: 3}
-  m_Color: {r: 0.07058824, g: 0.35723287, b: 0.3882353, a: 1}
+  m_Color: {r: 0.8196079, g: 0.48235297, b: 0.23529413, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 2
@@ -348,7 +348,7 @@ GameObject:
   - component: {fileID: -8435911677690845889}
   - component: {fileID: 7397799963576805088}
   m_Layer: 0
-  m_Name: BogWisp
+  m_Name: Gnat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -386,18 +386,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data:
-    unitName: BogWisp
-    maxSize: 2
-    speed: 2
+    unitName: Gnat
+    maxSize: 1
+    speed: 3
     level: 0
     moves:
-    - moveName: Flare
+    - moveName: Nibble
       moveDamage: 1
-      moveRange: 3
-      moveDescription: A flash of light? Some swamp bubbles? Magic?
+      moveRange: 1
+      moveDescription: The gnat attempts to take a small bite out of its target
   head: {fileID: 334675950987140449}
   segmentLink: {fileID: 6897957375675128042}
-  uiIcon: {fileID: 21300000, guid: 078032ec4e55c7b4facbae5449eae303, type: 3}
+  uiIcon: {fileID: 21300000, guid: bd974981b91820e4a8cd62817307087b, type: 3}
   associatedData:
     tag: 
     id: -1
@@ -407,7 +407,7 @@ MonoBehaviour:
     curMaxMovementBudget: 0
     curMovesTaken: 0
     curMaxSize: 1
-    curAttackRange: 1
+    curSelectedMove: 0
     rosterOverride:
       unitName: UNNAMED
       maxSize: 3
@@ -535,7 +535,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_Sprite: {fileID: -5177388603050735206, guid: 8884154dfe85442a3a3578be807dbcdf, type: 3}
-  m_Color: {r: 0.070635, g: 0.2566183, b: 0.277, a: 1}
+  m_Color: {r: 0.4669811, g: 0.3287554, b: 0.2246796, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 2

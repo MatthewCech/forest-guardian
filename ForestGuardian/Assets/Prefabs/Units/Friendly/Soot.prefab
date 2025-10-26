@@ -303,7 +303,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   data:
     unitName: Soot
-    maxSize: 2
+    maxSize: 3
     speed: 3
     level: 0
     moves:
@@ -314,7 +314,7 @@ MonoBehaviour:
         errant '
   head: {fileID: 334675950987140449}
   segmentLink: {fileID: 6897957375675128042}
-  uiIcon: {fileID: 21300000, guid: 078032ec4e55c7b4facbae5449eae303, type: 3}
+  uiIcon: {fileID: 21300000, guid: c094ef0f30b7e1a4480e7cc8a7a86f00, type: 3}
   associatedData:
     tag: 
     id: -1

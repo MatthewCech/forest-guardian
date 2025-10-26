@@ -929,7 +929,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   data:
     unitName: Guardian
-    maxSize: 3
+    maxSize: 4
     speed: 2
     level: 0
     moves:

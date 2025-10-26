@@ -42,7 +42,7 @@ namespace forest
             currency = 0;
 
             AddToRoster(lookup, "Guardian");
-            AddToRoster(lookup, "BogWisp");
+            AddToRoster(lookup, "Soot");
         }
 
         /// <summary>
