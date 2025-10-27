@@ -9,7 +9,7 @@ namespace forest
     {
         // Inspector
         [SerializeField] private string initialDialog = "intro";
-        [SerializeField] private string campDialog = "camp";
+        // [SerializeField] private string campDialog = "camp";
 
         // Internal
         private MessageSubscription subIntroFinished;
