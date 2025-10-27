@@ -20,14 +20,27 @@
     },
     {
       "tag": "Ivy",
-      "id": 93,
+      "id": 96,
       "team": 2,
       "locations": [
         {
-          "x": 1,
-          "y": 3,
+          "x": 3,
+          "y": 1,
           "magnitude": 3.1622777,
           "sqrMagnitude": 10
+        }
+      ]
+    },
+    {
+      "tag": "Corrupt Ivy",
+      "id": 97,
+      "team": 2,
+      "locations": [
+        {
+          "x": 0,
+          "y": 3,
+          "magnitude": 3.0,
+          "sqrMagnitude": 9
         }
       ]
     }
@@ -411,5 +424,6 @@
       "sqrMagnitude": 2
     }
   },
-  "nextID": 96
+  "nextID": 98,
+  "flagIsTutorial": false
 }

@@ -25,7 +25,7 @@ namespace forest
         private IEnumerator OpponentMove()
         {
             const float visualDisplayDelay = .3f;
-            const float visualMoveDelay = .1f;
+            const float visualMoveDelay = .2f;
 
             if (!TryGetOpponentsTarget(out PlayfieldUnit targeted))
             {

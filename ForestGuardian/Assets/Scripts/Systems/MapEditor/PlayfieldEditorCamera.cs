@@ -59,22 +59,22 @@ namespace forest
 
             if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
             {
-                moveInput.y -= moveSpeed * Time.deltaTime;
+                moveInput.y += moveSpeed * Time.deltaTime;
             }
 
             if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
             {
-                moveInput.x += moveSpeed * Time.deltaTime;
+                moveInput.x -= moveSpeed * Time.deltaTime;
             }
 
             if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
             {
-                moveInput.y += moveSpeed * Time.deltaTime;
+                moveInput.y -= moveSpeed * Time.deltaTime;
             }
 
             if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
             {
-                moveInput.x -= moveSpeed * Time.deltaTime;
+                moveInput.x += moveSpeed * Time.deltaTime;
             }
 
             float z = this.transform.position.z;
