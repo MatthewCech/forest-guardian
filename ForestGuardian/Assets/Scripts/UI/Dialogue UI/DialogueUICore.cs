@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Loam.Convo;
+using Loam;
 
 namespace forest
 {
@@ -14,7 +15,8 @@ namespace forest
         [Header("Data")]
         [SerializeField] private List<TextAsset> _conversations;
 
-        private Loam.MessageSubscription _subscriptionStart;
+        private MessageSubscription _subscriptionStart;
+        private MessageSubscription _subscriptionEnd;
 
         public void Initialize()
         {
@@ -32,25 +34,34 @@ namespace forest
 
         private void ProcessMessage(string input)
         {
-            Loam.Postmaster.Instance.Send(new MsgConvoMessage() { message = input });
+            Postmaster.Instance.Send(new MsgConvoMessage() { message = input });
             Debug.Log(input);
         }
 
         private void OnEnable()
         {
-            _subscriptionStart = Loam.Postmaster.Instance.Subscribe<MsgConvoStart>(StartFromAssetMessage);
+            _subscriptionStart = Postmaster.Instance.Subscribe<MsgConvoStart>(StartConvoFromAssetMessage);
+            _subscriptionEnd = Postmaster.Instance.Subscribe<MsgConvoEnd>(EndConvoMessage);
         }
 
         private void OnDisable()
         {
+            _subscriptionEnd.Dispose();
             _subscriptionStart.Dispose();
         }
 
-        private void StartFromAssetMessage(Loam.Message raw)
+        private void StartConvoFromAssetMessage(Message raw)
         {
             MsgConvoStart msg = raw as MsgConvoStart;
 
             StartByName(msg.convoName);
+        }
+
+        private void EndConvoMessage(Message raw)
+        {
+            MsgConvoEnd msg = raw as MsgConvoEnd;
+
+            EndConversation();
         }
 
         private void StartByName(string convoName)

@@ -131,9 +131,17 @@ namespace forest
             return true;
         }
 
+        public void SetPlayfieldAndLoad(string levelToLoad)
+        {
+            GameData.currentPlayfieldText = levelToLoad;
+            GameData.currentPlayfield = null;
+            LoadLevel(ForestLevel.Playfield);
+        }
+
         public void SetPlayfieldAndLoad(TextAsset levelToLoad)
         {
             GameData.currentPlayfield = levelToLoad;
+            GameData.currentPlayfieldText = null;
             LoadLevel(ForestLevel.Playfield);
         }
 

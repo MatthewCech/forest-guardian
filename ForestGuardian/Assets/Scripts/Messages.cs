@@ -124,6 +124,14 @@ namespace forest
     }
 
     [MessageMetadata(
+    friendlyName: "End Convo",
+    description: "Attempts to end any active dialogue and hide the conversation dialog",
+    isVisible: true)]
+    public class MsgConvoEnd : Loam.Message
+    {
+    }
+
+    [MessageMetadata(
     friendlyName: "Convo Message",
     description: "An interaction in a dialog sending a message",
     isVisible: true)]

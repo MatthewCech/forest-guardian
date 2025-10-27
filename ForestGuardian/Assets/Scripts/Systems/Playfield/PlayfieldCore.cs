@@ -86,6 +86,18 @@ namespace forest
             UI?.buttonJumpToPortal?.onClick.RemoveAllListeners();
             SetState<Combat200Shutdown>();
         }
+
+        /// <summary>
+        /// Attempt to collect the raw string representing the level to load. 
+        /// Tries in the following order:
+        ///
+        /// - Inspector specified override: Given priority, no side effects.
+        /// - Text asset specified in game data: Internal level asset, so this gets priority. Removes reference and any external data if found.
+        /// - string specified in game data: External level asset. Removes info about self if found, and just in case nulls internal ref data.
+        /// 
+        /// </summary>
+        /// <param name="selected">The raw unparsed playfield data, to be parsed into a playfield object.</param>
+        /// <returns>whether or not level data could be found and loaded into out param named 'selected'</returns>
         private bool TryGetConsumeLevelData(out string selected)
         {
             selected = null;
@@ -98,22 +110,27 @@ namespace forest
                 return true;
             }
 
-            // Try and collect level information from the game instance
+            // Try and collect level information from the game instance, consume it if we find it.
             TextAsset coreValue = Core.Instance.GameData.currentPlayfield;
             if (coreValue != null)
             {
                 selected = coreValue.text;
 
-                // Note: Consume this data.
                 Core.Instance.GameData.currentPlayfield = null;
-
+                Core.Instance.GameData.currentPlayfieldText = null;
                 return true;
             }
 
+            // Ok, may not be a text asset so there may be some extranal data coming in.
+            // Try and load that instead, and consume it if we find it.
             string coreValueAsString = Core.Instance.GameData.currentPlayfieldText;
             if(coreValueAsString != null)
             {
+                selected = coreValueAsString;
 
+                Core.Instance.GameData.currentPlayfield = null;
+                Core.Instance.GameData.currentPlayfieldText = null;
+                return true;
             }
 
             return false;
