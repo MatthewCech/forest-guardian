@@ -5782,7 +5782,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fb15d6a17d47104d9501ace6a0e2b94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelToMatch: {fileID: 4900000, guid: 6f85e55a934cc1b448d687858130ad2f, type: 3}
   playfieldCore: {fileID: 8795689981178753726}
   tutorialDisplay: {fileID: 840619650}
   messageText: {fileID: 1262201962}
@@ -7266,7 +7265,7 @@ PrefabInstance:
     - target: {fileID: 1285525200247335279, guid: 8c75ae87fd7db0242b67a4ae2166b5e4, type: 3}
       propertyPath: levelOverride
       value: 
-      objectReference: {fileID: 4900000, guid: cf3877a8b9ff2e445b14d8613d73649d, type: 3}
+      objectReference: {fileID: 4900000, guid: 6f85e55a934cc1b448d687858130ad2f, type: 3}
     - target: {fileID: 1285525200247335279, guid: 8c75ae87fd7db0242b67a4ae2166b5e4, type: 3}
       propertyPath: TEMPlevelAssets.Array.size
       value: 3

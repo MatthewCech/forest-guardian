@@ -32,6 +32,7 @@ namespace forest
 
         // Runtime Data Only
         [System.NonSerialized] public TextAsset currentPlayfield = null;
+        [System.NonSerialized] public string currentPlayfieldText = null;
         [System.NonSerialized] public Playfield lastFloor = null; // for use during multi-floor dungeons
         
         /// <summary>

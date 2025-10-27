@@ -28,7 +28,10 @@ namespace forest
 
         // Internal tracking for playfield.
         // This is not unique across the game, just the specific playfield.
+        // These are also something we should either generate or are manually
+        // specified, not specified in an editor.
         [JsonProperty] private int nextID = 1;
+        [JsonProperty] private bool flagIsTutorial = false;
 
         /// <summary>
         /// Provide a playfield-unique ID for use when creating a new tile/unit/item within the playfield.
@@ -37,6 +40,15 @@ namespace forest
         public int GetNextID()
         {
             return nextID++;
+        }
+
+        /// <summary>
+        /// Return whether or not this is a special case tutorial level.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsTutorial()
+        {
+            return flagIsTutorial;
         }
 
         /// <summary>

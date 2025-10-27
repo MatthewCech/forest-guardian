@@ -31,7 +31,6 @@ namespace forest
         public VisualLookup VisualLookup { get; private set; }
         public PlayfieldLookup PlayfieldLookup { get; private set; }
         public PlayfieldUI UI { get; private set; }
-        public string PlayfieldName { get; private set; }
 
         // Internal
         private Playfield playfield;
@@ -44,21 +43,20 @@ namespace forest
         {
             Postmaster.Instance.Configure(PostmasterConfig.Default());
 
-            if (!TrySelectLevel(out TextAsset toLoad))
+            if (!TryGetConsumeLevelData(out string toLoad))
             {
                 Debug.LogError("No playfield specified! Attempting to exit.");
                 Exit();
                 return;
             }
 
-            playfield = Playfield.BuildPlayfield(toLoad.text);
+            playfield = Playfield.BuildPlayfield(toLoad);
             visualizerPlayfield.Initialize(visualLookup);
             visualizerPlayfield.DisplayAll(playfield);
 
             Utils.CenterCamera(mainCam, visualizerPlayfield);
 
             // Internal property setup
-            PlayfieldName = toLoad.name;
             Playfield = playfield;
             VisualPlayfield = visualizerPlayfield;
             VisualLookup = visualLookup;
@@ -88,14 +86,14 @@ namespace forest
             UI?.buttonJumpToPortal?.onClick.RemoveAllListeners();
             SetState<Combat200Shutdown>();
         }
-        private bool TrySelectLevel(out TextAsset selected)
+        private bool TryGetConsumeLevelData(out string selected)
         {
             selected = null;
 
             // If we were given an override, just do that.
             if (levelOverride != null)
             {
-                selected = levelOverride;
+                selected = levelOverride.text;
                 Debug.LogWarning("Hey! You've overridden the level for the playfield, hopefully for testing. This will prevent normal progression otherwise.");
                 return true;
             }
@@ -104,11 +102,18 @@ namespace forest
             TextAsset coreValue = Core.Instance.GameData.currentPlayfield;
             if (coreValue != null)
             {
-                selected = coreValue;
+                selected = coreValue.text;
 
                 // Note: Consume this data.
                 Core.Instance.GameData.currentPlayfield = null;
+
                 return true;
+            }
+
+            string coreValueAsString = Core.Instance.GameData.currentPlayfieldText;
+            if(coreValueAsString != null)
+            {
+
             }
 
             return false;

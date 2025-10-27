@@ -40,7 +40,6 @@ namespace forest
         }
 
         [Header("Things to stare at and reach into")]
-        [SerializeField] private TextAsset levelToMatch;
         [SerializeField] private PlayfieldCore playfieldCore; // Used just for name really
 
         [Header("UI")]
@@ -160,7 +159,7 @@ namespace forest
             switch (curState)
             {
                 case TutorialState.Startup:
-                    if (string.Equals(playfieldCore.PlayfieldName, levelToMatch.name))
+                    if (playfieldCore.Playfield.IsTutorial())
                     {
                         SetState(TutorialState.ProvidingContext_01);
                     }
