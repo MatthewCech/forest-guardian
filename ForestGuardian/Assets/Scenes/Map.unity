@@ -1835,6 +1835,18 @@ PrefabInstance:
       propertyPath: visibleName
       value: Ivy Grove
       objectReference: {fileID: 0}
+    - target: {fileID: 8682143159296459062, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
+      propertyPath: overrideAutoPop
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8682143159296459062, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
+      propertyPath: tagsBestowed.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8682143159296459062, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
+      propertyPath: tagsBestowed.Array.data[0]
+      value: riverbank
+      objectReference: {fileID: 0}
     - target: {fileID: 8970852046660200809, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
       propertyPath: asset
       value: 
@@ -35493,6 +35505,115 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1001 &1255543692
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1672223266829813505, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
+      propertyPath: m_text
+      value: <b>Riverbank</b>
+      objectReference: {fileID: 0}
+    - target: {fileID: 1672223266829813505, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
+      propertyPath: m_fontSize
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1672223266829813505, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
+      propertyPath: m_fontStyle
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1672223266829813505, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1720372127498171107, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
+      propertyPath: m_Name
+      value: Dungeon 'riverbank' (unlocks '')
+      objectReference: {fileID: 0}
+    - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.23
+      objectReference: {fileID: 0}
+    - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 3.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3503761111848370290, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 4540661235692571854, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
+      propertyPath: m_SortingOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8682143159296459062, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
+      propertyPath: depth
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8682143159296459062, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
+      propertyPath: infoPane
+      value: 
+      objectReference: {fileID: 682343841}
+    - target: {fileID: 8682143159296459062, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
+      propertyPath: tagLabel
+      value: riverbank
+      objectReference: {fileID: 0}
+    - target: {fileID: 8682143159296459062, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
+      propertyPath: levelData
+      value: 
+      objectReference: {fileID: 4900000, guid: 79632575bcabcb74988eaa9f796d31d3, type: 3}
+    - target: {fileID: 8682143159296459062, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
+      propertyPath: visibleName
+      value: Riverbank
+      objectReference: {fileID: 0}
+    - target: {fileID: 8970852046660200809, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
+      propertyPath: asset
+      value: 
+      objectReference: {fileID: 4900000, guid: ebc0520e30878bf41b2aa2ca2d00c1ca, type: 3}
+    m_RemovedComponents:
+    - {fileID: 8970852046660200809, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7690414718388180640, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 0}
+  m_SourcePrefab: {fileID: 100100000, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
 --- !u!1 &1262289743
 GameObject:
   m_ObjectHideFlags: 0
@@ -42734,7 +42855,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   initialDialog: intro
-  campDialog: camp
 --- !u!4 &1649143262
 Transform:
   m_ObjectHideFlags: 0
@@ -53398,7 +53518,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7444760060522020155, guid: 25091790c23650a409db382290a8c885, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.00007797374
+      value: -0.00006023608
       objectReference: {fileID: 0}
     - target: {fileID: 7504255272786054419, guid: 25091790c23650a409db382290a8c885, type: 3}
       propertyPath: m_AnchorMax.x
@@ -53519,6 +53639,7 @@ SceneRoots:
   - {fileID: 1951802256}
   - {fileID: 3372670674132212144}
   - {fileID: 75543632}
+  - {fileID: 1255543692}
   - {fileID: 1270341706}
   - {fileID: 1583801790}
   - {fileID: 1924781314}

@@ -1,46 +1,137 @@
 {
-  "tagLabel": "ivy-grove",
-  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+  "tagLabel": "riverbank",
+  "description": "The culimation of the riverbank adventure",
   "tagsBestowed": [
     "riverbank"
   ],
   "units": [
     {
-      "tag": "Ivy",
-      "id": 90,
+      "tag": "Gnat",
+      "id": 105,
       "team": 2,
       "locations": [
         {
-          "x": 2,
-          "y": 2,
-          "magnitude": 2.828427,
-          "sqrMagnitude": 8
+          "x": 7,
+          "y": 4,
+          "magnitude": 8.062258,
+          "sqrMagnitude": 65
         }
       ]
     },
     {
-      "tag": "Ivy",
-      "id": 96,
+      "tag": "Gnat",
+      "id": 106,
       "team": 2,
       "locations": [
         {
-          "x": 3,
+          "x": 5,
           "y": 1,
-          "magnitude": 3.1622777,
-          "sqrMagnitude": 10
+          "magnitude": 5.09901953,
+          "sqrMagnitude": 26
+        }
+      ]
+    },
+    {
+      "tag": "Gnat",
+      "id": 107,
+      "team": 2,
+      "locations": [
+        {
+          "x": 5,
+          "y": 7,
+          "magnitude": 8.602325,
+          "sqrMagnitude": 74
         }
       ]
     },
     {
       "tag": "Corrupt Ivy",
-      "id": 97,
+      "id": 108,
       "team": 2,
       "locations": [
         {
-          "x": 0,
-          "y": 3,
-          "magnitude": 3.0,
-          "sqrMagnitude": 9
+          "x": 6,
+          "y": 0,
+          "magnitude": 6.0,
+          "sqrMagnitude": 36
+        }
+      ]
+    },
+    {
+      "tag": "Corrupt Ivy",
+      "id": 109,
+      "team": 2,
+      "locations": [
+        {
+          "x": 8,
+          "y": 4,
+          "magnitude": 8.944272,
+          "sqrMagnitude": 80
+        }
+      ]
+    },
+    {
+      "tag": "Corrupt Ivy",
+      "id": 110,
+      "team": 2,
+      "locations": [
+        {
+          "x": 6,
+          "y": 8,
+          "magnitude": 10.0,
+          "sqrMagnitude": 100
+        }
+      ]
+    },
+    {
+      "tag": "Rotting Tree",
+      "id": 112,
+      "team": 2,
+      "locations": [
+        {
+          "x": 7,
+          "y": 6,
+          "magnitude": 9.219544,
+          "sqrMagnitude": 85
+        }
+      ]
+    },
+    {
+      "tag": "Rotting Tree",
+      "id": 113,
+      "team": 2,
+      "locations": [
+        {
+          "x": 7,
+          "y": 2,
+          "magnitude": 7.28011,
+          "sqrMagnitude": 53
+        }
+      ]
+    },
+    {
+      "tag": "Ivy",
+      "id": 98,
+      "team": 2,
+      "locations": [
+        {
+          "x": 6,
+          "y": 2,
+          "magnitude": 6.3245554,
+          "sqrMagnitude": 40
+        }
+      ]
+    },
+    {
+      "tag": "Ivy",
+      "id": 99,
+      "team": 2,
+      "locations": [
+        {
+          "x": 6,
+          "y": 6,
+          "magnitude": 8.485281,
+          "sqrMagnitude": 72
         }
       ]
     }
@@ -57,7 +148,7 @@
           "id": 2
         },
         {
-          "tag": "Nothing",
+          "tag": "Marsh",
           "id": 3
         },
         {
@@ -69,7 +160,7 @@
           "id": 5
         },
         {
-          "tag": "Wall",
+          "tag": "Basic",
           "id": 6
         },
         {
@@ -91,7 +182,7 @@
           "id": 6
         },
         {
-          "tag": "Basic",
+          "tag": "Marsh",
           "id": 7
         },
         {
@@ -103,16 +194,16 @@
           "id": 9
         },
         {
-          "tag": "Wall",
+          "tag": "Basic",
           "id": 10
         },
         {
-          "tag": "Marsh",
-          "id": 14
+          "tag": "Basic",
+          "id": 12
         },
         {
-          "tag": "Wall",
-          "id": 15
+          "tag": "Basic",
+          "id": 14
         },
         {
           "tag": "Wall",
@@ -125,7 +216,7 @@
       ],
       [
         {
-          "tag": "Nothing",
+          "tag": "Marsh",
           "id": 11
         },
         {
@@ -141,29 +232,29 @@
           "id": 14
         },
         {
-          "tag": "Marsh",
+          "tag": "Basic",
           "id": 15
         },
         {
-          "tag": "Marsh",
-          "id": 22
+          "tag": "Basic",
+          "id": 18
         },
         {
-          "tag": "Marsh",
-          "id": 23
+          "tag": "Basic",
+          "id": 21
         },
         {
           "tag": "Basic",
           "id": 24
         },
         {
-          "tag": "Basic",
+          "tag": "Wall",
           "id": 27
         }
       ],
       [
         {
-          "tag": "Basic",
+          "tag": "Marsh",
           "id": 16
         },
         {
@@ -179,23 +270,23 @@
           "id": 19
         },
         {
-          "tag": "Marsh",
+          "tag": "Basic",
           "id": 20
         },
         {
-          "tag": "Marsh",
-          "id": 30
+          "tag": "Basic",
+          "id": 24
         },
         {
           "tag": "Basic",
-          "id": 31
+          "id": 28
         },
         {
           "tag": "Basic",
           "id": 32
         },
         {
-          "tag": "Basic",
+          "tag": "Wall",
           "id": 36
         }
       ],
@@ -213,20 +304,20 @@
           "id": 23
         },
         {
-          "tag": "Marsh",
+          "tag": "Basic",
           "id": 24
         },
         {
-          "tag": "Marsh",
+          "tag": "Basic",
           "id": 25
         },
         {
           "tag": "Basic",
-          "id": 38
+          "id": 30
         },
         {
           "tag": "Basic",
-          "id": 39
+          "id": 35
         },
         {
           "tag": "Basic",
@@ -260,18 +351,18 @@
         },
         {
           "tag": "Basic",
-          "id": 46
+          "id": 36
         },
         {
           "tag": "Basic",
-          "id": 47
+          "id": 42
         },
         {
           "tag": "Basic",
           "id": 48
         },
         {
-          "tag": "Nothing",
+          "tag": "Basic",
           "id": 54
         }
       ],
@@ -285,11 +376,11 @@
           "id": 32
         },
         {
-          "tag": "Wall",
+          "tag": "Basic",
           "id": 33
         },
         {
-          "tag": "Wall",
+          "tag": "Basic",
           "id": 34
         },
         {
@@ -298,24 +389,24 @@
         },
         {
           "tag": "Basic",
-          "id": 54
+          "id": 42
         },
         {
           "tag": "Basic",
-          "id": 55
+          "id": 49
         },
         {
           "tag": "Basic",
           "id": 56
         },
         {
-          "tag": "Nothing",
+          "tag": "Basic",
           "id": 63
         }
       ],
       [
         {
-          "tag": "Nothing",
+          "tag": "Basic",
           "id": 36
         },
         {
@@ -336,94 +427,163 @@
         },
         {
           "tag": "Basic",
-          "id": 62
+          "id": 48
         },
         {
           "tag": "Basic",
-          "id": 63
+          "id": 56
         },
         {
-          "tag": "Nothing",
+          "tag": "Basic",
           "id": 64
         },
         {
-          "tag": "Nothing",
+          "tag": "Basic",
           "id": 72
         }
       ],
       [
         {
           "tag": "Nothing",
-          "id": 65
-        },
-        {
-          "tag": "Nothing",
-          "id": 66
-        },
-        {
-          "tag": "Nothing",
-          "id": 67
+          "id": 41
         },
         {
           "tag": "Basic",
-          "id": 68
+          "id": 42
         },
         {
           "tag": "Basic",
-          "id": 69
+          "id": 43
         },
         {
           "tag": "Basic",
-          "id": 70
+          "id": 44
         },
         {
           "tag": "Basic",
-          "id": 71
+          "id": 45
         },
         {
-          "tag": "Nothing",
+          "tag": "Basic",
+          "id": 54
+        },
+        {
+          "tag": "Basic",
+          "id": 63
+        },
+        {
+          "tag": "Basic",
           "id": 72
         },
         {
           "tag": "Nothing",
           "id": 81
         }
+      ],
+      [
+        {
+          "tag": "Nothing",
+          "id": 46
+        },
+        {
+          "tag": "Nothing",
+          "id": 47
+        },
+        {
+          "tag": "Basic",
+          "id": 48
+        },
+        {
+          "tag": "Basic",
+          "id": 49
+        },
+        {
+          "tag": "Basic",
+          "id": 50
+        },
+        {
+          "tag": "Basic",
+          "id": 60
+        },
+        {
+          "tag": "Basic",
+          "id": 70
+        },
+        {
+          "tag": "Nothing",
+          "id": 80
+        },
+        {
+          "tag": "Nothing",
+          "id": 90
+        }
       ]
     ]
   },
-  "items": [],
+  "items": [
+    {
+      "tag": "Acorn",
+      "id": 91,
+      "location": {
+        "x": 8,
+        "y": 7,
+        "magnitude": 10.630146,
+        "sqrMagnitude": 113
+      }
+    },
+    {
+      "tag": "Acorn",
+      "id": 93,
+      "location": {
+        "x": 9,
+        "y": 6,
+        "magnitude": 10.8166542,
+        "sqrMagnitude": 117
+      }
+    }
+  ],
   "portals": [],
   "origins": [
     {
-      "id": 94,
+      "id": 101,
       "location": {
-        "x": 5,
-        "y": 6,
-        "magnitude": 7.81025,
-        "sqrMagnitude": 61
+        "x": 1,
+        "y": 3,
+        "magnitude": 3.1622777,
+        "sqrMagnitude": 10
       },
-      "partyIndex": 0
+      "partyIndex": -1
     },
     {
-      "id": 95,
+      "id": 102,
       "location": {
-        "x": 4,
-        "y": 7,
-        "magnitude": 8.062258,
-        "sqrMagnitude": 65
+        "x": 2,
+        "y": 4,
+        "magnitude": 4.472136,
+        "sqrMagnitude": 20
       },
-      "partyIndex": 1
+      "partyIndex": -1
+    },
+    {
+      "id": 103,
+      "location": {
+        "x": 1,
+        "y": 5,
+        "magnitude": 5.09901953,
+        "sqrMagnitude": 26
+      },
+      "partyIndex": -1
     }
   ],
   "exit": {
     "id": 92,
     "location": {
-      "x": 1,
-      "y": 1,
-      "magnitude": 1.41421354,
-      "sqrMagnitude": 2
+      "x": 9,
+      "y": 4,
+      "magnitude": 9.848858,
+      "sqrMagnitude": 97
     }
   },
-  "nextID": 98,
+  "nextID": 93,
   "flagIsTutorial": false
 }

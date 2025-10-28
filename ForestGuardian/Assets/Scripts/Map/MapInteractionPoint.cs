@@ -22,6 +22,7 @@ namespace forest
         [Header("Auto-populated")]
         [Tooltip("Level name, used for unlocking")][SerializeField] private string tagLabel;
         [Tooltip("the unlock provided by finishing this dungeon")][SerializeField] private List<string> tagsBestowed;
+        [Tooltip("Allow override for this section")][SerializeField] private bool overrideAutoPop = false;
 
         // Internal
         private MessageSubscription handleMsgShowLevelInfo;
@@ -42,7 +43,7 @@ namespace forest
         /// </summary>
         private void OnValidate()
         {
-            if (levelData != null)
+            if (levelData != null && !overrideAutoPop)
             {
                 Playfield pf = JsonUtility.FromJson<Playfield>(levelData.text);
                 this.gameObject.name = $"Dungeon '{pf.tagLabel}' (unlocks '{pf.GetBestowedList()}')";

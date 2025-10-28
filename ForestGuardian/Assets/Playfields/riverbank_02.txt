@@ -1,0 +1,617 @@
+{
+  "tagLabel": "riverbank",
+  "description": "so many gnats!",
+  "tagsBestowed": null,
+  "units": [
+    {
+      "tag": "Corrupt Ivy",
+      "id": 117,
+      "team": 2,
+      "locations": [
+        {
+          "x": 7,
+          "y": 6,
+          "magnitude": 9.219544,
+          "sqrMagnitude": 85
+        }
+      ]
+    },
+    {
+      "tag": "Gnat",
+      "id": 122,
+      "team": 2,
+      "locations": [
+        {
+          "x": 3,
+          "y": 1,
+          "magnitude": 3.1622777,
+          "sqrMagnitude": 10
+        }
+      ]
+    },
+    {
+      "tag": "Gnat",
+      "id": 123,
+      "team": 2,
+      "locations": [
+        {
+          "x": 2,
+          "y": 2,
+          "magnitude": 2.828427,
+          "sqrMagnitude": 8
+        }
+      ]
+    },
+    {
+      "tag": "Ivy",
+      "id": 126,
+      "team": 2,
+      "locations": [
+        {
+          "x": 9,
+          "y": 6,
+          "magnitude": 10.8166542,
+          "sqrMagnitude": 117
+        }
+      ]
+    },
+    {
+      "tag": "Ivy",
+      "id": 127,
+      "team": 2,
+      "locations": [
+        {
+          "x": 9,
+          "y": 4,
+          "magnitude": 9.848858,
+          "sqrMagnitude": 97
+        }
+      ]
+    },
+    {
+      "tag": "Gnat",
+      "id": 132,
+      "team": 2,
+      "locations": [
+        {
+          "x": 6,
+          "y": 1,
+          "magnitude": 6.08276272,
+          "sqrMagnitude": 37
+        }
+      ]
+    },
+    {
+      "tag": "Gnat",
+      "id": 133,
+      "team": 2,
+      "locations": [
+        {
+          "x": 7,
+          "y": 2,
+          "magnitude": 7.28011,
+          "sqrMagnitude": 53
+        }
+      ]
+    },
+    {
+      "tag": "Gnat",
+      "id": 134,
+      "team": 2,
+      "locations": [
+        {
+          "x": 5,
+          "y": 4,
+          "magnitude": 6.40312433,
+          "sqrMagnitude": 41
+        }
+      ]
+    },
+    {
+      "tag": "Gnat",
+      "id": 135,
+      "team": 2,
+      "locations": [
+        {
+          "x": 6,
+          "y": 5,
+          "magnitude": 7.81025,
+          "sqrMagnitude": 61
+        }
+      ]
+    },
+    {
+      "tag": "Gnat",
+      "id": 137,
+      "team": 2,
+      "locations": [
+        {
+          "x": 7,
+          "y": 4,
+          "magnitude": 8.062258,
+          "sqrMagnitude": 65
+        }
+      ]
+    }
+  ],
+  "world": {
+    "data": [
+      [
+        {
+          "tag": "Nothing",
+          "id": 1
+        },
+        {
+          "tag": "Nothing",
+          "id": 2
+        },
+        {
+          "tag": "Nothing",
+          "id": 3
+        },
+        {
+          "tag": "Marsh",
+          "id": 4
+        },
+        {
+          "tag": "Marsh",
+          "id": 5
+        },
+        {
+          "tag": "Marsh",
+          "id": 6
+        },
+        {
+          "tag": "Marsh",
+          "id": 7
+        },
+        {
+          "tag": "Marsh",
+          "id": 8
+        },
+        {
+          "tag": "Nothing",
+          "id": 9
+        },
+        {
+          "tag": "Nothing",
+          "id": 10
+        }
+      ],
+      [
+        {
+          "tag": "Nothing",
+          "id": 6
+        },
+        {
+          "tag": "Marsh",
+          "id": 7
+        },
+        {
+          "tag": "Marsh",
+          "id": 8
+        },
+        {
+          "tag": "Basic",
+          "id": 9
+        },
+        {
+          "tag": "Basic",
+          "id": 10
+        },
+        {
+          "tag": "Basic",
+          "id": 12
+        },
+        {
+          "tag": "Marsh",
+          "id": 14
+        },
+        {
+          "tag": "Marsh",
+          "id": 16
+        },
+        {
+          "tag": "Marsh",
+          "id": 18
+        },
+        {
+          "tag": "Nothing",
+          "id": 20
+        }
+      ],
+      [
+        {
+          "tag": "Marsh",
+          "id": 11
+        },
+        {
+          "tag": "Marsh",
+          "id": 12
+        },
+        {
+          "tag": "Basic",
+          "id": 13
+        },
+        {
+          "tag": "Basic",
+          "id": 14
+        },
+        {
+          "tag": "Basic",
+          "id": 15
+        },
+        {
+          "tag": "Basic",
+          "id": 18
+        },
+        {
+          "tag": "Basic",
+          "id": 21
+        },
+        {
+          "tag": "Basic",
+          "id": 24
+        },
+        {
+          "tag": "Marsh",
+          "id": 27
+        },
+        {
+          "tag": "Marsh",
+          "id": 30
+        }
+      ],
+      [
+        {
+          "tag": "Marsh",
+          "id": 16
+        },
+        {
+          "tag": "Basic",
+          "id": 17
+        },
+        {
+          "tag": "Basic",
+          "id": 18
+        },
+        {
+          "tag": "Basic",
+          "id": 19
+        },
+        {
+          "tag": "Basic",
+          "id": 20
+        },
+        {
+          "tag": "Basic",
+          "id": 24
+        },
+        {
+          "tag": "Basic",
+          "id": 28
+        },
+        {
+          "tag": "Basic",
+          "id": 32
+        },
+        {
+          "tag": "Basic",
+          "id": 36
+        },
+        {
+          "tag": "Marsh",
+          "id": 40
+        }
+      ],
+      [
+        {
+          "tag": "Marsh",
+          "id": 21
+        },
+        {
+          "tag": "Basic",
+          "id": 22
+        },
+        {
+          "tag": "Basic",
+          "id": 23
+        },
+        {
+          "tag": "Basic",
+          "id": 24
+        },
+        {
+          "tag": "Wall",
+          "id": 25
+        },
+        {
+          "tag": "Basic",
+          "id": 30
+        },
+        {
+          "tag": "Basic",
+          "id": 35
+        },
+        {
+          "tag": "Basic",
+          "id": 40
+        },
+        {
+          "tag": "Basic",
+          "id": 45
+        },
+        {
+          "tag": "Basic",
+          "id": 50
+        }
+      ],
+      [
+        {
+          "tag": "Marsh",
+          "id": 26
+        },
+        {
+          "tag": "Basic",
+          "id": 27
+        },
+        {
+          "tag": "Basic",
+          "id": 28
+        },
+        {
+          "tag": "Basic",
+          "id": 29
+        },
+        {
+          "tag": "Basic",
+          "id": 30
+        },
+        {
+          "tag": "Wall",
+          "id": 36
+        },
+        {
+          "tag": "Basic",
+          "id": 42
+        },
+        {
+          "tag": "Basic",
+          "id": 48
+        },
+        {
+          "tag": "Basic",
+          "id": 54
+        },
+        {
+          "tag": "Basic",
+          "id": 60
+        }
+      ],
+      [
+        {
+          "tag": "Marsh",
+          "id": 31
+        },
+        {
+          "tag": "Basic",
+          "id": 32
+        },
+        {
+          "tag": "Basic",
+          "id": 33
+        },
+        {
+          "tag": "Basic",
+          "id": 34
+        },
+        {
+          "tag": "Basic",
+          "id": 35
+        },
+        {
+          "tag": "Basic",
+          "id": 42
+        },
+        {
+          "tag": "Wall",
+          "id": 49
+        },
+        {
+          "tag": "Wall",
+          "id": 56
+        },
+        {
+          "tag": "Basic",
+          "id": 63
+        },
+        {
+          "tag": "Basic",
+          "id": 70
+        }
+      ],
+      [
+        {
+          "tag": "Marsh",
+          "id": 36
+        },
+        {
+          "tag": "Marsh",
+          "id": 37
+        },
+        {
+          "tag": "Basic",
+          "id": 38
+        },
+        {
+          "tag": "Basic",
+          "id": 39
+        },
+        {
+          "tag": "Basic",
+          "id": 40
+        },
+        {
+          "tag": "Basic",
+          "id": 48
+        },
+        {
+          "tag": "Basic",
+          "id": 56
+        },
+        {
+          "tag": "Wall",
+          "id": 64
+        },
+        {
+          "tag": "Wall",
+          "id": 72
+        },
+        {
+          "tag": "Wall",
+          "id": 80
+        }
+      ],
+      [
+        {
+          "tag": "Nothing",
+          "id": 41
+        },
+        {
+          "tag": "Marsh",
+          "id": 42
+        },
+        {
+          "tag": "Marsh",
+          "id": 43
+        },
+        {
+          "tag": "Basic",
+          "id": 44
+        },
+        {
+          "tag": "Basic",
+          "id": 45
+        },
+        {
+          "tag": "Basic",
+          "id": 54
+        },
+        {
+          "tag": "Basic",
+          "id": 63
+        },
+        {
+          "tag": "Basic",
+          "id": 72
+        },
+        {
+          "tag": "Wall",
+          "id": 81
+        },
+        {
+          "tag": "Wall",
+          "id": 90
+        }
+      ],
+      [
+        {
+          "tag": "Nothing",
+          "id": 46
+        },
+        {
+          "tag": "Nothing",
+          "id": 47
+        },
+        {
+          "tag": "Marsh",
+          "id": 48
+        },
+        {
+          "tag": "Basic",
+          "id": 49
+        },
+        {
+          "tag": "Basic",
+          "id": 50
+        },
+        {
+          "tag": "Basic",
+          "id": 60
+        },
+        {
+          "tag": "Basic",
+          "id": 70
+        },
+        {
+          "tag": "Basic",
+          "id": 80
+        },
+        {
+          "tag": "Wall",
+          "id": 90
+        },
+        {
+          "tag": "Wall",
+          "id": 100
+        }
+      ]
+    ]
+  },
+  "items": [],
+  "portals": [
+    {
+      "id": 110,
+      "target": "riverbank_03",
+      "location": {
+        "x": 9,
+        "y": 5,
+        "magnitude": 10.29563,
+        "sqrMagnitude": 106
+      }
+    }
+  ],
+  "origins": [
+    {
+      "id": 101,
+      "location": {
+        "x": 4,
+        "y": 9,
+        "magnitude": 9.848858,
+        "sqrMagnitude": 97
+      },
+      "partyIndex": -1
+    },
+    {
+      "id": 106,
+      "location": {
+        "x": 4,
+        "y": 8,
+        "magnitude": 8.944272,
+        "sqrMagnitude": 80
+      },
+      "partyIndex": -1
+    },
+    {
+      "id": 107,
+      "location": {
+        "x": 5,
+        "y": 8,
+        "magnitude": 9.433981,
+        "sqrMagnitude": 89
+      },
+      "partyIndex": -1
+    }
+  ],
+  "exit": {
+    "id": 108,
+    "location": {
+      "x": 6,
+      "y": 9,
+      "magnitude": 10.8166542,
+      "sqrMagnitude": 117
+    }
+  },
+  "nextID": 138,
+  "flagIsTutorial": false
+}
