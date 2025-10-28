@@ -42,6 +42,9 @@ namespace forest
         [SerializeField] private TMPro.TextMeshProUGUI uiTagBestowedValue;
         [SerializeField] private Toggle uiIsPlayerTeam;
         [SerializeField] private Toggle uiIsEnemyTeam;
+        [SerializeField] private Toggle uiIsForcePrimary;
+        [SerializeField] private Toggle uiIsForceSecondary;
+        [SerializeField] private Toggle uiIsForceAlternative;
 
         [Header("Metadata Panel")]
         [SerializeField] private TMPro.TMP_InputField inputMetadataPanel;
@@ -267,8 +270,10 @@ namespace forest
         private void Update()
         {
             uiLayer.text = previewType.ToString();
+
             string action = "Placing";
-            if(IsMainInputModifierDown())
+
+            if (IsMainInputModifierDown())
             {
                 action = "Removing";
             }
@@ -276,6 +281,16 @@ namespace forest
             if(IsExtraInputModifierDown())
             {
                 action = "Writing";
+            }
+
+            if(uiIsForceSecondary.isOn)
+            {
+                action = "Removing (BY FORCE)";
+            }
+
+            if (uiIsForceAlternative.isOn)
+            {
+                action = "Writing (BY FORCE)";
             }
 
             uiStatus.text = $"{action} {previewType.ToString()}";
@@ -332,13 +347,13 @@ namespace forest
                 return;
             }
 
-            if(IsMainInputModifierDown())
+            if(IsMainInputModifierDown() || uiIsForceSecondary.isOn)
             {
                 ProcessSecondaryAction(position);
                 return;
             }
 
-            if(IsExtraInputModifierDown())
+            if(IsExtraInputModifierDown() || uiIsForceAlternative.isOn)
             {
                 if(previewType == PlayfieldEditorSelectionType.Portal)
                 {
