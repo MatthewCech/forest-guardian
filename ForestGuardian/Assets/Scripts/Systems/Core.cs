@@ -49,6 +49,7 @@ namespace forest
         public GameInstance GameData { get; private set; }
         public AudioCore AudioCore { get; private set; }
         public UICore UICore { get; private set; }
+        public FXCore FXCore { get; private set; }
         public VisualLookup VisualLookup { get; private set; }
 
         /// <summary>
@@ -130,6 +131,24 @@ namespace forest
             UICore = coreToRegister;
             return true;
         }
+
+        public bool TryRegisterFXCore(FXCore coreToRegister)
+        {
+            if(FXCore != null)
+            {
+                Debug.Log("Ignoring FXCore registration attempt, we already have one.");
+                GameObject.Destroy(coreToRegister.gameObject);
+                return false;
+            }
+
+            DontDestroyOnLoad(coreToRegister);
+            coreToRegister.transform.SetParent(this.transform);
+            coreToRegister.transform.position = Vector3.zero;
+
+            FXCore = coreToRegister;
+            return true;
+        }
+
 
         public void SetPlayfieldAndLoad(string levelToLoad)
         {

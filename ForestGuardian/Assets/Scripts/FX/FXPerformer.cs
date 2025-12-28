@@ -7,19 +7,26 @@ namespace forest
 {
     public class FXPerformer : MonoBehaviour
     {
+        [Header("Base FX")]
         [SerializeField] private FXTag effectTag;
-        [SerializeField] protected float maxTime = 2; // Backup max time the effect can take
-        
+        [SerializeField] protected double maxTime = 2; // Backup max time the effect can take
+
         // Populated by effect caller
         [NonSerialized] protected Transform target; // target of the effect for use mostly in the effect. 
         [NonSerialized] protected Transform source; // origin location for the effect (where this prefab gets placed)
-        [NonSerialized] protected Action<bool> OnComplete; // pass if normally executed or not.
+        [NonSerialized] protected Action<bool> OnComplete; // pass if the effect noted itself as done (true), or if it hit a timeout (false).
 
         // Internal tracking
-        [NonSerialized] private float timeSoFar = 0;
+        [NonSerialized] private double timeSoFar = 0;
         [NonSerialized] protected bool hasFinished = false;
         [NonSerialized] protected bool hasStarted = false;
 
+        /// <summary>
+        /// Begins the effect playback
+        /// </summary>
+        /// <param name="source">Beginning location for the effect</param>
+        /// <param name="target">Ending location for the effect. May be the same as the source.</param>
+        /// <param name="OnComplete">Optional callback</param>
         public virtual void FxStart(Transform source, Transform target, Action<bool>OnComplete = null)
         {
             this.OnComplete = OnComplete;
@@ -31,7 +38,7 @@ namespace forest
 
         public virtual void FXUpdate()
         {
-            if (!hasStarted || !hasFinished)
+            if (!hasStarted || hasFinished)
             {
                 return;
             }
@@ -41,7 +48,7 @@ namespace forest
             {
                 OnComplete?.Invoke(false);
                 hasFinished = true;
-                Destroy(this);
+                Destroy(this.gameObject);
                 return;
             }
         }
@@ -49,7 +56,13 @@ namespace forest
         public virtual void FXDone()
         {
             OnComplete?.Invoke(true);
+            hasFinished = true;
             Destroy(this.gameObject);
+        }
+
+        public bool HasFinished()
+        {
+            return hasFinished;
         }
     }
 }

@@ -50,3 +50,6 @@ TagManager:
   - name: Tutorial
     uniqueID: 3168329575
     locked: 0
+  - name: FX
+    uniqueID: 2613286029
+    locked: 0
