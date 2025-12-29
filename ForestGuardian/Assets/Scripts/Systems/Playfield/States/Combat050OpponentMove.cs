@@ -25,7 +25,7 @@ namespace forest
         private IEnumerator OpponentMove()
         {
             const float visualDisplayDelay = .3f;
-            const float visualFXWaitDelay = .01f;
+            const float visualFXWaitDelay = .02f;
             const float visualMoveDelay = .2f;
 
             if (!TryGetOpponentsTarget(out PlayfieldUnit targeted))
@@ -101,13 +101,13 @@ namespace forest
 
                 StateMachine.VisualPlayfield.HideIndicators();
 
-                // Not a great way to do it, but busy-wait for FX to finish.
+                yield return new WaitForSeconds(visualDisplayDelay);
+
+                // Not a great way to do it, but busy-wait for FX to finish if we haven't got there with the built in delay yet.
                 while(isWaitingForFX)
                 {
                     yield return new WaitForSeconds(visualFXWaitDelay);
                 }
-
-                yield return new WaitForSeconds(visualDisplayDelay);
             }
 
             StateMachine.SetState<Combat070EvaluateTurn>();
