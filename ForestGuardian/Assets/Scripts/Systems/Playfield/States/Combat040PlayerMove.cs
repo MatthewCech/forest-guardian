@@ -236,6 +236,7 @@ namespace forest
                 if (isValidTarget)
                 {
                     MoveData selectedMove = visualUnit.data.moves[indicatorOwnerUnit.curSelectedMove];
+                    Unit visualTarget = StateMachine.VisualPlayfield.FindUnit(targetUnit);
 
                     if (targetUnit.team == Team.Player)
                     {
@@ -246,16 +247,22 @@ namespace forest
 
                         Core.Instance.UICore.DisplayCoDA("fr?", () =>
                         {
-                            StateMachine.VisualPlayfield.DamageUnit(selectedMove, indicatorOwnerUnit, targetUnit, StateMachine.Playfield);
-                            WrapUpAttack();
+                            Core.Instance.FXCore.Play(selectedMove.moveFX, visualUnit.transform, visualTarget.transform, (_) =>
+                            {
+                                StateMachine.VisualPlayfield.DamageUnit(selectedMove, indicatorOwnerUnit, targetUnit, StateMachine.Playfield);
+                                WrapUpAttack();
+                            });
                         });
                         
                         return;
                     }
                     else
                     {
-                        StateMachine.VisualPlayfield.DamageUnit(selectedMove, indicatorOwnerUnit, targetUnit, StateMachine.Playfield);
-                        WrapUpAttack();
+                        Core.Instance.FXCore.Play(selectedMove.moveFX, visualUnit.transform, visualTarget.transform, (_) =>
+                        {
+                            StateMachine.VisualPlayfield.DamageUnit(selectedMove, indicatorOwnerUnit, targetUnit, StateMachine.Playfield);
+                            WrapUpAttack();
+                        });
 
                         return;
                     }
