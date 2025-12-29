@@ -11,6 +11,8 @@ namespace forest
         public int moveDamage = 1;
         public int moveRange = 1;
 
+        [Space]
+        public FXTag moveFX = FXTag.NONE;
         public string moveDescription = "";
 
         public MoveData Clone()

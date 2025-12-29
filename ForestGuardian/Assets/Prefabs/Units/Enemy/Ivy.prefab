@@ -543,6 +543,7 @@ MonoBehaviour:
     - moveName: Wrap
       moveDamage: 2
       moveRange: 1
+      moveFX: 1
       moveDescription: Vines trap and tangles up the target
   head: {fileID: 4261630505289986683}
   segmentLink: {fileID: 7345218864977399038}

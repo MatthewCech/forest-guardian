@@ -53,7 +53,7 @@ namespace forest
                 FXPerformer cur = playing[i];
                 cur.FXUpdate();
 
-                if(cur.HasFinished())
+                if(cur.HasFinished)
                 {
                     playing.RemoveAt(i);
                 }

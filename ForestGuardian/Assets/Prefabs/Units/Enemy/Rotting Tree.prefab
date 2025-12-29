@@ -394,6 +394,7 @@ MonoBehaviour:
     - moveName: Lurch
       moveDamage: 1
       moveRange: 3
+      moveFX: 2
       moveDescription: The tree shifts dramatically.
   head: {fileID: 334675950987140449}
   segmentLink: {fileID: 6897957375675128042}

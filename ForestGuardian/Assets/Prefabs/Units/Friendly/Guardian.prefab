@@ -936,10 +936,12 @@ MonoBehaviour:
     - moveName: Bite
       moveDamage: 2
       moveRange: 1
+      moveFX: 1
       moveDescription: Chomp!
     - moveName: Throw
       moveDamage: 1
       moveRange: 2
+      moveFX: 2
       moveDescription: Throw a stick or rock
   head: {fileID: 334675950987140449}
   segmentLink: {fileID: 6897957375675128042}

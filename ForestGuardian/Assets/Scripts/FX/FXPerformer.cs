@@ -60,9 +60,8 @@ namespace forest
             Destroy(this.gameObject);
         }
 
-        public bool HasFinished()
-        {
-            return hasFinished;
-        }
+        public bool HasFinished { get { return hasFinished; } }
+
+        public FXTag FXTag { get { return effectTag; } }
     }
 }

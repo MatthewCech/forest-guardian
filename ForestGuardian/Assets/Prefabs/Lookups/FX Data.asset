@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: FX Data
   m_EditorClassIdentifier: 
   fxPairs:
-  - tag: 1
-    performer: {fileID: 2600189035770888617, guid: 5d98dfa2c58989442bcc4e1265659e38, type: 3}
+  - {fileID: 2600189035770888617, guid: 013ebf89ef56a334bad0f7d4518aa67a, type: 3}
+  - {fileID: 2600189035770888617, guid: 5d98dfa2c58989442bcc4e1265659e38, type: 3}

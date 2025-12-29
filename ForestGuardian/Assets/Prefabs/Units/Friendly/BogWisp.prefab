@@ -394,6 +394,7 @@ MonoBehaviour:
     - moveName: Flare
       moveDamage: 1
       moveRange: 3
+      moveFX: 2
       moveDescription: A flash of light? Some swamp bubbles? Magic?
   head: {fileID: 334675950987140449}
   segmentLink: {fileID: 6897957375675128042}
