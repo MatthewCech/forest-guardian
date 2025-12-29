@@ -63,13 +63,10 @@ namespace forest
 
 #if UNITY_EDITOR
     [UnityEditor.CustomEditor(typeof(FXCore))]
-    [UnityEditor.CanEditMultipleObjects] // If safe, this is nice. 
-    public class YOUR_MONOBEHAVIOR_CLASS_NAMEEditor : UnityEditor.Editor
+    public class FXCoreEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
-            UnityEditor.EditorGUILayout.LabelField("I'm a custom added label!");
-            
             base.OnInspectorGUI();
 
             if (GUILayout.Button("Perform Debug FX"))
