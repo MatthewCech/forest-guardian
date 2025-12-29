@@ -9,7 +9,7 @@ namespace forest
     {
         [Header("Derived")]
         [SerializeField] private AnimationCurve interpolationCurve;
-        [SerializeField] private float interpolationDuration = 1;
+        [Min(0.01f)][SerializeField] private float interpolationDuration = 1;
 
         private float iterpoationSoFar = 0;
 
