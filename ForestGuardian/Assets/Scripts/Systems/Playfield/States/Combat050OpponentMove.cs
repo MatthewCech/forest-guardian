@@ -25,6 +25,7 @@ namespace forest
         private IEnumerator OpponentMove()
         {
             const float visualDisplayDelay = .3f;
+            const float visualFXWaitDelay = .02f;
             const float visualMoveDelay = .2f;
 
             if (!TryGetOpponentsTarget(out PlayfieldUnit targeted))
@@ -39,6 +40,7 @@ namespace forest
             }
 
             yield return null;
+            bool isWaitingForFX = false;
             for (int unitIndex = 0; unitIndex < StateMachine.Playfield.units.Count; ++unitIndex)
             {
                 // Select and display the move for an opponent
@@ -86,12 +88,26 @@ namespace forest
                 {
                     if (StateMachine.Playfield.TryGetUnitAt(closest, out PlayfieldUnit targetPlayerUnit))
                     {
-                        StateMachine.VisualPlayfield.DamageUnit(moveToUse, curOpponentToMove, targetPlayerUnit, StateMachine.Playfield);
+                        Unit targetPlayerVisual = StateMachine.VisualPlayfield.FindUnit(targetPlayerUnit);
+                        isWaitingForFX = true;
+
+                        Core.Instance.FXCore.Play(moveToUse.moveFX, instance.transform, targetPlayerVisual.transform, (_) =>
+                        {
+                            StateMachine.VisualPlayfield.DamageUnit(moveToUse, curOpponentToMove, targetPlayerUnit, StateMachine.Playfield);
+                            isWaitingForFX = false;
+                        });
                     }
                 }
 
                 StateMachine.VisualPlayfield.HideIndicators();
+
                 yield return new WaitForSeconds(visualDisplayDelay);
+
+                // Not a great way to do it, but busy-wait for FX to finish if we haven't got there with the built in delay yet.
+                while(isWaitingForFX)
+                {
+                    yield return new WaitForSeconds(visualFXWaitDelay);
+                }
             }
 
             StateMachine.SetState<Combat070EvaluateTurn>();

@@ -10,7 +10,7 @@ namespace forest
         public string moveName = "UNNAMED";
         public int moveDamage = 1;
         public int moveRange = 1;
-
+        public FXTag moveFX = FXTag.NONE;
         public string moveDescription = "";
 
         public MoveData Clone()

@@ -394,6 +394,7 @@ MonoBehaviour:
     - moveName: Nibble
       moveDamage: 1
       moveRange: 1
+      moveFX: 1
       moveDescription: The gnat attempts to take a small bite out of its target
   head: {fileID: 334675950987140449}
   segmentLink: {fileID: 6897957375675128042}

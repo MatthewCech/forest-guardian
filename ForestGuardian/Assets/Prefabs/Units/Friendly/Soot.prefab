@@ -310,6 +310,7 @@ MonoBehaviour:
     - moveName: Peck
       moveDamage: 2
       moveRange: 1
+      moveFX: 1
       moveDescription: 'This bird''s got a sharp beak that can do some damage to
         errant '
   head: {fileID: 334675950987140449}

@@ -9,14 +9,8 @@ namespace forest
     {
         NONE = 0, 
 
-        FX_ATTACK_GENERIC = 1,
-    }
-
-    [System.Serializable]
-    public class FXPair
-    {
-        public FXTag tag;
-        public FXPerformer performer;
+        FX_ATT_BASIC_CLOSE = 1,
+        FX_ATT_BASIC_FAR = 2
     }
 
     /// <summary>
@@ -25,7 +19,7 @@ namespace forest
     [CreateAssetMenu(fileName = "FX Data", menuName = "ScriptableObjects/FX Lookup Data", order = 3)]
     public class FXLookup : ScriptableObject
     {
-        [SerializeField] private List<FXPair> fxPairs = new List<FXPair>();
+        [SerializeField] private List<FXPerformer> fxPairs = new List<FXPerformer>();
 
         private Dictionary<FXTag, FXPerformer> tagLookup = new Dictionary<FXTag, FXPerformer>();
 
@@ -35,7 +29,7 @@ namespace forest
 
             foreach (var item in fxPairs)
             {
-                tagLookup.Add(item.tag, item.performer);
+                tagLookup.Add(item.FXTag, item);
             }
         }
 

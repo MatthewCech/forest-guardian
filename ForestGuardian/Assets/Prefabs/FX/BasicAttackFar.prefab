@@ -4900,7 +4900,7 @@ GameObject:
   - component: {fileID: 8494316478831974995}
   - component: {fileID: 2600189035770888617}
   m_Layer: 0
-  m_Name: BasicAttack
+  m_Name: BasicAttackFar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4934,7 +4934,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc0355cbdfb08cb41810403d7f15b77e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  effectTag: 1
+  effectTag: 2
   maxTime: 0.6
   interpolationCurve:
     serializedVersion: 2

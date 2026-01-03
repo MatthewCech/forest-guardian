@@ -29,6 +29,12 @@ namespace forest
 
         public void Play(FXTag tag, Transform origin, Transform target, System.Action<bool> onComplete = null)
         {
+            if(tag == FXTag.NONE)
+            {
+                Debug.Log("Attempted to play FX with tag 'NONE', so playing no effect.");
+                return;
+            }
+
             if(!fxLookup.TryGetFXTemplateByTag(tag, out FXPerformer identified))
             {
                 Debug.LogWarning($"Couldn't find FX with the template {tag.ToString()}");
@@ -53,7 +59,7 @@ namespace forest
                 FXPerformer cur = playing[i];
                 cur.FXUpdate();
 
-                if(cur.HasFinished())
+                if(cur.HasFinished)
                 {
                     playing.RemoveAt(i);
                 }
@@ -63,13 +69,10 @@ namespace forest
 
 #if UNITY_EDITOR
     [UnityEditor.CustomEditor(typeof(FXCore))]
-    [UnityEditor.CanEditMultipleObjects] // If safe, this is nice. 
-    public class YOUR_MONOBEHAVIOR_CLASS_NAMEEditor : UnityEditor.Editor
+    public class FXCoreEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
-            UnityEditor.EditorGUILayout.LabelField("I'm a custom added label!");
-            
             base.OnInspectorGUI();
 
             if (GUILayout.Button("Perform Debug FX"))
