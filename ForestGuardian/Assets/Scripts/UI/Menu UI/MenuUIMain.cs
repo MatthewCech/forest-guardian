@@ -27,7 +27,7 @@ namespace forest
 
         private void ShowSettings()
         {
-            Debug.LogWarning("Nothing yet!");
+            Core.Instance.UICore.ShowSettings();
         }
 
         private void ShowAbout()

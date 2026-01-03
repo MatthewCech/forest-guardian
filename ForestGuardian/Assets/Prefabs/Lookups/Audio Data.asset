@@ -14,17 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioPairs:
   - tag: 10
+    type: 1
     audioClip: {fileID: 8300000, guid: e2676aa817eaaeb4cbff74f22eba428d, type: 3}
     artist: Kevin MacLeod
     notes: A bit dramatic. Map usage, general pensive feel. Almost an 'edge of space'
       style energy, not too intense but an air of mystery.
     link: https://incompetech.com/
   - tag: 20
+    type: 1
     audioClip: {fileID: 8300000, guid: 3d5c8b5d7399a9b468c69ea8a62a96ce, type: 3}
     artist: Kevin MacLeod
     notes: Half decent combat sound, probably too dramatic.
     link: https://incompetech.com/
   - tag: 11
+    type: 1
     audioClip: {fileID: 8300000, guid: 7c9abdc59a6fafd48bb2da2e8f5d15a0, type: 3}
     artist: Kevin MacLeod
     notes: Funky store song!

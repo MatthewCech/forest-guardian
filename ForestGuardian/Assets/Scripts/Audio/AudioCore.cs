@@ -64,7 +64,7 @@ namespace forest
             }
 
             SetAllOfCategory(msg.audioType, newVolume);
-            Postmaster.Instance.Send(new MsgAudioVolumeChanged { audioType = AudioType.MUSIC });
+            Postmaster.Instance.Send(new MsgAudioVolumeChanged { audioType = msg.audioType, volume = newVolume });
         }
 
         /// <summary>

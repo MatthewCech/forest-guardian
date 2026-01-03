@@ -25,6 +25,25 @@ namespace forest
 
             sliderMusic.onValueChanged.AddListener(RequestNewMusicVolume);
             sliderSFX.onValueChanged.AddListener(RequestNewSFXVolume);
+
+            // The timing on this is potentially strange.
+            TryForceUpdateSliderValues();
+        }
+
+        private void Start()
+        {
+            TryForceUpdateSliderValues();
+        }
+
+        void TryForceUpdateSliderValues()
+        {
+            if(Core.Instance == null || Core.Instance.AudioCore == null)
+            {
+                return;
+            }
+
+            SetSliderVolume(sliderMusic, Core.Instance.AudioCore.GetVolume(AudioType.MUSIC));
+            SetSliderVolume(sliderSFX, Core.Instance.AudioCore.GetVolume(AudioType.EFFECT_GENERAL));
         }
 
         // Update is called once per frame
@@ -61,20 +80,29 @@ namespace forest
         void SetVolumeSlider(Message raw)
         {
             MsgAudioVolumeChanged msg = raw as MsgAudioVolumeChanged;
-            string volumeDisplay = $"{Mathf.RoundToInt(msg.volume * 100)}%";
-            switch (msg.audioType)
+            SetVolumeSlider(msg.audioType, msg.volume);
+        }
+
+        void SetVolumeSlider(AudioType audioType, float volume01)
+        {
+            string volumeDisplay = $"{Mathf.RoundToInt(volume01 * 100)}%";
+            switch (audioType)
             {
                 case AudioType.MUSIC:
-                    int newMusicVolume = Mathf.RoundToInt(msg.volume * (sliderMusic.maxValue - sliderMusic.minValue));
-                    sliderMusic.SetValueWithoutNotify(newMusicVolume);
+                    SetSliderVolume(sliderMusic, volume01);
                     sliderMusicValue.text = volumeDisplay;
                     break;
                 case AudioType.EFFECT_GENERAL:
-                    int newEffectGeneralVolume = Mathf.RoundToInt(msg.volume * (sliderSFX.maxValue - sliderSFX.minValue));
-                    sliderSFX.SetValueWithoutNotify(newEffectGeneralVolume);
+                    SetSliderVolume(sliderSFX, volume01);
                     sliderSFXValue.text = volumeDisplay;
                     break;
             }
+        }
+
+        void SetSliderVolume(Slider slider, float volume01)
+        {
+            int newVolume = Mathf.RoundToInt(volume01 * (slider.maxValue - slider.minValue));
+            slider.SetValueWithoutNotify(newVolume);
         }
     }
 }

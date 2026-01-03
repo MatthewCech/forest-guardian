@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Loam.Convo;
 using UnityEngine.EventSystems;
+using Loam;
 
 namespace forest 
 {
@@ -18,6 +19,7 @@ namespace forest
 
         [Header("Settings")]
         [SerializeField] private SettingsUICore settingsCore;
+        [SerializeField] private CanvasGroup canvasGroupSettings;
 
         [Header("Confirmation of Destructive Action dialogue")]
         [SerializeField] private CanvasGroup canvasGroupCoDA;
@@ -38,13 +40,27 @@ namespace forest
                 return;
             }
             
-            canvasGroupCoDA.gameObject.SetActive(true);
+            // Settings config
+            settingsCore.gameObject.SetActive(true);
+            canvasGroupSettings.SetCanvasActive(false);
 
+            // Convo UI Config
             convoCore.Initialize();
 
+            // CoDA config
+            canvasGroupCoDA.gameObject.SetActive(true);
             SetCoDAVisibility(false);
         }
 
+        public void HideSettings()
+        {
+            canvasGroupSettings.SetCanvasActive(false);
+        }
+
+        public void ShowSettings()
+        {
+            canvasGroupSettings.SetCanvasActive(true);
+        }
 
         /// <summary>
         /// Check if anything under the cursor is tagged as UI via event system raycast.
@@ -99,11 +115,8 @@ namespace forest
 
         private void SetCoDAVisibility(bool isVisible)
         {
-            canvasGroupCoDA.alpha = isVisible ? 1 : 0;
-            canvasGroupCoDA.interactable = isVisible;
-            canvasGroupCoDA.blocksRaycasts = isVisible;
-
-            IsWorldInteractable = !isVisible; // If visible, not enabled.
+            canvasGroupCoDA.SetCanvasActive(isVisible);
+            IsWorldInteractable = !isVisible; // If confirmation of destructive action IS visible, then the world IS NOT interactable.
         }
 
         public void DisplayCoDA(string message = "fr?", System.Action onYes = null, System.Action onNo = null)
