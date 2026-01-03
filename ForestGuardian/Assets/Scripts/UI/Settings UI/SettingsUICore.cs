@@ -18,7 +18,6 @@ namespace forest
 
         MessageSubscription subSetVolumeSlider;
 
-        // Start is called before the first frame update
         void OnEnable()
         {
             subSetVolumeSlider = Postmaster.Instance.Subscribe<MsgAudioVolumeChanged>(SetVolumeSlider);
@@ -42,11 +41,10 @@ namespace forest
                 return;
             }
 
-            SetSliderVolume(sliderMusic, Core.Instance.AudioCore.GetVolume(AudioType.MUSIC));
-            SetSliderVolume(sliderSFX, Core.Instance.AudioCore.GetVolume(AudioType.EFFECT_GENERAL));
+            SetSliderVolume(sliderMusic, sliderMusicValue, Core.Instance.AudioCore.GetVolume(AudioType.MUSIC));
+            SetSliderVolume(sliderSFX, sliderSFXValue, Core.Instance.AudioCore.GetVolume(AudioType.EFFECT_GENERAL));
         }
 
-        // Update is called once per frame
         void OnDisable()
         {
             sliderSFX.onValueChanged.RemoveListener(RequestNewSFXVolume);
@@ -58,22 +56,22 @@ namespace forest
         void RequestNewMusicVolume(float newValue)
         {
             float range = (sliderMusic.maxValue - sliderMusic.minValue);
-            float newVolume = newValue / range;
+            float targetVolume = newValue / range;
             Postmaster.Instance.Send(new MsgAudioTryChangeVolume
             {
                 audioType = AudioType.MUSIC,
-                requestedVolume = newValue
+                requestedVolume = targetVolume
             });
         }
 
         void RequestNewSFXVolume(float newValue)
         {
             float range = (sliderSFX.maxValue - sliderSFX.minValue);
-            float newVolume = newValue / range;
+            float targetVolume = newValue / range;
             Postmaster.Instance.Send(new MsgAudioTryChangeVolume
             {
                 audioType = AudioType.EFFECT_GENERAL,
-                requestedVolume = newValue
+                requestedVolume = targetVolume
             });
         }
 
@@ -85,24 +83,24 @@ namespace forest
 
         void SetVolumeSlider(AudioType audioType, float volume01)
         {
-            string volumeDisplay = $"{Mathf.RoundToInt(volume01 * 100)}%";
             switch (audioType)
             {
                 case AudioType.MUSIC:
-                    SetSliderVolume(sliderMusic, volume01);
-                    sliderMusicValue.text = volumeDisplay;
+                    SetSliderVolume(sliderMusic, sliderMusicValue, volume01);
                     break;
                 case AudioType.EFFECT_GENERAL:
-                    SetSliderVolume(sliderSFX, volume01);
-                    sliderSFXValue.text = volumeDisplay;
+                    SetSliderVolume(sliderSFX, sliderSFXValue, volume01);
                     break;
             }
         }
 
-        void SetSliderVolume(Slider slider, float volume01)
+        void SetSliderVolume(Slider slider, TMPro.TextMeshProUGUI value, float volume01)
         {
             int newVolume = Mathf.RoundToInt(volume01 * (slider.maxValue - slider.minValue));
             slider.SetValueWithoutNotify(newVolume);
+
+            string volumeDisplay = $"{Mathf.RoundToInt(volume01 * 100)}%";
+            value.text = volumeDisplay;
         }
     }
 }
