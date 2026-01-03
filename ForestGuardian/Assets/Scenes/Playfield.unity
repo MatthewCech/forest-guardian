@@ -1669,7 +1669,7 @@ GameObject:
   - component: {fileID: 423886503}
   - component: {fileID: 423886502}
   m_Layer: 0
-  m_Name: Playfield Music
+  m_Name: (MUS) Playfield Music
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1853,8 +1853,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 932987469}
   m_HandleRect: {fileID: 932987468}
   m_Direction: 0
-  m_Value: 0
-  m_Size: 1
+  m_Value: 1
+  m_Size: 0.99999994
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4736,8 +4736,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 142460663}
   m_HandleRect: {fileID: 142460662}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 1
+  m_Value: 1
+  m_Size: 0.9999999
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -5764,7 +5764,7 @@ GameObject:
   - component: {fileID: 1895615652}
   - component: {fileID: 1895615651}
   m_Layer: 0
-  m_Name: '[TUTORIAL] Tutorial Core'
+  m_Name: (TUTORIAL) Tutorial Core
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6532,7 +6532,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2060394043}
   m_Layer: 0
-  m_Name: '[TUTORIAL] Playfield Indicator'
+  m_Name: (TUTORIAL) Playfield Indicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

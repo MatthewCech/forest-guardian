@@ -16,12 +16,15 @@ namespace forest
         [Header("Dialog")]
         [SerializeField] private DialogueUICore convoCore;
 
+        [Header("Settings")]
+        [SerializeField] private SettingsUICore settingsCore;
+
         [Header("Confirmation of Destructive Action dialogue")]
         [SerializeField] private CanvasGroup canvasGroupCoDA;
         [SerializeField] private TMPro.TextMeshProUGUI dialogueCoDA;
         [SerializeField] private Button dialogueCoDAYes;
         [SerializeField] private Button dialogueCoDANo;
-        
+
         private System.Action onYes;
         private System.Action onNo;
         private static int layerUI = LAYER_UNDEFINED;

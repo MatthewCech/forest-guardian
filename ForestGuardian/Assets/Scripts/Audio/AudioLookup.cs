@@ -17,10 +17,19 @@ namespace forest
         SFX_UI = 100,
     }
 
+    public enum AudioType : byte
+    {
+        UNSET = 0,
+
+        MUSIC,
+        EFFECT_GENERAL
+    }
+
     [System.Serializable]
-    public class AudioDataPair
+    public class AudioFileData
     {
         public AudioTag tag;
+        public AudioType type;
         public AudioClip audioClip;
         public string artist;
         public string notes;
@@ -32,9 +41,10 @@ namespace forest
         }
     }
 
-    public class AudioPlaybackPair
+    public class AudioPlaybackData
     {
         public long id;
+        public AudioType type;
         public AudioSource source;
     }
 
@@ -44,15 +54,15 @@ namespace forest
     [CreateAssetMenu(fileName = "Audio Data", menuName = "ScriptableObjects/Audio Lookup Data", order = 2)]
     public class AudioLookup : ScriptableObject
     {
-        [SerializeField] private List<AudioDataPair> audioPairs = new List<AudioDataPair>();
+        [SerializeField] private List<AudioFileData> audioPairs = new List<AudioFileData>();
 
-        private Dictionary<AudioTag, List<AudioDataPair>> tagLookup = new Dictionary<AudioTag, List<AudioDataPair>>();
+        private Dictionary<AudioTag, List<AudioFileData>> tagLookup = new Dictionary<AudioTag, List<AudioFileData>>();
 
         public void Initialize()
         {
             tagLookup.Clear();
 
-            foreach (AudioDataPair pair in audioPairs)
+            foreach (AudioFileData pair in audioPairs)
             {
                 if (pair.tag == AudioTag.NONE)
                 {
@@ -62,14 +72,14 @@ namespace forest
 
                 if (!tagLookup.ContainsKey(pair.tag))
                 {
-                    tagLookup[pair.tag] = new List<AudioDataPair>();
+                    tagLookup[pair.tag] = new List<AudioFileData>();
                 }
 
                 tagLookup[pair.tag].Add(pair);
             }
         }
 
-        public bool TryGetAudioWithTag(AudioTag tag, out List<AudioDataPair> audioList)
+        public bool TryGetAudioWithTag(AudioTag tag, out List<AudioFileData> audioList)
         {
             return tagLookup.TryGetValue(tag, out audioList);
         }
