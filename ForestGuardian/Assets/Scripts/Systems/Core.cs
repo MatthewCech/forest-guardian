@@ -51,6 +51,8 @@ namespace forest
         public UICore UICore { get; private set; }
         public FXCore FXCore { get; private set; }
         public VisualLookup VisualLookup { get; private set; }
+        public DataSerializer DataSerializer { get; private set; }
+
 
         /// <summary>
         /// Pre-awake initialization and singleton setup
@@ -70,6 +72,8 @@ namespace forest
             DontDestroyOnLoad(coreObj);
             instance = core;
 
+            instance.DataSerializer = new DataSerializer();
+            instance.DataSerializer.Initialize();
         }
 
         /// <summary>
@@ -83,8 +87,14 @@ namespace forest
         private void OnGameInstanceInitConditionsMet()
         {
             // Data Initialization
-            GameData = new GameInstance();
-            GameData.PopulateDefaults(VisualLookup);
+            GameData = DataSerializer.GetOrCreateGameInstance(VisualLookup);
+        }
+
+        public void ClearSaveData()
+        {
+            LoadLevel(ForestLevel.MainMenu);
+            DataSerializer.DestroySavedGameInstance();
+            GameData = DataSerializer.GetOrCreateGameInstance(VisualLookup);
         }
 
         public void TryRegisterVisualLookup(VisualLookup lookup)
@@ -148,7 +158,6 @@ namespace forest
             FXCore = coreToRegister;
             return true;
         }
-
 
         public void SetPlayfieldAndLoad(string levelToLoad)
         {

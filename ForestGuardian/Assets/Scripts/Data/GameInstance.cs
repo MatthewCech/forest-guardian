@@ -14,13 +14,12 @@ namespace forest
     public class GameInstance
     {
         // Defines
-        public const int FLAG_COUNT = 1;
-        public const int FLAG_STORY_INTRO = 0;
+        [System.NonSerialized] public const int FLAG_COUNT = 1;
+        [System.NonSerialized] public const int FLAG_STORY_INTRO = 0;
 
-        public const string LEVEL_TUTORIAL = "tutorial";
-        public const string LEVEL_1_1 = "ivy-grove";
+        [System.NonSerialized] public const string LEVEL_TUTORIAL = "tutorial";
+        [System.NonSerialized] public const string LEVEL_1_1 = "ivy-grove";
 
-        // Defines
         [System.NonSerialized] public const string PLAYER_UNIT_DEFAULT = "Guardian";
 
         // Data

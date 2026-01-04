@@ -15,9 +15,6 @@ namespace forest
         private List<AudioPlaybackData> playingSources = new List<AudioPlaybackData>();
         private static long nextId = 0;
 
-        private float TMP_LOCATION_volumeMUS = 1;
-        private float TMP_LOCATION_volumeSFX = 1;
-
         public void Awake()
         {
             audioLookup.Initialize();
@@ -32,9 +29,9 @@ namespace forest
             switch (type)
             {
                 case AudioType.MUSIC:
-                    return TMP_LOCATION_volumeMUS;
+                    return Core.Instance.DataSerializer.VolumeMusic;
                 case AudioType.EFFECT_GENERAL:
-                    return TMP_LOCATION_volumeSFX;
+                    return Core.Instance.DataSerializer.VolumeSFX;
                 case AudioType.UNSET:
                 default:
                     throw new System.Exception("Absolutely not. You may not request the volume of an invalid category, fix the method call.");
@@ -56,10 +53,10 @@ namespace forest
             switch (msg.audioType)
             {
                 case AudioType.MUSIC:
-                    TMP_LOCATION_volumeMUS = newVolume;
+                    Core.Instance.DataSerializer.VolumeMusic = newVolume;
                     break;
                 case AudioType.EFFECT_GENERAL:
-                    TMP_LOCATION_volumeSFX = newVolume;
+                    Core.Instance.DataSerializer.VolumeSFX = newVolume;
                     break;
             }
 
@@ -133,15 +130,15 @@ namespace forest
             switch (selectedData.type)
             {
                 case AudioType.MUSIC:
-                    newSource.volume = TMP_LOCATION_volumeMUS;
+                    newSource.volume = Core.Instance.DataSerializer.VolumeMusic;
                     break;
                 case AudioType.EFFECT_GENERAL:
-                    newSource.volume = TMP_LOCATION_volumeSFX;
+                    newSource.volume = Core.Instance.DataSerializer.VolumeSFX;
                     break;
                 case AudioType.UNSET:
                 default:
                     Debug.LogError($"Unexpected audio type found for tag {tagToPlay} with data {selectedData.audioClip?.name}. Treating it as music for category and volume purposes, but this NEEDS to be fixed.");
-                    newSource.volume = TMP_LOCATION_volumeMUS;
+                    newSource.volume = Core.Instance.DataSerializer.VolumeMusic;
                     typeToUse = AudioType.MUSIC;
                     break;
             }
