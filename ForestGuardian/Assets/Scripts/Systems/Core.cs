@@ -19,13 +19,15 @@ namespace forest
             MainMenu,
             Map,
             Playfield,
-            Editor
+            Editor,
+            About
         }
 
         public const string SCENE_NAME_PLAYFIELD = "Playfield";
         public const string SCENE_NAME_MAP = "Map";
         public const string SCENE_NAME_MAINMENU = "MainMenu";
         public const string SCENE_NAME_PLAYFIELDEDITOR = "PlayfieldEditor";
+        public const string SCENE_NAME_ABOUT = "About";
 
         // Singleton setup
         private static Core instance = null;
@@ -191,6 +193,10 @@ namespace forest
 
                 case ForestLevel.Editor:
                     SceneManager.LoadScene(SCENE_NAME_PLAYFIELDEDITOR);
+                    break;
+
+                case ForestLevel.About:
+                    SceneManager.LoadScene(SCENE_NAME_ABOUT);
                     break;
 
                 case ForestLevel.DEFAULT:

@@ -32,7 +32,7 @@ namespace forest
 
         private void ShowAbout()
         {
-            Debug.LogWarning("Nothing yet!");
+            Core.Instance.LoadLevel(Core.ForestLevel.About);
         }
 
         private void Quit()
