@@ -352,12 +352,14 @@ MonoBehaviour:
   viewingCamera: {fileID: 1199193438}
   visualPlayfield: {fileID: 546421707}
   visualLookup: {fileID: 11400000, guid: 8ec9726a8fd6d0b4580e6136cf9f33a6, type: 2}
-  sizeX: 30
-  sizeY: 30
-  seed: 1257
+  sizeX: 20
+  sizeY: 20
+  useRandomSeed: 0
+  seed: 924546
   scale: 0.2
+  thresholdWall: 0.832
   thresholdLand: 0.51
-  thresholdMarsh: 0.37
+  thresholdMarsh: 0.414
 --- !u!1 &546924576
 GameObject:
   m_ObjectHideFlags: 0

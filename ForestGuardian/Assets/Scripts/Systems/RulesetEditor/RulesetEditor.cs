@@ -11,24 +11,30 @@ namespace forest
         [SerializeField] private Camera viewingCamera;
         [SerializeField] private VisualPlayfield visualPlayfield;
         [SerializeField] private VisualLookup visualLookup;
-        [Header("Settings (live update)")]
+
+        [Header("Settings (General)")]
         [SerializeField][Min(1)] private int sizeX = 1;
         [SerializeField][Min(1)] private int sizeY = 1;
+
+        [Header("Settings (Perlin)")]
+        [SerializeField] private bool useRandomSeed = false;
         [SerializeField] private int seed = 123;
         [SerializeField][Min(0.001f)] private float scale = 0.1f;
-        [SerializeField] private float thresholdLand = 0.5f;
-        [SerializeField] private float thresholdMarsh = 0.4f;
-
-
+        [SerializeField][Range(0, 1)] private float thresholdWall = 0.9f;
+        [SerializeField][Range(0, 1)] private float thresholdLand = 0.5f;
+        [SerializeField][Range(0, 1)] private float thresholdMarsh = 0.4f;
 
         private Playfield workingPlayfield = null;
 
         private int prevSizeX = -1;
         private int prevSizeY = -1;
+        private bool prevUseRandomSeed = false;
         private int prevSeed = -1;
         private float prevScale = -1;
+        private float prevThresholdWall = -1;
         private float prevThresholdLand = -1;
         private float prevThresholdMarsh = -1;
+
         private void Start()
         {
             prevSizeX = sizeX;
@@ -44,15 +50,19 @@ namespace forest
         {
             if (prevSizeX != sizeX
                 || prevSizeY != sizeY
+                || prevUseRandomSeed != useRandomSeed
                 || prevSeed != seed
                 || prevScale != scale
+                || prevThresholdWall != thresholdWall
                 || prevThresholdLand != thresholdLand
                 || prevThresholdMarsh != thresholdMarsh)
             {
                 prevSizeX = sizeX;
                 prevSizeY = sizeY;
+                prevUseRandomSeed = useRandomSeed;
                 prevSeed = seed;
                 prevScale = scale;
+                prevThresholdWall = thresholdWall;
                 prevThresholdLand = thresholdLand;
                 prevThresholdMarsh = thresholdMarsh;
 
@@ -60,11 +70,30 @@ namespace forest
             }
         }
 
+        class Pair
+        {
+            public float threshold;
+            public string tag;
+        }
+
         private void RefreshPlayfield()
         {
+            if (useRandomSeed)
+            {
+                seed = Random.Range(-999999, 999999);
+                prevSeed = seed;
+            }
+
             workingPlayfield = Utils.CreatePlayfield(visualLookup, sizeX, sizeY, workingPlayfield);
 
-            for(int x = 0; x < sizeX; ++x)
+            List<Pair> thresholds = new List<Pair>();
+            thresholds.Add(new Pair() { threshold = thresholdLand, tag = "Basic" });
+            thresholds.Add(new Pair() { threshold = thresholdMarsh, tag = "Marsh" });
+            thresholds.Add(new Pair() { threshold = thresholdWall, tag = "Wall" });
+
+            thresholds.Sort((lhs, rhs) => { return lhs.threshold < rhs.threshold ? 1 : -1; });
+
+            for (int x = 0; x < sizeX; ++x)
             {
                 for(int y = 0; y < sizeY; ++y)
                 {
@@ -72,18 +101,16 @@ namespace forest
 
                     PlayfieldTile tile = new PlayfieldTile();
 
-                    if (height01 > thresholdLand)
+                    tile.tag = "Nothing";
+                    for (int i = 0; i < thresholds.Count; ++i)
                     {
-                        tile.tag = "Basic";
-                    }
-                    else if (height01 > thresholdMarsh)
-                    {
-                        tile.tag = "Marsh";
-                    }
-                    else
-                    {
-                        tile.tag = "Nothing";
-                    }
+                        Pair cur = thresholds[i];
+                        if (height01 > cur.threshold)
+                        {
+                            tile.tag = cur.tag;
+                            break;
+                        }
+                    }    
 
                     tile.id = workingPlayfield.GetNextID();
 
@@ -93,5 +120,22 @@ namespace forest
 
             visualPlayfield.DisplayAll(workingPlayfield);
         }
+
+
+#if UNITY_EDITOR
+    [UnityEditor.CustomEditor(typeof(RulesetEditor))]
+    public class RulesetEditorEditor : UnityEditor.Editor
+    {
+        public override void OnInspectorGUI()
+        {
+            if (GUILayout.Button("Refresh Playfield"))
+            {
+                (target as RulesetEditor).RefreshPlayfield();
+            }
+
+            base.OnInspectorGUI();
+        }
+    }
+#endif
     }
 }
