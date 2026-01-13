@@ -102,7 +102,10 @@ namespace forest
             uiWidthEntryField.text = uiWidthSlider.value.ToString();
             uiHeightEntryField.text = uiHeightSlider.value.ToString();
 
-            workingPlayfield = CreatePlayfield();
+            int newWidth = Mathf.RoundToInt(uiWidthSlider.value);
+            int newHeight = Mathf.RoundToInt(uiHeightSlider.value);
+
+            workingPlayfield = Utils.CreatePlayfield(lookup, newWidth, newHeight);
             visuals.DisplayAll(workingPlayfield);
             Utils.CenterCamera(displayingCamera, visuals);
 
@@ -562,137 +565,12 @@ namespace forest
             return Input.GetKey(extraModifier);
         }
 
-
-        private Playfield CreatePlayfield(Playfield existing = null)
+        private void SizeChange(float e)
         {
-            // Get world size
             int newWidth = Mathf.RoundToInt(uiWidthSlider.value);
             int newHeight = Mathf.RoundToInt(uiHeightSlider.value);
 
-            // Create and configure blank playfield
-            Playfield newPlayfield = new Playfield();
-            newPlayfield.items = new List<PlayfieldItem>();
-            newPlayfield.units = new List<PlayfieldUnit>();
-            newPlayfield.world = new Collection2D<PlayfieldTile>(newWidth, newHeight);
-            newPlayfield.portals = new List<PlayfieldPortal>();
-            newPlayfield.origins = new List<PlayfieldOrigin>();
-            newPlayfield.exit = null;
-
-            for (int x = 0; x < newWidth; ++x)
-            {
-                for (int y = 0; y < newHeight; ++y)
-                {
-                    PlayfieldTile tile = new PlayfieldTile();
-                    tile.tag = lookup.defaultTileTemplate.name;
-                    tile.id = newPlayfield.GetNextID();
-                    newPlayfield.world.Set(x, y, tile);
-                }
-            }
-
-            if(existing != null)
-            {
-                MoveDataToNewPlayfield(existing, newPlayfield);
-            }
-
-            // TODO: Separated like this to allow moving existing data over.
-            return newPlayfield;
-        }
-
-        private void MoveDataToNewPlayfield(Playfield existing, Playfield newPlayfield)
-        {
-            // Local function to check if we're within bounds.
-            bool InCombinedBounds(Vector2Int pos)
-            {
-                bool inFirst = pos.x < existing.world.GetWidth() && pos.y < existing.world.GetHeight();
-                bool inSecond = pos.x < newPlayfield.world.GetWidth() && pos.y < newPlayfield.world.GetHeight();
-                return inFirst && inSecond;
-            }
-
-            newPlayfield.world.ScrapeDataFrom(existing.world);
-
-            // Back to front move over units that are still in the new bounds of the playfield.
-            // The entire location/body of the unit must be in the new resize playfield or it all gets removed.
-            for (int i = existing.units.Count - 1; i >= 0; --i)
-            {
-                PlayfieldUnit unit = existing.units[i];
-
-                bool shouldRemove = false;
-                for (int bodyPos = 0; bodyPos < unit.locations.Count; ++bodyPos)
-                {
-                    Vector2Int cur = unit.locations[bodyPos];
-
-                    if (!InCombinedBounds(cur))
-                    {
-                        shouldRemove = true;
-                        break;
-                    }
-                }
-
-                if (shouldRemove)
-                {
-                    existing.units.RemoveAt(i);
-                    continue;
-                }
-            }
-            newPlayfield.units = existing.units;
-
-            for (int i = existing.items.Count - 1; i >= 0; --i)
-            {
-                PlayfieldItem item = existing.items[i];
-                Vector2Int cur = item.location;
-
-                if (!InCombinedBounds(cur))
-                {
-                    existing.units.RemoveAt(i);
-                    continue;
-                }
-            }
-            newPlayfield.items = existing.items;
-
-            for(int i = existing.portals.Count - 1; i >= 0; --i)
-            {
-                PlayfieldPortal portal = existing.portals[i];
-                Vector2Int cur = portal.location;
-
-                if(!InCombinedBounds(cur))
-                {
-                    existing.portals.RemoveAt(i);
-                    continue;
-                }
-            }
-            newPlayfield.portals = existing.portals;
-
-            for (int i = existing.origins.Count - 1; i >= 0; --i)
-            {
-                PlayfieldOrigin origin = existing.origins[i];
-                Vector2Int cur = origin.location;
-
-                if (!InCombinedBounds(cur))
-                {
-                    existing.origins.RemoveAt(i);
-                    continue;
-                }
-            }
-            newPlayfield.origins = existing.origins;
-
-            if(existing.exit != null)
-            {
-                Vector2Int curExitPos = existing.exit.location;
-                if(!InCombinedBounds(curExitPos))
-                {
-                    existing.exit = null;
-                }
-            }
-            newPlayfield.exit = existing.exit;
-
-            // Other data
-            newPlayfield.tagLabel = existing.tagLabel;
-            newPlayfield.tagsBestowed = existing.tagsBestowed;
-        }
-
-        private void SizeChange(float e)
-        {
-            workingPlayfield = CreatePlayfield(workingPlayfield);
+            workingPlayfield = Utils.CreatePlayfield(lookup, newWidth, newHeight, workingPlayfield);
             visuals.DisplayAll(workingPlayfield);
             Utils.CenterCamera(displayingCamera, visuals);
 
