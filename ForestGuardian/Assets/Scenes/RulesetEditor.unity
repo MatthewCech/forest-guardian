@@ -349,17 +349,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc765a92ba1eec84db13f4f3e7fbb2f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  generatorType: 2
+  repeatedlyRefresh: 0
   viewingCamera: {fileID: 1199193438}
   visualPlayfield: {fileID: 546421707}
   visualLookup: {fileID: 11400000, guid: 8ec9726a8fd6d0b4580e6136cf9f33a6, type: 2}
-  sizeX: 20
-  sizeY: 20
+  sizeXMin: 10
+  sizeXMax: 20
+  sizeYMin: 10
+  sizeYMax: 20
   useRandomSeed: 0
   seed: 924546
   scale: 0.2
   thresholdWall: 0.832
   thresholdLand: 0.51
   thresholdMarsh: 0.414
+  originBorderMin: 1
+  originBorderRange: 2
+  portalBorderMin: 1
+  portalBorderRange: 2
 --- !u!1 &546924576
 GameObject:
   m_ObjectHideFlags: 0
@@ -639,7 +647,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6320280143833044373, guid: dc1f1143f4e657a4d9d648b60dbc50e6, type: 3}
       propertyPath: orthographic size
-      value: 10
+      value: 11.5
       objectReference: {fileID: 0}
     - target: {fileID: 6320280143833044373, guid: dc1f1143f4e657a4d9d648b60dbc50e6, type: 3}
       propertyPath: m_BackGroundColor.b
@@ -819,6 +827,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1623000946}
   m_CullTransparentMesh: 1
+--- !u!1 &1738872025
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1738872026}
+  m_Layer: 0
+  m_Name: -----------------
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 2147483647
+  m_IsActive: 0
+--- !u!4 &1738872026
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1738872025}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1983601725
 GameObject:
   m_ObjectHideFlags: 0
@@ -955,6 +994,7 @@ SceneRoots:
   - {fileID: 1199193437}
   - {fileID: 187787061}
   - {fileID: 878610258}
+  - {fileID: 1738872026}
   - {fileID: 546421708}
   - {fileID: 982553740}
   - {fileID: 208126293}
