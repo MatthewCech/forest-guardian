@@ -7,6 +7,7 @@ namespace forest
 {
     public class RulesetEditor : MonoBehaviour
     {
+        private const string NEXT_GENERATOR_FLOOR_KEY = "Next";
 
         private const string TILE_NO_TILE = "Nothing";
         private const string TILE_GENERIC_GROUND = "Basic";
@@ -140,7 +141,7 @@ namespace forest
             visualPlayfield.DisplayAll(aggregatePlayfield);
         }
 
-        private class PairPerlin
+        private class PerlinThresholdPair
         {
             public float threshold;
             public string tag;
@@ -159,11 +160,11 @@ namespace forest
 
             Playfield workingPlayfield = Utils.CreatePlayfield(visualLookup, sizeX, sizeY, existingPlayfield);
 
-            List<PairPerlin> thresholds = new List<PairPerlin>
+            List<PerlinThresholdPair> thresholds = new List<PerlinThresholdPair>
             {
-                new PairPerlin() { threshold = thresholdLand, tag = TILE_GENERIC_GROUND },
-                new PairPerlin() { threshold = thresholdMarsh, tag = TILE_GENERIC_MARSH },
-                new PairPerlin() { threshold = thresholdWall, tag = TILE_GENERIC_WALL }
+                new PerlinThresholdPair() { threshold = thresholdLand, tag = TILE_GENERIC_GROUND },
+                new PerlinThresholdPair() { threshold = thresholdMarsh, tag = TILE_GENERIC_MARSH },
+                new PerlinThresholdPair() { threshold = thresholdWall, tag = TILE_GENERIC_WALL }
             };
 
             thresholds.Sort((lhs, rhs) => { return lhs.threshold < rhs.threshold ? 1 : -1; });
@@ -179,7 +180,7 @@ namespace forest
                     tile.tag = TILE_NO_TILE;
                     for (int i = 0; i < thresholds.Count; ++i)
                     {
-                        PairPerlin cur = thresholds[i];
+                        PerlinThresholdPair cur = thresholds[i];
                         if (height01 > cur.threshold)
                         {
                             tile.tag = cur.tag;
@@ -200,7 +201,6 @@ namespace forest
         /// A wanderer draws a path between a start and an end that get placed in specific areas.
         /// Noise is added at various points, but creates a wibbly line of an experience.
         /// </summary>
-        /// <returns></returns>
         private Playfield CreatePathPlayfield()
         {
             Random.InitState(seed);
@@ -220,55 +220,117 @@ namespace forest
             bool originIsHorizontal = Random.Range(0, 2) > 0;
             bool originIsPositive = Random.Range(0, 2) > 0;
             int originOffset = Random.Range(originBorderMin, originBorderMin + originBorderRange);
-            int originXPos = -1;
-            int originYPos = -1;
-            if (originIsHorizontal) // We're going to select randomly on the X axis
+            int portalOffset = Random.Range(portalBorderMin, portalBorderMin + portalBorderRange);
+            Vector2Int originPos = new Vector2Int(-1, -1);
+            Vector2Int portalPos = new Vector2Int(-1, -1);
+
+            if (originIsHorizontal) 
             {
-                originXPos = Random.Range(originBorderMin, sizeX - originBorderMin);
-                originYPos = originIsPositive ? sizeY - originOffset - 1 : originOffset; // positive Y side vs negative Y side offset
+                // Randomly place along the X axis
+                originPos.x = Random.Range(originBorderMin, sizeX - originBorderMin);
+                portalPos.x = Random.Range(portalBorderMin, sizeX - portalBorderMin);
+
+                // Place origin and portal on opposite top/bottom sides
+                originPos.y = originIsPositive ? sizeY - originOffset - 1 : originOffset;
+                portalPos.y = !originIsPositive ? sizeY - portalOffset - 1 : portalOffset; 
             }
             else
             {
-                originYPos = Random.Range(originBorderMin, sizeY - originBorderMin);
-                originXPos = originIsPositive ? sizeX - originOffset - 1 : originOffset; // positive X side vs negative X side offset
+                // Randomly place along the Y axis
+                originPos.y = Random.Range(originBorderMin, sizeY - originBorderMin);
+                portalPos.y = Random.Range(portalBorderMin, sizeY - portalBorderMin);
+
+                // Place origin and portal on opposite left/right sides
+                portalPos.x = !originIsPositive ? sizeX - portalOffset - 1 : portalOffset;
+                originPos.x = originIsPositive ? sizeX - originOffset - 1 : originOffset; 
             }
 
             workingPlayfield.origins.Add(new PlayfieldOrigin
             {
                 id = workingPlayfield.GetNextID(),
-                location = new Vector2Int(originXPos, originYPos),
+                location = originPos,
                 partyIndex = 0
             });
-
-            // Establish portal location.
-            // we match the horizontal or vertical slant, but opposite side.
-            bool portalIsHorizontal = originIsHorizontal;
-            bool portalIsPositive = !originIsPositive;
-            int portalOffset = Random.Range(portalBorderMin, portalBorderMin + portalBorderRange);
-            int portalXPos = -1;
-            int portalYPos = -1;
-            if (portalIsHorizontal)
-            {
-                portalXPos = Random.Range(portalBorderMin, sizeX - portalBorderMin);
-                portalYPos = portalIsPositive ? sizeY - portalOffset - 1 : portalOffset; // positive Y side vs negative Y side offset
-            }
-            else
-            {
-                portalYPos = Random.Range(portalBorderMin, sizeY - portalBorderMin);
-                portalXPos = portalIsPositive ? sizeX - portalOffset - 1 : portalOffset; // positive X side vs negative X side offset
-            }
 
             workingPlayfield.portals.Add(new PlayfieldPortal
             {
                 id = workingPlayfield.GetNextID(),
-                location = new Vector2Int(portalXPos, portalYPos),
-                target = "next" // PLACEHOLDER NAME FOR NEXT FLOOR I GUESS?
+                location = portalPos,
+                target = NEXT_GENERATOR_FLOOR_KEY
             });
 
             // Draw wibbly core path by stepping from the origin to the exit portal
+            CreatePathToTarget(workingPlayfield, originPos, portalPos);
 
-            int xCurrent = originXPos;
-            int yCurrent = originYPos;
+            // Perform outline passes
+            for (int outlines = 0; outlines < outlineLayers; ++outlines)
+            {
+                AddTileOutline(workingPlayfield, TILE_GENERIC_GROUND, TILE_GENERIC_GROUND);
+            }
+
+            return workingPlayfield;
+        }
+
+        /// <summary>
+        /// Given a specific type of tyle, goes and adds an outline at the expense of any other tile
+        /// at the target location. Does so greedily, inefficiently, and in a way that burns a lot of IDs.
+        /// </summary>
+        private static void AddTileOutline(Playfield workingPlayfield, string targetTag, string outlineTag)
+        {
+            int sizeX = workingPlayfield.world.GetWidth();
+            int sizeY = workingPlayfield.world.GetHeight();
+
+            List<Vector2Int> toAdd = new List<Vector2Int>();
+            for (int x = 0; x < workingPlayfield.world.GetWidth(); ++x)
+            {
+                for (int y = 0; y < workingPlayfield.world.GetHeight(); ++y)
+                {
+                    PlayfieldTile existingTile = workingPlayfield.world.Get(x, y);
+                    if (existingTile.tag.Equals(targetTag))
+                    {
+                        toAdd.Add(new Vector2Int(x + 1, y));
+                        toAdd.Add(new Vector2Int(x - 1, y));
+                        toAdd.Add(new Vector2Int(x, y + 1));
+                        toAdd.Add(new Vector2Int(x, y - 1));
+                    }
+                }
+            }
+
+            for (int i = 0; i < toAdd.Count; ++i)
+            {
+                Vector2Int cur = toAdd[i];
+
+                int x = Mathf.Clamp(cur.x, 0, sizeX - 1);
+                int y = Mathf.Clamp(cur.y, 0, sizeY - 1);
+
+                workingPlayfield.world.Set(new Vector2Int(x, y), new PlayfieldTile()
+                {
+                    id = workingPlayfield.GetNextID(),
+                    tag = outlineTag
+                });
+            }
+        }
+
+        /// <summary>
+        /// Create a wanderer that goes from the start to the target, taking X or Y steps based
+        /// on how many in that direction are needed still. Eg: 4 to the right, 2 up gives a 4/6
+        /// chance to move on the X axis.
+        /// 
+        /// This is modified a noise roll that overrides this if the roll is made, selecting a random
+        /// direction. To prevent runaway noisy wandering, a watchdog is honored and if the number of 
+        /// noise steps exceeds the watchdog's allowed steps, walk conventionally.
+        /// </summary>
+        /// <param name="workingPlayfield"></param>
+        /// <param name="start"></param>
+        /// <param name="target"></param>
+        private void CreatePathToTarget(Playfield workingPlayfield, Vector2Int start, Vector2Int target)
+        {
+            int sizeX = workingPlayfield.world.GetWidth();
+            int sizeY = workingPlayfield.world.GetHeight();
+
+            int xCurrent = start.x;
+            int yCurrent = start.y;
+
             int watchdog = noiseWatchdog;
             bool didWatchdogNotify = false;
 
@@ -278,17 +340,17 @@ namespace forest
                 tag = TILE_GENERIC_GROUND
             });
 
-            while (xCurrent != portalXPos || yCurrent != portalYPos)
+            while (xCurrent != target.x || yCurrent != target.y)
             {
-                float xDiff = Mathf.Abs(portalXPos - xCurrent);
-                float yDiff = Mathf.Abs(portalYPos - yCurrent);
+                float xDiff = Mathf.Abs(target.x - xCurrent);
+                float yDiff = Mathf.Abs(target.y - yCurrent);
 
                 float moveOnX = xDiff / (xDiff + yDiff);
                 float rollXY = Random.Range(0.0f, 1.0f);
 
                 float rollNoise = Random.Range(0.0f, 1.0f);
                 bool preferNoise = pathNoise > rollNoise;
-                if(watchdog-- < 0)
+                if (watchdog-- < 0)
                 {
                     if (!didWatchdogNotify)
                     {
@@ -316,13 +378,11 @@ namespace forest
                 {
                     if (rollXY < moveOnX)
                     {
-                        int dir = portalXPos < xCurrent ? -1 : 1;
-                        xCurrent += dir;
+                        xCurrent += target.x < xCurrent ? -1 : 1;
                     }
                     else
                     {
-                        int dir = portalYPos < yCurrent ? -1 : 1;
-                        yCurrent += dir;
+                        yCurrent += target.y < yCurrent ? -1 : 1;
                     }
                 }
 
@@ -335,42 +395,6 @@ namespace forest
                     tag = TILE_GENERIC_GROUND
                 });
             }
-
-            // Perform outline passes
-            for (int outlines = 0; outlines < outlineLayers; ++outlines)
-            {
-                List<Vector2Int> toAdd = new List<Vector2Int>();
-                for (int x = 0; x < workingPlayfield.world.GetWidth(); ++x)
-                {
-                    for (int y = 0; y < workingPlayfield.world.GetHeight(); ++y)
-                    {
-                        PlayfieldTile existingTile = workingPlayfield.world.Get(x, y);
-                        if (existingTile.tag.Equals(TILE_GENERIC_GROUND))
-                        {
-                            toAdd.Add(new Vector2Int(x + 1, y));
-                            toAdd.Add(new Vector2Int(x - 1, y));
-                            toAdd.Add(new Vector2Int(x, y + 1));
-                            toAdd.Add(new Vector2Int(x, y - 1));
-                        }
-                    }
-                }
-
-                for (int i = 0; i < toAdd.Count; ++i)
-                {
-                    Vector2Int cur = toAdd[i];
-
-                    int x = Mathf.Clamp(cur.x, 0, sizeX - 1);
-                    int y = Mathf.Clamp(cur.y, 0, sizeY - 1);
-
-                    workingPlayfield.world.Set(new Vector2Int(x, y), new PlayfieldTile()
-                    {
-                        id = workingPlayfield.GetNextID(),
-                        tag = TILE_GENERIC_GROUND
-                    });
-                }
-            }
-
-            return workingPlayfield;
         }
 
         public void ClearWorkingPlayfield()
