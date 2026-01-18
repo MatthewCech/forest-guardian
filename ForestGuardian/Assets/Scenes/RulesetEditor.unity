@@ -354,20 +354,23 @@ MonoBehaviour:
   viewingCamera: {fileID: 1199193438}
   visualPlayfield: {fileID: 546421707}
   visualLookup: {fileID: 11400000, guid: 8ec9726a8fd6d0b4580e6136cf9f33a6, type: 2}
-  sizeXMin: 10
-  sizeXMax: 20
-  sizeYMin: 10
-  sizeYMax: 20
+  sizeXMin: 15
+  sizeXMax: 15
+  sizeYMin: 15
+  sizeYMax: 15
   useRandomSeed: 0
-  seed: 924546
+  seed: -331477
   scale: 0.2
   thresholdWall: 0.832
   thresholdLand: 0.51
   thresholdMarsh: 0.414
   originBorderMin: 1
   originBorderRange: 2
-  portalBorderMin: 1
-  portalBorderRange: 2
+  portalBorderMin: 2
+  portalBorderRange: 1
+  pathNoise: 0.27
+  noiseWatchdog: 50
+  outlineLayers: 0
 --- !u!1 &546924576
 GameObject:
   m_ObjectHideFlags: 0

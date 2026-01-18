@@ -7,6 +7,12 @@ namespace forest
 {
     public class RulesetEditor : MonoBehaviour
     {
+
+        private const string TILE_NO_TILE = "Nothing";
+        private const string TILE_GENERIC_GROUND = "Basic";
+        private const string TILE_GENERIC_MARSH = "Marsh";
+        private const string TILE_GENERIC_WALL = "Wall";
+
         public enum GeneratorType
         {
             DEFAULT = 0,
@@ -39,7 +45,7 @@ namespace forest
         private bool prevUseRandomSeed = false;
         private int prevSeed = -1;
         private float prevScale = -1;
-        private Playfield workingPlayfield = null;
+        private Playfield aggregatePlayfield = null;
 
         [Header("PERLIN (settings)")]
         [SerializeField][Range(0, 1)] private float thresholdWall = 0.9f;
@@ -54,10 +60,16 @@ namespace forest
         [SerializeField][Range(0, 25)] private int originBorderRange = 2;
         [SerializeField][Range(0, 25)] private int portalBorderMin = 1;
         [SerializeField][Range(0, 25)] private int portalBorderRange = 2;
+        [SerializeField][Range(0, 1)] private float pathNoise = 0.1f;
+        [SerializeField][Min(0)] private int noiseWatchdog = 50;
+        [SerializeField][Range(0, 10)] private int outlineLayers = 0;
         private int prevOriginBorderMin = 1;
         private int prevOriginBorderRange = 2;
         private int prevPortalBorderMin = 1;
         private int prevPortalBorderRange = 2;
+        private float prevPathNoise = 0.1f;
+        private int prevOutlineLayers = 0;
+        private int prevNoiseWatchdog = 50;
 
         private void Start()
         {
@@ -78,7 +90,7 @@ namespace forest
             if(TryUpdate(ref prevGeneratorType, generatorType))
             {
                 // If generator type changes, always clear out existing playfield.
-                workingPlayfield = null;
+                aggregatePlayfield = null;
                 needsRedraw = true;
             }
 
@@ -98,6 +110,9 @@ namespace forest
             needsRedraw |= TryUpdate(ref prevOriginBorderRange, originBorderRange);
             needsRedraw |= TryUpdate(ref prevPortalBorderMin, portalBorderMin);
             needsRedraw |= TryUpdate(ref prevPortalBorderRange, portalBorderRange);
+            needsRedraw |= TryUpdate(ref prevPathNoise, pathNoise);
+            needsRedraw |= TryUpdate(ref prevNoiseWatchdog, noiseWatchdog);
+            needsRedraw |= TryUpdate(ref prevOutlineLayers, outlineLayers);
 
             if (needsRedraw)
             {
@@ -109,19 +124,20 @@ namespace forest
         {
             if (useRandomSeed)
             {
-                seed = Random.Range(-999999, 999999);
-                prevSeed = seed;
+                NewRandSeed();
             }
 
             switch(generatorType)
             {
                 case GeneratorType.PERLIN_ONLY:
-                    CreatePerlinPlayfield();
+                    aggregatePlayfield = CreatePerlinPlayfield(aggregatePlayfield);
                     break;
                 case GeneratorType.PATH_ONLY:
-                    CreatePathPlayfield();
+                    aggregatePlayfield = CreatePathPlayfield();
                     break;
             }
+
+            visualPlayfield.DisplayAll(aggregatePlayfield);
         }
 
         private class PairPerlin
@@ -134,18 +150,20 @@ namespace forest
         /// A straight perlin noise only approach to generating terrain. Allows different
         /// thresholds to be selected but makes no guarantees of clean pathing.
         /// </summary>
-        private void CreatePerlinPlayfield()
+        private Playfield CreatePerlinPlayfield(Playfield existingPlayfield = null)
         {
+            Random.InitState(seed);
+
             int sizeX = Random.Range(sizeXMin, sizeXMax + 1);
             int sizeY = Random.Range(sizeYMin, sizeYMax + 1);
 
-            workingPlayfield = Utils.CreatePlayfield(visualLookup, sizeX, sizeY, workingPlayfield);
+            Playfield workingPlayfield = Utils.CreatePlayfield(visualLookup, sizeX, sizeY, existingPlayfield);
 
             List<PairPerlin> thresholds = new List<PairPerlin>
             {
-                new PairPerlin() { threshold = thresholdLand, tag = "Basic" },
-                new PairPerlin() { threshold = thresholdMarsh, tag = "Marsh" },
-                new PairPerlin() { threshold = thresholdWall, tag = "Wall" }
+                new PairPerlin() { threshold = thresholdLand, tag = TILE_GENERIC_GROUND },
+                new PairPerlin() { threshold = thresholdMarsh, tag = TILE_GENERIC_MARSH },
+                new PairPerlin() { threshold = thresholdWall, tag = TILE_GENERIC_WALL }
             };
 
             thresholds.Sort((lhs, rhs) => { return lhs.threshold < rhs.threshold ? 1 : -1; });
@@ -158,7 +176,7 @@ namespace forest
 
                     PlayfieldTile tile = new PlayfieldTile();
 
-                    tile.tag = "Nothing";
+                    tile.tag = TILE_NO_TILE;
                     for (int i = 0; i < thresholds.Count; ++i)
                     {
                         PairPerlin cur = thresholds[i];
@@ -175,58 +193,62 @@ namespace forest
                 }
             }
 
-            visualPlayfield.DisplayAll(workingPlayfield);
+            return workingPlayfield;
         }
 
-        private void CreatePathPlayfield()
+        /// <summary>
+        /// A wanderer draws a path between a start and an end that get placed in specific areas.
+        /// Noise is added at various points, but creates a wibbly line of an experience.
+        /// </summary>
+        /// <returns></returns>
+        private Playfield CreatePathPlayfield()
         {
+            Random.InitState(seed);
+
+            // Ensure minimum size
             int sizeX = Random.Range(sizeXMin, sizeXMax + 1);
             int sizeY = Random.Range(sizeYMin, sizeYMax + 1);
 
             int minSize = Mathf.Max(originBorderRange * 2, 2);
-
-            // Ensure minimum size
             sizeX = Mathf.Max(sizeX, minSize);
             sizeY = Mathf.Max(sizeY, minSize);
 
             // Create playfield based on previous
-            workingPlayfield = Utils.CreatePlayfield(visualLookup, sizeX, sizeY, null);
+            Playfield workingPlayfield = Utils.CreatePlayfield(visualLookup, sizeX, sizeY, null);
 
             // Establish origin location
-            bool isHorizontal = Random.Range(0, 2) > 0;
-            bool isPositive = Random.Range(0, 2) > 0;
-            int offset = Random.Range(originBorderMin, originBorderMin + originBorderRange);
-            int xPos = -1;
-            int yPos = -1;
-            if (isHorizontal)
+            bool originIsHorizontal = Random.Range(0, 2) > 0;
+            bool originIsPositive = Random.Range(0, 2) > 0;
+            int originOffset = Random.Range(originBorderMin, originBorderMin + originBorderRange);
+            int originXPos = -1;
+            int originYPos = -1;
+            if (originIsHorizontal) // We're going to select randomly on the X axis
             {
-                // We're going to select randomly on the X axis
-                xPos = Random.Range(originBorderMin, sizeX - originBorderMin);
-                yPos = isPositive ? sizeY - offset - 1 : offset; // positive Y side vs negative Y side offset
+                originXPos = Random.Range(originBorderMin, sizeX - originBorderMin);
+                originYPos = originIsPositive ? sizeY - originOffset - 1 : originOffset; // positive Y side vs negative Y side offset
             }
             else
             {
-                yPos = Random.Range(originBorderMin, sizeY - originBorderMin);
-                xPos = isPositive ? sizeX - offset - 1 : offset; // positive X side vs negative X side offset
+                originYPos = Random.Range(originBorderMin, sizeY - originBorderMin);
+                originXPos = originIsPositive ? sizeX - originOffset - 1 : originOffset; // positive X side vs negative X side offset
             }
 
             workingPlayfield.origins.Add(new PlayfieldOrigin
             {
                 id = workingPlayfield.GetNextID(),
-                location = new Vector2Int(xPos, yPos),
+                location = new Vector2Int(originXPos, originYPos),
                 partyIndex = 0
             });
 
             // Establish portal location.
             // we match the horizontal or vertical slant, but opposite side.
-            bool portalIsHorizontal = isHorizontal;
-            bool portalIsPositive = !isPositive;
+            bool portalIsHorizontal = originIsHorizontal;
+            bool portalIsPositive = !originIsPositive;
             int portalOffset = Random.Range(portalBorderMin, portalBorderMin + portalBorderRange);
             int portalXPos = -1;
             int portalYPos = -1;
             if (portalIsHorizontal)
             {
-                // We're going to select randomly on the X axis
                 portalXPos = Random.Range(portalBorderMin, sizeX - portalBorderMin);
                 portalYPos = portalIsPositive ? sizeY - portalOffset - 1 : portalOffset; // positive Y side vs negative Y side offset
             }
@@ -243,59 +265,112 @@ namespace forest
                 target = "next" // PLACEHOLDER NAME FOR NEXT FLOOR I GUESS?
             });
 
-            visualPlayfield.DisplayAll(workingPlayfield);
-        }
+            // Draw wibbly core path by stepping from the origin to the exit portal
 
+            int xCurrent = originXPos;
+            int yCurrent = originYPos;
+            int watchdog = noiseWatchdog;
+            bool didWatchdogNotify = false;
 
-
-
-
-
-
-
-
-        private bool TryUpdate(ref GeneratorType prevValue, GeneratorType value)
-        {
-            if (prevValue != value)
+            workingPlayfield.world.Set(new Vector2Int(xCurrent, yCurrent), new PlayfieldTile()
             {
-                prevValue = value;
-                return true;
+                id = workingPlayfield.GetNextID(),
+                tag = TILE_GENERIC_GROUND
+            });
+
+            while (xCurrent != portalXPos || yCurrent != portalYPos)
+            {
+                float xDiff = Mathf.Abs(portalXPos - xCurrent);
+                float yDiff = Mathf.Abs(portalYPos - yCurrent);
+
+                float moveOnX = xDiff / (xDiff + yDiff);
+                float rollXY = Random.Range(0.0f, 1.0f);
+
+                float rollNoise = Random.Range(0.0f, 1.0f);
+                bool preferNoise = pathNoise > rollNoise;
+                if(watchdog-- < 0)
+                {
+                    if (!didWatchdogNotify)
+                    {
+                        Debug.LogWarning($"Noise watchdog(${noiseWatchdog}) hit. Est steps from target min:{xDiff + yDiff}, est: {(xDiff + yDiff) / (1 - pathNoise)}");
+                        didWatchdogNotify = true;
+                    }
+
+                    preferNoise = false;
+                }
+
+                if (preferNoise)
+                {
+                    bool doX = Random.Range(0, 2) > 0;
+
+                    if (doX)
+                    {
+                        xCurrent += Random.Range(-1, 2);
+                    }
+                    else
+                    {
+                        yCurrent += Random.Range(-1, 2);
+                    }
+                }
+                else
+                {
+                    if (rollXY < moveOnX)
+                    {
+                        int dir = portalXPos < xCurrent ? -1 : 1;
+                        xCurrent += dir;
+                    }
+                    else
+                    {
+                        int dir = portalYPos < yCurrent ? -1 : 1;
+                        yCurrent += dir;
+                    }
+                }
+
+                xCurrent = Mathf.Clamp(xCurrent, 0, sizeX - 1);
+                yCurrent = Mathf.Clamp(yCurrent, 0, sizeY - 1);
+
+                workingPlayfield.world.Set(new Vector2Int(xCurrent, yCurrent), new PlayfieldTile()
+                {
+                    id = workingPlayfield.GetNextID(),
+                    tag = TILE_GENERIC_GROUND
+                });
             }
 
-            return false;
-        }
-
-        private bool TryUpdate(ref int prevValue, int value)
-        {
-            if (prevValue != value)
+            // Perform outline passes
+            for (int outlines = 0; outlines < outlineLayers; ++outlines)
             {
-                prevValue = value;
-                return true;
+                List<Vector2Int> toAdd = new List<Vector2Int>();
+                for (int x = 0; x < workingPlayfield.world.GetWidth(); ++x)
+                {
+                    for (int y = 0; y < workingPlayfield.world.GetHeight(); ++y)
+                    {
+                        PlayfieldTile existingTile = workingPlayfield.world.Get(x, y);
+                        if (existingTile.tag.Equals(TILE_GENERIC_GROUND))
+                        {
+                            toAdd.Add(new Vector2Int(x + 1, y));
+                            toAdd.Add(new Vector2Int(x - 1, y));
+                            toAdd.Add(new Vector2Int(x, y + 1));
+                            toAdd.Add(new Vector2Int(x, y - 1));
+                        }
+                    }
+                }
+
+                for (int i = 0; i < toAdd.Count; ++i)
+                {
+                    Vector2Int cur = toAdd[i];
+
+                    int x = Mathf.Clamp(cur.x, 0, sizeX - 1);
+                    int y = Mathf.Clamp(cur.y, 0, sizeY - 1);
+
+                    workingPlayfield.world.Set(new Vector2Int(x, y), new PlayfieldTile()
+                    {
+                        id = workingPlayfield.GetNextID(),
+                        tag = TILE_GENERIC_GROUND
+                    });
+                }
             }
 
-            return false;
-        }
-
-        private bool TryUpdate(ref float prevValue, float value)
-        {
-            if (prevValue != value)
-            {
-                prevValue = value;
-                return true;
-            }
-
-            return false;
-        }
-
-        private bool TryUpdate(ref bool prevValue, bool value)
-        {
-            if (prevValue != value)
-            {
-                prevValue = value;
-                return true;
-            }
-
-            return false;
+            return workingPlayfield;
         }
 
         public void ClearWorkingPlayfield()
@@ -303,10 +378,10 @@ namespace forest
             int sizeX = -1;
             int sizeY = -1;
 
-            if (workingPlayfield != null)
+            if (aggregatePlayfield != null)
             {
-                sizeX = workingPlayfield.world.GetWidth();
-                sizeY = workingPlayfield.world.GetHeight();
+                sizeX = aggregatePlayfield.world.GetWidth();
+                sizeY = aggregatePlayfield.world.GetHeight();
             }
             else
             {
@@ -314,9 +389,32 @@ namespace forest
                 sizeY = Random.Range(sizeYMin, sizeYMax + 1);
             }
 
-            workingPlayfield = Utils.CreatePlayfield(visualLookup, sizeX, sizeY);
-            visualPlayfield.DisplayAll(workingPlayfield);
+            aggregatePlayfield = Utils.CreatePlayfield(visualLookup, sizeX, sizeY);
+            visualPlayfield.DisplayAll(aggregatePlayfield);
         }
+
+        public void CameraCenter()
+        {
+            Utils.CenterCamera(viewingCamera, visualPlayfield);
+        }
+
+        private void NewRandSeed()
+        {
+            seed = Random.Range(-999999, 999999);
+            prevSeed = seed;
+        }
+
+        private bool TryUpdate<T>(ref T prevValue, T value)
+        {
+            if (!prevValue.Equals(value))
+            {
+                prevValue = value;
+                return true;
+            }
+
+            return false;
+        }
+
 
 #if UNITY_EDITOR
         [UnityEditor.CustomEditor(typeof(RulesetEditor))]
@@ -327,11 +425,20 @@ namespace forest
                 if (GUILayout.Button("Refresh Playfield"))
                 {
                     (target as RulesetEditor).DrawPlayfield();
+                    (target as RulesetEditor).CameraCenter();
                 }
 
-                if(GUILayout.Button("Clear Playfield"))
+                if (GUILayout.Button("Refresh Playfield New Seed"))
+                {
+                    (target as RulesetEditor).NewRandSeed();
+                    (target as RulesetEditor).DrawPlayfield();
+                    (target as RulesetEditor).CameraCenter();
+                }
+
+                if (GUILayout.Button("Clear Playfield"))
                 {
                     (target as RulesetEditor).ClearWorkingPlayfield();
+                    (target as RulesetEditor).CameraCenter();
                 }
 
                 base.OnInspectorGUI();
