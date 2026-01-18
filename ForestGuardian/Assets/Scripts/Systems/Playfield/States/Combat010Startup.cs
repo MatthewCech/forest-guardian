@@ -40,13 +40,19 @@ namespace forest
 
             int originsNeedingAssignment = 0;
             
+            
             if (StateMachine.Playfield.origins != null)
             {
                 foreach (PlayfieldOrigin origin in StateMachine.Playfield.origins)
                 {
-                    // This means we need the player to specify since we're not going to try and auto-pull from the party.
                     if (origin.partyIndex == PlayfieldOrigin.NO_INDEX_SELECTED)
                     {
+                        // No index is explicitly requiring the player to say.
+                        originsNeedingAssignment++;
+                    }
+                    else if(Core.Instance.GameData.lastFloor == null)
+                    {
+                        // Doesn't matter if we have a specific party index ask, we have no last floor data.
                         originsNeedingAssignment++;
                     }
                 }

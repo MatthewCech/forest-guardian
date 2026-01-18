@@ -209,7 +209,7 @@ namespace forest
 
                 CheckForShortCircuitStateJump(indicatorOwnerUnit);
 
-                if (indicatorOwnerUnit.curMovementBudget == 0)
+                if (!Utils.CanAffordAnyMove(StateMachine.Playfield, indicatorOwnerUnit))
                 {
                     StateMachine.VisualPlayfield.DisplayIndicatorAttackPreview(indicatorOwnerUnit, StateMachine.Playfield);
                 }

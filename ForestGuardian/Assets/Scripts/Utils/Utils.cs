@@ -28,7 +28,7 @@ namespace forest
             // See if we're going to be stepping on ourselves.
             bool isSteppingOnSelf = false;
             int indexBeingSteppedOn = -1;
-            for(int i = 0; i < unitToMove.locations.Count; ++i)
+            for (int i = 0; i < unitToMove.locations.Count; ++i)
             {
                 if (unitToMove.locations[i] == pos)
                 {
@@ -67,7 +67,7 @@ namespace forest
             unitToShorten.locations.RemoveAt(unitToShorten.locations.Count - 1);
 
             // Suggest deletion if there are no location left
-            if(unitToShorten.locations.Count == 0)
+            if (unitToShorten.locations.Count == 0)
             {
                 playfield.units.Remove(unitToShorten);
 
@@ -102,7 +102,7 @@ namespace forest
             // If there is a unit and it's not us, no-go. That's overlap.
             if (playfield.TryGetUnitAt(targetLocation, out PlayfieldUnit atTile))
             {
-                if(atTile.id != unitTryingToMove.id)
+                if (atTile.id != unitTryingToMove.id)
                 {
                     return false;
                 }
@@ -110,11 +110,11 @@ namespace forest
 
             // If the move is too expensive AND we've already moved, we can't move.
             // This is written like this to allow a single movement if we have a speed > 0 but we haven't moved yet. 
-            if(unitTryingToMove.curMovementBudget - targetTile.curMoveDifficulty < 0 && unitTryingToMove.curMovesTaken != 0)
+            if (unitTryingToMove.curMovementBudget - targetTile.curMoveDifficulty < 0 && unitTryingToMove.curMovesTaken != 0)
             {
                 return false;
             }
-               
+
             return true;
         }
 
@@ -136,6 +136,33 @@ namespace forest
             visualizerPlayfield.DisplayUnits(playfield);
             visualizerPlayfield.DisplayItems(playfield);
             visualizerPlayfield.DisplayIndicatorMovePreview(unit, playfield);
+        }
+
+        /// <summary>
+        /// Check against direct up/down/left/right world tiles to see if they can be moved to.
+        /// </summary>
+        /// <param name="playfield"></param>
+        /// <param name="unit"></param>
+        /// <returns></returns>
+        public static bool CanAffordAnyMove(Playfield playfield, PlayfieldUnit unitTryingToMove)
+        {
+            // If we have no budget, don't even bother running checks.
+            if(unitTryingToMove.curMovementBudget <= 0)
+            {
+                return false;
+            }
+
+            // Ok we have a budget, so can we do anything?
+            Vector2Int head = unitTryingToMove.locations[PlayfieldUnit.HEAD_INDEX];
+
+            bool canMove = false;
+
+            canMove |= CanMovePlayfieldUnitTo(playfield, unitTryingToMove, head + Vector2Int.right);
+            canMove |= CanMovePlayfieldUnitTo(playfield, unitTryingToMove, head + Vector2Int.left);
+            canMove |= CanMovePlayfieldUnitTo(playfield, unitTryingToMove, head + Vector2Int.up);
+            canMove |= CanMovePlayfieldUnitTo(playfield, unitTryingToMove, head + Vector2Int.down);
+
+            return canMove;
         }
     }
 }
