@@ -28,7 +28,7 @@ namespace forest
             const float visualFXWaitDelay = .02f;
             const float visualMoveDelay = .2f;
 
-            if (!TryGetOpponentsTarget(out PlayfieldUnit targeted))
+            if (!HasEnemies())
             {
                 yield return null;
 
@@ -50,11 +50,22 @@ namespace forest
                     continue;
                 }
 
+                // See if we managed to kill all the player units
+                if (!TryGetTargetPosition(curOpponentToMove, out Vector2Int targetPos))
+                {
+                    yield return null;
+
+                    // If we're here, we didn't actually find anything whatsoever.
+                    StateMachine.SetState<Combat070EvaluateTurn>();
+                    yield break;
+                }
+
+                // Display upcoming movement
                 StateMachine.VisualPlayfield.DisplayIndicatorMovePreview(curOpponentToMove, StateMachine.Playfield);
                 yield return new WaitForSeconds(visualDisplayDelay);
 
                 // 'Walk' towards the player based on available moves
-                if (BuildPlayerStepPath(StateMachine.Playfield, targeted, curOpponentToMove, out List<Tile> steps))
+                if (BuildPlayerStepPath(StateMachine.Playfield, targetPos, curOpponentToMove, out List<Tile> steps))
                 {
                     StateMachine.VisualPlayfield.ShowMovePath(StateMachine.Playfield, curOpponentToMove, steps);
                     yield return new WaitForSeconds(visualMoveDelay * 3);
@@ -78,15 +89,14 @@ namespace forest
 
                 // Apply damage
                 Vector2Int head = curOpponentToMove.locations[PlayfieldUnit.HEAD_INDEX];
-                Vector2Int closest = GetClosestOpponentPosition(curOpponentToMove);
 
                 int attackIndexTouse = curOpponentToMove.curSelectedMove;
                 Unit instance = StateMachine.VisualPlayfield.FindUnit(curOpponentToMove);
                 MoveData moveToUse = instance.data.moves[attackIndexTouse];
 
-                if (head.GridDistance(closest) <= moveToUse.moveRange)
+                if (head.GridDistance(targetPos) <= moveToUse.moveRange)
                 {
-                    if (StateMachine.Playfield.TryGetUnitAt(closest, out PlayfieldUnit targetPlayerUnit))
+                    if (StateMachine.Playfield.TryGetUnitAt(targetPos, out PlayfieldUnit targetPlayerUnit))
                     {
                         Unit targetPlayerVisual = StateMachine.VisualPlayfield.FindUnit(targetPlayerUnit);
                         isWaitingForFX = true;
@@ -113,10 +123,15 @@ namespace forest
             StateMachine.SetState<Combat070EvaluateTurn>();
         }
 
-        private Vector2Int GetClosestOpponentPosition(PlayfieldUnit curOpponent)
+        /// <summary>
+        /// Find the closest tile that has the head or a tail of a player unit on it.
+        /// </summary>
+        /// <returns>If any unit heads or bodies were found of player units</returns>
+        private bool TryGetTargetPosition(PlayfieldUnit movingUnit, out Vector2Int closestPos)
         {
-            Vector2Int closestPos = new Vector2Int(-short.MaxValue, -short.MaxValue); // A wild distance
-            Vector2Int head = curOpponent.locations[PlayfieldUnit.HEAD_INDEX];
+            closestPos = new Vector2Int(-short.MaxValue, -short.MaxValue); // A wild distance
+            Vector2Int head = movingUnit.locations[PlayfieldUnit.HEAD_INDEX];
+            bool didFindSomething = false;
 
             for (int i = 0; i < StateMachine.Playfield.units.Count; ++i)
             {
@@ -129,30 +144,14 @@ namespace forest
                         if (head.GridDistance(curLoc) < head.GridDistance(closestPos))
                         {
                             closestPos = curLoc;
+                            didFindSomething = true;
                         }
                     }
                 }
             }
 
-            return closestPos;
+            return didFindSomething;
         }
-
-        private bool TryGetOpponentsTarget(out PlayfieldUnit targeted)
-        {
-            for (int i = 0; i < StateMachine.Playfield.units.Count; ++i)
-            {
-                PlayfieldUnit cur = StateMachine.Playfield.units[i];
-                if (cur.team == Team.Player)
-                {
-                    targeted = StateMachine.Playfield.units[i];
-                    return true;
-                }
-            }
-
-            targeted = null;
-            return false;
-        }
-
 
         /// <summary>
         /// Uses DFS with heuristic (greedy and frankly slightly drunk) to move towards the player.
@@ -160,11 +159,11 @@ namespace forest
         /// since it's based on the existing tiles and data that's accessed through it.
         /// </summary>
         /// <param name="playfield"></param>
-        /// <param name="targeted"></param>
+        /// <param name="targetPos"></param>
         /// <param name="curOpponentToMove"></param>
         /// <param name="steps"></param>
         /// <returns></returns>
-        private bool BuildPlayerStepPath(Playfield playfield, PlayfieldUnit targeted, PlayfieldUnit curOpponentToMove, out List<Tile> steps)
+        private bool BuildPlayerStepPath(Playfield playfield, Vector2Int targetPos, PlayfieldUnit curOpponentToMove, out List<Tile> steps)
         {
             List<SearchNode<Tile>> pending = new List<SearchNode<Tile>>();
             List<SearchNode<Tile>> visited = new List<SearchNode<Tile>>();
@@ -175,10 +174,9 @@ namespace forest
 
             // Done as head indexes
             Vector2Int startPos = curOpponentToMove.locations[PlayfieldUnit.HEAD_INDEX];
-            Vector2Int goalPos = targeted.locations[PlayfieldUnit.HEAD_INDEX];
 
             Tile startTile = FindTile(startPos);
-            Tile goalTile = FindTile(goalPos);
+            Tile goalTile = FindTile(targetPos);
 
 
             pending.Add(new SearchNode<Tile>(startTile, startTile.moveDifficulty));
@@ -207,8 +205,8 @@ namespace forest
                     SearchNode<Tile> node = new SearchNode<Tile>(newItem, newItem.moveDifficulty);
                     node.curNodeCost = int.MaxValue;
 
-                    int xDif = Mathf.Abs(goalPos.x - curPos.x);
-                    int yDif = Mathf.Abs(goalPos.y - curPos.y);
+                    int xDif = Mathf.Abs(targetPos.x - curPos.x);
+                    int yDif = Mathf.Abs(targetPos.y - curPos.y);
                     int distTar = xDif + yDif + Mathf.Abs(xDif - yDif);
 
                     node.heuristic = newItem.moveDifficulty + distTar;
