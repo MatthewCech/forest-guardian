@@ -182,47 +182,6 @@ namespace forest
         }
 
         /// <summary>
-        /// Removes the exit at the specified position 
-        /// </summary>
-        /// <param name="pos"></param>
-        /// <returns></returns>
-        public bool RemoveExitAt(Vector2Int pos)
-        {
-            if (exit == null)
-            {
-                return false;
-            }
-            
-            if (exit.location == pos)
-            {
-                exit = null;
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Try and get the exit at the specified location
-        /// </summary>
-        /// <param name="pos"></param>
-        /// <param name="theExit"></param>
-        /// <returns></returns>
-        public bool TryGetExitAt(Vector2Int pos, out PlayfieldExit theExit)
-        {
-            if (exit == null || exit.location != pos)
-            {
-                theExit = null;
-                return false;
-            }
-            else
-            {
-                theExit = exit;
-                return true;
-            }
-        }
-
-        /// <summary>
         /// See if we have an item at the specified location, and return it if so.
         /// </summary>
         /// <param name="pos"></param>

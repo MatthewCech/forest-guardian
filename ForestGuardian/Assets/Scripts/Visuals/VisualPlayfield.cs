@@ -18,7 +18,6 @@ namespace forest
         private List<Item> itemTracking;
         private List<Portal> portalTracking;
         private List<Origin> originTracking;
-        private Exit trackedExit;
 
         private List<Indicator> indicatorTracking;
 
@@ -33,7 +32,6 @@ namespace forest
             itemTracking = new List<Item>();
             portalTracking = new List<Portal>();
             originTracking = new List<Origin>();
-            trackedExit = null;
 
             indicatorTracking = new List<Indicator>();
         }
@@ -451,20 +449,6 @@ namespace forest
             }
         }
 
-        public void DisplayExit(Playfield toDisplay)
-        { 
-            if(trackedExit != null)
-            {
-                Destroy(trackedExit.gameObject);
-                trackedExit = null;
-            }
-
-            if(toDisplay.exit != null)
-            {
-                CreateExit(toDisplay.exit);
-            }
-        }
-
         /// <summary>
         /// Expensive draw-from-scratch for all items
         /// </summary>
@@ -493,7 +477,6 @@ namespace forest
             DisplayItems(toDisplay);
             DisplayPortals(toDisplay);
             DisplayOrigins(toDisplay);
-            DisplayExit(toDisplay);
         }
 
         /// <summary>
@@ -507,12 +490,6 @@ namespace forest
             ClearMonoBehaviourList(portalTracking);
             ClearMonoBehaviourList(indicatorTracking);
             ClearMonoBehaviourList(originTracking);
-
-            if (trackedExit != null)
-            {
-                Destroy(trackedExit.gameObject);
-                trackedExit = null;
-            }
         }
 
         /// <summary>
@@ -657,30 +634,6 @@ namespace forest
                 UnitData unitDat = Core.Instance.GameData.roster[data.curRosterIndex];
                 instance.unitIcon.sprite = lookup.GetUnitTemplateByName(unitDat.unitName).uiIcon;
             }
-        }
-
-        public void CreateExit(PlayfieldExit data)
-        {
-            EnsureParentObjectExists();
-
-            Vector2Int curLocation = data.location;
-
-            Exit instance = GameObject.Instantiate(lookup.ExitTemplate, spawnParent);
-
-            instance.associatedData = data;
-            instance.gridPos = curLocation;
-
-            float x = Offset(curLocation.x);
-            float y = Offset(curLocation.y);
-
-            instance.transform.position = new Vector3(x, -y, -lookup.unitZPriority);
-
-            if(trackedExit != null)
-            {
-                Debug.LogError("Woah, there are TWO exists trying to draw. This is not good. Going to track the most recent but things are probably broken.");
-            }
-
-            trackedExit = instance;
         }
 
         /// <summary>

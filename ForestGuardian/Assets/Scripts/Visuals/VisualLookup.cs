@@ -25,7 +25,6 @@ namespace forest
         [Header("Various Templates")]
         public Tile defaultTileTemplate; // The tile used when there's nothing present
         public Portal portalTemplate;    // "Stairs" in a traditional rogue/PMD sense, dungeon advancement
-        public Exit exitTemplate;        // "Exit" in a "Go back to the map" sense
         public Origin originTemplate;    // A start/placement location
 
         [Header("Template Lists")]
@@ -36,7 +35,6 @@ namespace forest
 
         public Tile DefaultTileTemplate { get { return defaultTileTemplate; } }
         public Portal PortalTemplate { get { return portalTemplate; } }
-        public Exit ExitTemplate { get { return exitTemplate; } }
         public Origin OriginTemplate { get { return originTemplate; } }
 
         /// <summary>

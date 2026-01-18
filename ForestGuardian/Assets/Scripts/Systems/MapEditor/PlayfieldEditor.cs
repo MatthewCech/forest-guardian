@@ -229,11 +229,6 @@ namespace forest
             PlayfieldEditorUISelectable origin = GameObject.Instantiate(selectableEntryTemplate, selectableEntryParent);
             origin.SetData(lookup.originTemplate.gameObject, PlayfieldEditorSelectionType.Origin, lookup.OriginTemplate.name, ProcessedSelectableClick);
             origin.gameObject.SetActive(true);
-
-            AddSelectableLabel("Exit");
-            PlayfieldEditorUISelectable exit = GameObject.Instantiate(selectableEntryTemplate, selectableEntryParent);
-            exit.SetData(lookup.exitTemplate.gameObject, PlayfieldEditorSelectionType.Exit, lookup.ExitTemplate.name, ProcessedSelectableClick);
-            exit.gameObject.SetActive(true);
         }
 
         private void ProcessedSelectableClick(PlayfieldEditorUISelectable previewClicked)
@@ -438,8 +433,7 @@ namespace forest
             else if (previewType == PlayfieldEditorSelectionType.Portal)
             {
                 // No placing at the same spot as an Origin or Exit
-                if (workingPlayfield.TryGetOriginAt(position, out PlayfieldOrigin _)
-                    || workingPlayfield.TryGetExitAt(position, out PlayfieldExit _))
+                if (workingPlayfield.TryGetOriginAt(position, out PlayfieldOrigin _))
                 {
                     return;
                 }
@@ -458,8 +452,7 @@ namespace forest
             else if (previewType == PlayfieldEditorSelectionType.Origin)
             {
                 // No placing at the same spot as a Portal or Exit
-                if(workingPlayfield.TryGetPortalAt(position, out PlayfieldPortal _)
-                    || workingPlayfield.TryGetExitAt(position, out PlayfieldExit _))
+                if(workingPlayfield.TryGetPortalAt(position, out PlayfieldPortal _))
                 {
                     return;
                 }
@@ -474,25 +467,6 @@ namespace forest
                 }
 
                 HideMetadataPanel();
-            }
-            else if (previewType == PlayfieldEditorSelectionType.Exit)
-            {
-                // No placing at the same spot as a Portal or Origin
-                if (workingPlayfield.TryGetPortalAt(position, out PlayfieldPortal _)
-                    || workingPlayfield.TryGetOriginAt(position, out PlayfieldOrigin _))
-                {
-                    return;
-                }
-
-                if (workingPlayfield.exit != null)
-                {
-                    workingPlayfield.exit = null;
-                }
-
-                PlayfieldExit newExit = new PlayfieldExit();
-                newExit.location = position;
-                newExit.id = workingPlayfield.GetNextID();
-                workingPlayfield.exit = newExit;
             }
 
             visuals.DisplayAll(workingPlayfield);
@@ -526,10 +500,6 @@ namespace forest
             else if (previewType == PlayfieldEditorSelectionType.Origin)
             {
                 workingPlayfield.RemoveOriginAt(position);
-            }
-            else if (previewType == PlayfieldEditorSelectionType.Exit)
-            {
-                workingPlayfield.RemoveExitAt(position);
             }
 
             visuals.DisplayAll(workingPlayfield);
@@ -576,7 +546,6 @@ namespace forest
             newPlayfield.world = new Collection2D<PlayfieldTile>(newWidth, newHeight);
             newPlayfield.portals = new List<PlayfieldPortal>();
             newPlayfield.origins = new List<PlayfieldOrigin>();
-            newPlayfield.exit = null;
 
             for (int x = 0; x < newWidth; ++x)
             {
@@ -674,16 +643,6 @@ namespace forest
                 }
             }
             newPlayfield.origins = existing.origins;
-
-            if(existing.exit != null)
-            {
-                Vector2Int curExitPos = existing.exit.location;
-                if(!InCombinedBounds(curExitPos))
-                {
-                    existing.exit = null;
-                }
-            }
-            newPlayfield.exit = existing.exit;
 
             // Other data
             newPlayfield.tagLabel = existing.tagLabel;

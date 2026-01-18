@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace forest
@@ -7,6 +5,7 @@ namespace forest
     /// <summary>
     /// A literal exit point, taking the player to the map regardless (or rather, to the end location)
     /// </summary>
+    [System.Obsolete("No longer present in gameplay, but in serialization.")]
     [System.Serializable]
     public class PlayfieldExit
     {

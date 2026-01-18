@@ -335,15 +335,6 @@ namespace forest
         {
             Vector2Int head = controlledUnit.locations[PlayfieldUnit.HEAD_INDEX];
 
-            if (StateMachine.Playfield.exit != null)
-            {
-                if (head == StateMachine.Playfield.exit.location)
-                {
-                    StateMachine.SetState<Combat090Defeat>();
-                    return true;
-                }
-            }
-
             if (StateMachine.Playfield.portals.Count > 0)
             {
                 if (StateMachine.Playfield.TryGetPortalAt(head, out PlayfieldPortal portal))
