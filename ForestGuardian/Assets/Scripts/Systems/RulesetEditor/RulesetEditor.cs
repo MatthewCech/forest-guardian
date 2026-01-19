@@ -15,11 +15,11 @@ namespace forest
             PERLIN,
             PATH,
             SUBDIVIDE,
-            CITIES, // #TODO
+            CITIES,
 
             // Combo generators
             PERLIN_PATH = 10,
-            SUBDIVIDE_PATH = 11, // #TODO
+            SUBDIVIDE_PATH = 11,
             PATH_STAINING = 12
         }
 
@@ -159,7 +159,11 @@ namespace forest
                     break;
 
                 case GeneratorType.SUBDIVIDE:
-                    aggregatePlayfield = Subdivide();
+                    aggregatePlayfield = CreateSubdividePlayfield();
+                    break;
+
+                case GeneratorType.CITIES:
+                    aggregatePlayfield = CreateCitiesPlayfield();
                     break;
 
                 case GeneratorType.PERLIN_PATH:
@@ -183,6 +187,20 @@ namespace forest
             visualPlayfield.DisplayAll(aggregatePlayfield);
         }
 
+
+        public Playfield CreateCitiesPlayfield()
+        {
+            Random.InitState(seed);
+
+            int sizeX = Random.Range(sizeXMin, sizeXMax + 1);
+            int sizeY = Random.Range(sizeYMin, sizeYMax + 1);
+
+            Playfield workingPlayfield = Utils.CreatePlayfield(sizeX, sizeY);
+
+            // #TODO
+
+            return workingPlayfield;
+        }
 
         private class PerlinThresholdPair
         {
@@ -216,7 +234,7 @@ namespace forest
             public int Height => Mathf.Abs(top - bottom);
         }
 
-        private Playfield Subdivide()
+        private Playfield CreateSubdividePlayfield()
         {
             Playfield playfield = SubdivideInternal(out SplitNode _, out List<SplitNode> _);
             return playfield;
@@ -263,7 +281,7 @@ namespace forest
             int portalRelY = Random.Range(roomPadding, portalRoom.Height - roomPadding);
             portal.location = new Vector2Int(portalRoom.left + portalRelX, portalRoom.top + portalRelY);
             combined.portals.Add(portal);
-
+            
             bool placing = true;
             int tries = 20;
             SplitNode originRoom = rooms[0];
