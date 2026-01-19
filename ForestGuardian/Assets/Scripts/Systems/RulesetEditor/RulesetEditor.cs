@@ -14,9 +14,13 @@ namespace forest
             // Single generators
             PERLIN,
             PATH,
+            SUBDIVIDE,
+            CITIES, // #TODO
 
             // Combo generators
             PERLIN_PATH = 10,
+            SUBDIVIDE_PATH = 11, // #TODO
+            PATH_STAINING = 12
         }
 
         [SerializeField] private GeneratorType generatorType = GeneratorType.PERLIN;
@@ -35,20 +39,20 @@ namespace forest
         [SerializeField][Min(1)] private int sizeYMax = 20;
         [SerializeField] private bool useRandomSeed = false;
         [SerializeField] private int seed = 123;
-        [SerializeField][Min(0.001f)] private float scale = 0.1f;
         private int prevSizeXMin = -1;
         private int prevSizeYMin = -1;
         private int prevSizeXMax = -1;
         private int prevSizeYMax = -1;
         private bool prevUseRandomSeed = false;
         private int prevSeed = -1;
-        private float prevScale = -1;
         private Playfield aggregatePlayfield = null;
 
         [Header("PERLIN (settings)")]
+        [SerializeField][Min(0.001f)] private float scale = 0.1f;
         [SerializeField][Range(0, 1)] private float thresholdWall = 0.9f;
         [SerializeField][Range(0, 1)] private float thresholdLand = 0.5f;
         [SerializeField][Range(0, 1)] private float thresholdMarsh = 0.4f;
+        private float prevScale = -1;
         private float prevThresholdWall = -1;
         private float prevThresholdLand = -1;
         private float prevThresholdMarsh = -1;
@@ -68,6 +72,20 @@ namespace forest
         private float prevPathNoise = 0.1f;
         private int prevOutlineLayers = 0;
         private int prevNoiseWatchdog = 50;
+
+        [Header("SUBDIVIDE (settings)")]
+        [SerializeField][Min(0)] private int roomPadding = 0;
+        [SerializeField][Min(1)] private int minRoomSize = 3;
+        [SerializeField][Range(0, 0.1f)] private float splitChancePerUnitArea = 0.01f;
+        private int prevRoomPadding = 0;
+        private int prevMinRoomSize = 3;
+        private float prevSplitChancePerUnitArea = 0.01f;
+
+        [Header("STAINED PATH (settings)")]
+        [SerializeField][Range(0, 1)] private float stainThresholdMarsh = 0.8f;
+        private float prevStainThresholdMarsh = 0.8f;
+
+
 
         private void Start()
         {
@@ -98,8 +116,8 @@ namespace forest
             needsRedraw |= TryUpdate(ref prevSizeYMax, sizeYMax);
             needsRedraw |= TryUpdate(ref prevUseRandomSeed, useRandomSeed);
             needsRedraw |= TryUpdate(ref prevSeed, seed);
-            needsRedraw |= TryUpdate(ref prevScale, scale);
 
+            needsRedraw |= TryUpdate(ref prevScale, scale);
             needsRedraw |= TryUpdate(ref prevThresholdWall, thresholdWall);
             needsRedraw |= TryUpdate(ref prevThresholdLand, thresholdLand);
             needsRedraw |= TryUpdate(ref prevThresholdMarsh, thresholdMarsh);
@@ -111,6 +129,12 @@ namespace forest
             needsRedraw |= TryUpdate(ref prevPathNoise, pathNoise);
             needsRedraw |= TryUpdate(ref prevNoiseWatchdog, noiseWatchdog);
             needsRedraw |= TryUpdate(ref prevOutlineLayers, outlineLayers);
+
+            needsRedraw |= TryUpdate(ref prevRoomPadding, roomPadding);
+            needsRedraw |= TryUpdate(ref prevMinRoomSize, minRoomSize);
+            needsRedraw |= TryUpdate(ref prevSplitChancePerUnitArea, splitChancePerUnitArea);
+
+            needsRedraw |= TryUpdate(ref prevStainThresholdMarsh, stainThresholdMarsh);
 
             if (needsRedraw)
             {
@@ -134,11 +158,21 @@ namespace forest
                     aggregatePlayfield = CreatePathPlayfield();
                     break;
 
+                case GeneratorType.SUBDIVIDE:
+                    aggregatePlayfield = Subdivide();
+                    break;
+
                 case GeneratorType.PERLIN_PATH:
                     ClearWorkingPlayfield();
                     Playfield perlin = CreatePerlinPlayfield(aggregatePlayfield);
                     Playfield path = CreatePathPlayfield();
                     aggregatePlayfield = Utils.LayerPlayfields(perlin, path);
+                    break;
+
+                case GeneratorType.PATH_STAINING:
+                    ClearWorkingPlayfield();
+                    Playfield toStain = CreatePathPlayfield();
+                    aggregatePlayfield = CreateStainedPath(toStain);
                     break;
             }
 
@@ -149,6 +183,209 @@ namespace forest
         {
             public float threshold;
             public string tag;
+        }
+        public enum SplitStyle
+        {
+            Horizontal,
+            Vertical
+        }
+
+        private class SplitNode
+        {
+            public int left = -1;
+            public int right = -1;
+            public int top = -1;
+            public int bottom = -1;
+            public int borderRadius = 0;
+
+            public SplitStyle splitStyle = SplitStyle.Horizontal;
+
+            public SplitNode child1 = null;
+            public SplitNode child2 = null;
+            public SplitNode parent = null;
+
+            public bool IsLeaf => child1 == null && child2 == null;
+            public int Width => Mathf.Abs(right - left);
+            public int Height => Mathf.Abs(top - bottom);
+        }
+
+        private Playfield Subdivide()
+        {
+            Random.InitState(seed);
+
+            int sizeX = Random.Range(sizeXMin, sizeXMax + 1);
+            int sizeY = Random.Range(sizeYMin, sizeYMax + 1);
+
+            Playfield workingPlayfield = Utils.CreatePlayfield(sizeX, sizeY);
+
+            SplitNode root = new SplitNode();
+            root.left = 0;
+            root.right = sizeX;
+            root.top = 0;
+            root.bottom = sizeY;
+            root.borderRadius = roomPadding;
+
+            Stack<SplitNode> toSplit = new Stack<SplitNode>();
+            toSplit.Push(root);
+
+            while (toSplit.Count > 0)
+            {
+                SplitNode node = toSplit.Pop();
+
+                int splitPadding = Mathf.CeilToInt(minRoomSize / 2.0f);
+                if(node.Width < splitPadding * 2 || node.Height < splitPadding * 2)
+                {
+                    continue;
+                }
+
+                float splitRoll = Random.Range(0f, 1f);
+                float chance = node.Width * node.Height * splitChancePerUnitArea;
+                if (chance < splitRoll) // roll failed
+                {
+                    continue;
+                }
+                
+                node.splitStyle = Random.Range(0, 2) > 0 ? SplitStyle.Horizontal : SplitStyle.Vertical;
+                if(node.parent != null)
+                {
+                    if(node.parent.splitStyle == SplitStyle.Horizontal)
+                    {
+                        node.splitStyle = SplitStyle.Vertical;
+                    }
+                    else
+                    {
+                        node.splitStyle = SplitStyle.Horizontal;
+                    }
+                }
+
+                if (node.splitStyle == SplitStyle.Horizontal)
+                {
+                    int horizontalSplitPos = Random.Range(node.left + splitPadding, node.right - splitPadding + 1);
+
+                    SplitNode newLeft = new SplitNode();
+                    newLeft.left = node.left;
+                    newLeft.right = horizontalSplitPos;
+                    newLeft.top = node.top;
+                    newLeft.bottom = node.bottom;
+                    newLeft.borderRadius = roomPadding;
+                    newLeft.parent = node;
+
+                    node.child1 = newLeft;
+                    toSplit.Push(newLeft);
+
+                    SplitNode newRight = new SplitNode();
+                    newRight.left = horizontalSplitPos;
+                    newRight.right = node.right;
+                    newRight.top = node.top;
+                    newRight.bottom = node.bottom;
+                    newRight.borderRadius = roomPadding;
+                    newRight.parent = node;
+
+                    node.child2 = newRight;
+                    toSplit.Push(newRight);
+                }
+                else
+                {
+                    int verticalSplitPos = Random.Range(node.top + splitPadding, node.bottom - splitPadding + 1);
+
+                    SplitNode newTop = new SplitNode();
+                    newTop.left = node.left;
+                    newTop.right = node.right;
+                    newTop.top = node.top;
+                    newTop.bottom = verticalSplitPos;
+                    newTop.borderRadius = roomPadding;
+                    newTop.parent = node;
+
+                    node.child1 = newTop;
+                    toSplit.Push(newTop);
+
+                    SplitNode newBottom = new SplitNode();
+                    newBottom.left = node.left;
+                    newBottom.right = node.right;
+                    newBottom.top = verticalSplitPos;
+                    newBottom.bottom = node.bottom;
+                    newBottom.borderRadius = roomPadding;
+                    newBottom.parent = node;
+
+                    node.child2 = newBottom;
+                    toSplit.Push(newBottom);
+                }
+            }
+
+
+            List<SplitNode> toDraw = new List<SplitNode>();
+            Stack<SplitNode> walk = new Stack<SplitNode>();
+            walk.Push(root);
+            while (walk.Count > 0)
+            {
+                SplitNode cur = walk.Pop();
+                if (cur.IsLeaf)
+                {
+                    if (cur.Width >= minRoomSize && cur.Height >= minRoomSize)
+                    {
+                        toDraw.Add(cur);
+                    }
+                }
+                else
+                {
+                    if (cur.child1 != null)
+                    {
+                        walk.Push(cur.child1);
+                    }
+
+                    if(cur.child2 != null)
+                    {
+                        walk.Push(cur.child2);
+                    }
+                }
+            }
+
+            foreach(SplitNode cur in toDraw)
+            {
+                for(int x = cur.left + cur.borderRadius; x < cur.right - cur.borderRadius; ++x)
+                {
+                    for(int y = cur.top + cur.borderRadius; y < cur.bottom - cur.borderRadius; ++y)
+                    {
+                        workingPlayfield.world.Set(x, y, new PlayfieldTile()
+                        {
+                            id = workingPlayfield.GetNextID(),
+                            tag = VisualLookup.TILE_GENERIC_GROUND
+                        });
+                    }
+                }
+            }
+
+            return workingPlayfield;
+        }
+
+        private Playfield CreateStainedPath(Playfield toStain)
+        {
+            Random.InitState(seed);
+
+            int width = toStain.world.GetWidth();
+            int height = toStain.world.GetHeight();
+
+            List<Vector2Int> marshTiles = new List<Vector2Int>();
+
+            for (int x = 0; x < width; ++x)
+            {
+                for (int y = 0; y < height; ++y)
+                {
+                    float height01 = Mathf.PerlinNoise(seed + (x * scale), seed + (y * scale));
+
+                    if(height01 > stainThresholdMarsh)
+                    {
+                        PlayfieldTile tile = new PlayfieldTile();
+                        tile.id = toStain.GetNextID();
+                        tile.tag = VisualLookup.TILE_GENERIC_MARSH;
+
+                        toStain.world.Set(x, y, tile);
+                        marshTiles.Add(new Vector2Int(x, y));
+                    }
+                }
+            }
+
+            return toStain;
         }
 
         /// <summary>
