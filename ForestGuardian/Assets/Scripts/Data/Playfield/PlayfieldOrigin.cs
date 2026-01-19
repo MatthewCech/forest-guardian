@@ -19,6 +19,17 @@ namespace forest
         [JsonProperty] public Vector2Int location = Vector2Int.zero;
         [JsonProperty] public int partyIndex = NO_INDEX_SELECTED; // Index to draw from automatically for previous units
 
+        // Serialized values cloned only.
+        public PlayfieldOrigin Clone(int newID)
+        {
+            return new PlayfieldOrigin()
+            {
+                id = newID,
+                location = this.location,
+                partyIndex = this.partyIndex
+            };
+        }
+
         // Per turn variables
         // Tunable tile data based on lookup information, etc
         public int curRosterIndex = NO_INDEX_SELECTED;

@@ -105,7 +105,7 @@ namespace forest
             int newWidth = Mathf.RoundToInt(uiWidthSlider.value);
             int newHeight = Mathf.RoundToInt(uiHeightSlider.value);
 
-            workingPlayfield = Utils.CreatePlayfield(lookup, newWidth, newHeight);
+            workingPlayfield = Utils.CreatePlayfield(newWidth, newHeight);
             visuals.DisplayAll(workingPlayfield);
             Utils.CenterCamera(displayingCamera, visuals);
 
@@ -570,7 +570,7 @@ namespace forest
             int newWidth = Mathf.RoundToInt(uiWidthSlider.value);
             int newHeight = Mathf.RoundToInt(uiHeightSlider.value);
 
-            workingPlayfield = Utils.CreatePlayfield(lookup, newWidth, newHeight, workingPlayfield);
+            workingPlayfield = Utils.CreatePlayfield(newWidth, newHeight, workingPlayfield);
             visuals.DisplayAll(workingPlayfield);
             Utils.CenterCamera(displayingCamera, visuals);
 

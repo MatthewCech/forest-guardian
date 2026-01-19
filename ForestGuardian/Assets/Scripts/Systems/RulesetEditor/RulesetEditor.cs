@@ -7,22 +7,19 @@ namespace forest
 {
     public class RulesetEditor : MonoBehaviour
     {
-        private const string NEXT_GENERATOR_FLOOR_KEY = "Next";
-
-        private const string TILE_NO_TILE = "Nothing";
-        private const string TILE_GENERIC_GROUND = "Basic";
-        private const string TILE_GENERIC_MARSH = "Marsh";
-        private const string TILE_GENERIC_WALL = "Wall";
-
         public enum GeneratorType
         {
             DEFAULT = 0,
 
-            PERLIN_ONLY,
-            PATH_ONLY
+            // Single generators
+            PERLIN,
+            PATH,
+
+            // Combo generators
+            PERLIN_PATH = 10,
         }
 
-        [SerializeField] private GeneratorType generatorType = GeneratorType.PERLIN_ONLY;
+        [SerializeField] private GeneratorType generatorType = GeneratorType.PERLIN;
         [SerializeField] private bool repeatedlyRefresh = false;
         private GeneratorType prevGeneratorType = GeneratorType.DEFAULT;
 
@@ -130,11 +127,18 @@ namespace forest
 
             switch(generatorType)
             {
-                case GeneratorType.PERLIN_ONLY:
+                case GeneratorType.PERLIN:
                     aggregatePlayfield = CreatePerlinPlayfield(aggregatePlayfield);
                     break;
-                case GeneratorType.PATH_ONLY:
+                case GeneratorType.PATH:
                     aggregatePlayfield = CreatePathPlayfield();
+                    break;
+
+                case GeneratorType.PERLIN_PATH:
+                    ClearWorkingPlayfield();
+                    Playfield perlin = CreatePerlinPlayfield(aggregatePlayfield);
+                    Playfield path = CreatePathPlayfield();
+                    aggregatePlayfield = Utils.LayerPlayfields(perlin, path);
                     break;
             }
 
@@ -158,13 +162,13 @@ namespace forest
             int sizeX = Random.Range(sizeXMin, sizeXMax + 1);
             int sizeY = Random.Range(sizeYMin, sizeYMax + 1);
 
-            Playfield workingPlayfield = Utils.CreatePlayfield(visualLookup, sizeX, sizeY, existingPlayfield);
+            Playfield workingPlayfield = Utils.CreatePlayfield(sizeX, sizeY, existingPlayfield);
 
             List<PerlinThresholdPair> thresholds = new List<PerlinThresholdPair>
             {
-                new PerlinThresholdPair() { threshold = thresholdLand, tag = TILE_GENERIC_GROUND },
-                new PerlinThresholdPair() { threshold = thresholdMarsh, tag = TILE_GENERIC_MARSH },
-                new PerlinThresholdPair() { threshold = thresholdWall, tag = TILE_GENERIC_WALL }
+                new PerlinThresholdPair() { threshold = thresholdLand, tag = VisualLookup.TILE_GENERIC_GROUND },
+                new PerlinThresholdPair() { threshold = thresholdMarsh, tag = VisualLookup.TILE_GENERIC_MARSH },
+                new PerlinThresholdPair() { threshold = thresholdWall, tag = VisualLookup.TILE_GENERIC_WALL }
             };
 
             thresholds.Sort((lhs, rhs) => { return lhs.threshold < rhs.threshold ? 1 : -1; });
@@ -177,7 +181,7 @@ namespace forest
 
                     PlayfieldTile tile = new PlayfieldTile();
 
-                    tile.tag = TILE_NO_TILE;
+                    tile.tag = VisualLookup.TILE_DEFAULT_NAME;
                     for (int i = 0; i < thresholds.Count; ++i)
                     {
                         PerlinThresholdPair cur = thresholds[i];
@@ -201,7 +205,7 @@ namespace forest
         /// A wanderer draws a path between a start and an end that get placed in specific areas.
         /// Noise is added at various points, but creates a wibbly line of an experience.
         /// </summary>
-        private Playfield CreatePathPlayfield()
+        private Playfield CreatePathPlayfield(Playfield existingPlayfield = null)
         {
             Random.InitState(seed);
 
@@ -214,7 +218,7 @@ namespace forest
             sizeY = Mathf.Max(sizeY, minSize);
 
             // Create playfield based on previous
-            Playfield workingPlayfield = Utils.CreatePlayfield(visualLookup, sizeX, sizeY, null);
+            Playfield workingPlayfield = Utils.CreatePlayfield(sizeX, sizeY, existingPlayfield);
 
             // Establish origin location
             bool originIsHorizontal = Random.Range(0, 2) > 0;
@@ -256,7 +260,7 @@ namespace forest
             {
                 id = workingPlayfield.GetNextID(),
                 location = portalPos,
-                target = NEXT_GENERATOR_FLOOR_KEY
+                target = Globals.NEXT_GENERATOR_FLOOR_KEY
             });
 
             // Draw wibbly core path by stepping from the origin to the exit portal
@@ -265,7 +269,7 @@ namespace forest
             // Perform outline passes
             for (int outlines = 0; outlines < outlineLayers; ++outlines)
             {
-                AddTileOutline(workingPlayfield, TILE_GENERIC_GROUND, TILE_GENERIC_GROUND);
+                AddTileOutline(workingPlayfield, VisualLookup.TILE_GENERIC_GROUND, VisualLookup.TILE_GENERIC_GROUND);
             }
 
             return workingPlayfield;
@@ -337,7 +341,7 @@ namespace forest
             workingPlayfield.world.Set(new Vector2Int(xCurrent, yCurrent), new PlayfieldTile()
             {
                 id = workingPlayfield.GetNextID(),
-                tag = TILE_GENERIC_GROUND
+                tag = VisualLookup.TILE_GENERIC_GROUND
             });
 
             while (xCurrent != target.x || yCurrent != target.y)
@@ -392,7 +396,7 @@ namespace forest
                 workingPlayfield.world.Set(new Vector2Int(xCurrent, yCurrent), new PlayfieldTile()
                 {
                     id = workingPlayfield.GetNextID(),
-                    tag = TILE_GENERIC_GROUND
+                    tag = VisualLookup.TILE_GENERIC_GROUND
                 });
             }
         }
@@ -409,11 +413,12 @@ namespace forest
             }
             else
             {
+                Random.InitState(seed);
                 sizeX = Random.Range(sizeXMin, sizeXMax + 1);
                 sizeY = Random.Range(sizeYMin, sizeYMax + 1);
             }
 
-            aggregatePlayfield = Utils.CreatePlayfield(visualLookup, sizeX, sizeY);
+            aggregatePlayfield = Utils.CreatePlayfield(sizeX, sizeY);
             visualPlayfield.DisplayAll(aggregatePlayfield);
         }
 
@@ -456,12 +461,6 @@ namespace forest
                 {
                     (target as RulesetEditor).NewRandSeed();
                     (target as RulesetEditor).DrawPlayfield();
-                    (target as RulesetEditor).CameraCenter();
-                }
-
-                if (GUILayout.Button("Clear Playfield"))
-                {
-                    (target as RulesetEditor).ClearWorkingPlayfield();
                     (target as RulesetEditor).CameraCenter();
                 }
 

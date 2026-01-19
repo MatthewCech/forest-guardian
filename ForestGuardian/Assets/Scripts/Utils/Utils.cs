@@ -160,7 +160,7 @@ namespace forest
         /// <param name="lookup">Visual lookup, provides default tile information.</param>
         /// <param name="existing">Optional. An existing playfield to try and copy data over from - clones all the way down.</param>
         /// <returns></returns>
-        public static Playfield CreatePlayfield(VisualLookup lookup, int newWidth, int newHeight, Playfield existing = null)
+        public static Playfield CreatePlayfield(int newWidth, int newHeight, Playfield existing = null)
         {
             UnityEngine.Assertions.Assert.IsTrue(newWidth > 0);
             UnityEngine.Assertions.Assert.IsTrue(newHeight > 0);
@@ -179,7 +179,7 @@ namespace forest
                 for (int y = 0; y < newHeight; ++y)
                 {
                     PlayfieldTile tile = new PlayfieldTile();
-                    tile.tag = lookup.defaultTileTemplate.name;
+                    tile.tag = VisualLookup.TILE_DEFAULT_NAME;
                     tile.id = newPlayfield.GetNextID();
                     newPlayfield.world.Set(x, y, tile);
                 }
@@ -187,24 +187,135 @@ namespace forest
 
             if (existing != null)
             {
-                MoveDataToNewPlayfield(existing, newPlayfield);
+                MoveDataFromExistingPlayfield(newPlayfield, existing);
             }
 
             return newPlayfield;
         }
 
+        /// <summary>
+        /// Combines two existing playfields. There's an on-top specified because in cases
+        /// where an aspect stamps over another, it's important to decide which tiles overwrite.
+        /// 
+        /// Things that get written over:
+        /// - Origin list
+        /// - Portal List
+        /// </summary>
+        public static Playfield LayerPlayfields(Playfield under, Playfield onTop)
+        {
+            UnityEngine.Assertions.Assert.IsNotNull(under);
+            UnityEngine.Assertions.Assert.IsNotNull(onTop);
+            UnityEngine.Assertions.Assert.IsTrue(under.world.GetWidth() == onTop.world.GetWidth());
+            UnityEngine.Assertions.Assert.IsTrue(under.world.GetHeight() == onTop.world.GetHeight());
 
-        private static void MoveDataToNewPlayfield(Playfield existing, Playfield newPlayfield)
+            int width = under.world.GetWidth();
+            int height = under.world.GetHeight();
+
+            Playfield layered = CreatePlayfield(width, height);
+
+            for(int x = 0; x < width; ++x)
+            {
+                for(int y = 0; y < height; ++y)
+                {
+                    PlayfieldTile topTile = onTop.world.Get(x, y);
+
+                    if(topTile.tag.Equals(VisualLookup.TILE_DEFAULT_NAME))
+                    {
+                        // If we have nothing above, we use what's below.
+                        PlayfieldTile tile = under.world.Get(x, y).Clone(layered.GetNextID());
+                        layered.world.Set(x, y, tile);
+                    }
+                    else
+                    {
+                        PlayfieldTile tile = onTop.world.Get(x, y).Clone(layered.GetNextID());
+                        layered.world.Set(x, y, tile);
+                    }
+                }
+            }
+
+            layered.tagLabel = under.tagLabel;
+            if (!string.IsNullOrWhiteSpace(onTop.tagLabel))
+            {
+                layered.tagLabel = onTop.tagLabel;
+            }
+
+            layered.description = under.description;
+            if(!string.IsNullOrWhiteSpace(onTop.description))
+            {
+                layered.tagLabel = onTop.description;
+            }
+
+            if (onTop.tagsBestowed != null && onTop.tagsBestowed.Count > 0)
+            {
+                layered.tagsBestowed = new List<string>(onTop.tagsBestowed);
+            }
+            else if(under.tagsBestowed != null)
+            {
+                layered.tagsBestowed = new List<string>(under.tagsBestowed);
+            }
+
+            for (int i = 0; i < under.units.Count; ++i)
+            {
+                layered.units.Add(under.units[i].Clone(layered.GetNextID()));
+            }
+            for (int i = 0; i < onTop.units.Count; ++i)
+            {
+                layered.units.Add(onTop.units[i].Clone(layered.GetNextID()));
+            }
+
+            for (int i = 0; i < under.items.Count; ++i)
+            {
+                layered.items.Add(under.items[i].Clone(layered.GetNextID()));
+            }
+            for (int i = 0; i < onTop.items.Count; ++i)
+            {
+                layered.items.Add(onTop.items[i].Clone(layered.GetNextID()));
+            }
+
+            for (int i = 0; i < under.portals.Count; ++i)
+            {
+                layered.portals.Add(under.portals[i].Clone(layered.GetNextID()));
+            }
+            for (int i = 0; i < onTop.portals.Count; ++i)
+            {
+                layered.portals.Add(onTop.portals[i].Clone(layered.GetNextID()));
+            }
+
+            for (int i = 0; i < under.origins.Count; ++i)
+            {
+                layered.origins.Add(under.origins[i].Clone(layered.GetNextID()));
+            }
+            for (int i = 0; i < onTop.origins.Count; ++i)
+            {
+                layered.origins.Add(onTop.origins[i].Clone(layered.GetNextID()));
+            }
+
+            return layered;
+        }
+
+        /// <summary>
+        /// Does an aggressive and destructive move from an existing playfield to a new playfield.
+        /// Handles different sizes of playfield.
+        /// </summary>
+        /// <param name="target">The playfield, likely new, that will get the items from the existing.</param>
+        /// <param name="existing">The existing playfield to pull from</param>
+        /// <param name=""></param>
+        private static void MoveDataFromExistingPlayfield(Playfield target, Playfield existing)
         {
             // Local function to check if we're within bounds.
             bool InCombinedBounds(Vector2Int pos)
             {
                 bool inFirst = pos.x < existing.world.GetWidth() && pos.y < existing.world.GetHeight();
-                bool inSecond = pos.x < newPlayfield.world.GetWidth() && pos.y < newPlayfield.world.GetHeight();
+                bool inSecond = pos.x < target.world.GetWidth() && pos.y < target.world.GetHeight();
                 return inFirst && inSecond;
             }
 
-            newPlayfield.world.ScrapeDataFrom(existing.world);
+            target.world.ScrapeDataFrom(existing.world);
+
+            // World related content
+            target.tagLabel = existing.tagLabel;
+            target.description = existing.description;
+            target.tagsBestowed = existing.tagsBestowed;
 
             // Back to front move over units that are still in the new bounds of the playfield.
             // The entire location/body of the unit must be in the new resize playfield or it all gets removed.
@@ -230,7 +341,7 @@ namespace forest
                     continue;
                 }
             }
-            newPlayfield.units = existing.units;
+            target.units = existing.units;
 
             for (int i = existing.items.Count - 1; i >= 0; --i)
             {
@@ -243,7 +354,7 @@ namespace forest
                     continue;
                 }
             }
-            newPlayfield.items = existing.items;
+            target.items = existing.items;
 
             for (int i = existing.portals.Count - 1; i >= 0; --i)
             {
@@ -256,7 +367,7 @@ namespace forest
                     continue;
                 }
             }
-            newPlayfield.portals = existing.portals;
+            target.portals = existing.portals;
 
             for (int i = existing.origins.Count - 1; i >= 0; --i)
             {
@@ -269,7 +380,7 @@ namespace forest
                     continue;
                 }
             }
-            newPlayfield.origins = existing.origins;
+            target.origins = existing.origins;
 
             if (existing.exit != null)
             {
@@ -279,11 +390,7 @@ namespace forest
                     existing.exit = null;
                 }
             }
-            newPlayfield.exit = existing.exit;
-
-            // Other data
-            newPlayfield.tagLabel = existing.tagLabel;
-            newPlayfield.tagsBestowed = existing.tagsBestowed;
+            target.exit = existing.exit;
         }
     }
 }

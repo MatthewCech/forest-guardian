@@ -39,6 +39,18 @@ namespace forest
         [JsonProperty] public Team team = Team.DEFAULT;
         [JsonProperty] public List<Vector2Int> locations = new List<Vector2Int>();
 
+        // Only closes persisting content, not per turn stuff
+        public PlayfieldUnit Clone(int newID)
+        {
+            return new PlayfieldUnit()
+            {
+                tag = this.tag,
+                id = newID,
+                team = this.team,
+                locations = new List<Vector2Int>(locations)
+            };
+        }
+
         // Per-turn variables... These don't need serialization in practice,
         // and aren't related to data representation meaningfully. Curious philosophical coding question,
         // because removing this wouldn't impact state saving meaningfully but yeah. Like this is

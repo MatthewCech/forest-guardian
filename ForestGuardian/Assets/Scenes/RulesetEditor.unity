@@ -370,7 +370,7 @@ MonoBehaviour:
   portalBorderRange: 1
   pathNoise: 0.5
   noiseWatchdog: 50
-  outlineLayers: 0
+  outlineLayers: 1
 --- !u!1 &546924576
 GameObject:
   m_ObjectHideFlags: 0
