@@ -169,6 +169,10 @@ namespace forest
                     aggregatePlayfield = Utils.LayerPlayfields(perlin, path);
                     break;
 
+                case GeneratorType.SUBDIVIDE_PATH:
+                    aggregatePlayfield = SubdividePath();
+                    break;
+
                 case GeneratorType.PATH_STAINING:
                     ClearWorkingPlayfield();
                     Playfield toStain = CreatePathPlayfield();
@@ -178,6 +182,7 @@ namespace forest
 
             visualPlayfield.DisplayAll(aggregatePlayfield);
         }
+
 
         private class PerlinThresholdPair
         {
@@ -204,12 +209,83 @@ namespace forest
             public SplitNode child2 = null;
             public SplitNode parent = null;
 
+            public Vector2Int GetCenter() => new Vector2Int(left + (right - left) / 2, top + (bottom - top) / 2);
+
             public bool IsLeaf => child1 == null && child2 == null;
             public int Width => Mathf.Abs(right - left);
             public int Height => Mathf.Abs(top - bottom);
         }
 
         private Playfield Subdivide()
+        {
+            Playfield playfield = SubdivideInternal(out SplitNode _, out List<SplitNode> _);
+            return playfield;
+        }
+
+        private class PairLineDraw
+        {
+            public Vector2Int start;
+            public Vector2Int end;
+        }
+
+        private Playfield SubdividePath()
+        {
+            Playfield subdivides = SubdivideInternal(out SplitNode root, out List<SplitNode> rooms);
+            Playfield paths = Utils.CreatePlayfield(subdivides.world.GetWidth(), subdivides.world.GetHeight());
+
+            List<PairLineDraw> toDraw = new List<PairLineDraw>();
+
+            for(int i = 1; i < rooms.Count; ++i)
+            {
+                PairLineDraw line = new PairLineDraw();
+                line.start = rooms[i - 1].GetCenter();
+                line.end = rooms[i].GetCenter();
+                toDraw.Add(line);
+            }
+
+            for (int i = 0; i < toDraw.Count; ++i)
+            {
+                PairLineDraw pair = toDraw[i];
+                CreatePathToTarget(paths, pair.start, pair.end);
+            }
+
+            for (int outlines = 0; outlines < outlineLayers; ++outlines)
+            {
+                AddTileOutline(paths, VisualLookup.TILE_GENERIC_GROUND, VisualLookup.TILE_GENERIC_GROUND);
+            }
+
+            Playfield combined = Utils.LayerPlayfields(subdivides, paths);
+
+            SplitNode portalRoom = rooms[rooms.Count - 1];
+            PlayfieldPortal portal = new PlayfieldPortal();
+            portal.id = combined.GetNextID();
+            int portalRelX = Random.Range(roomPadding, portalRoom.Width - roomPadding);
+            int portalRelY = Random.Range(roomPadding, portalRoom.Height - roomPadding);
+            portal.location = new Vector2Int(portalRoom.left + portalRelX, portalRoom.top + portalRelY);
+            combined.portals.Add(portal);
+
+            bool placing = true;
+            int tries = 20;
+            SplitNode originRoom = rooms[0];
+            while (placing && tries-- > 0)
+            {
+                int originRelX = Random.Range(roomPadding, originRoom.Width - roomPadding);
+                int originRelY = Random.Range(roomPadding, originRoom.Height - roomPadding);
+                Vector2Int pos = new Vector2Int(originRoom.left + originRelX, originRoom.top + originRelY);
+                if (!combined.TryGetPortalAt(pos, out PlayfieldPortal _))
+                {
+                    PlayfieldOrigin origin = new PlayfieldOrigin();
+                    origin.id = combined.GetNextID();
+                    origin.location = pos;
+                    combined.origins.Add(origin);
+                    placing = false;
+                }
+            }
+
+            return combined;
+        }
+
+        private Playfield SubdivideInternal(out SplitNode root, out List<SplitNode> rooms)
         {
             Random.InitState(seed);
 
@@ -218,7 +294,7 @@ namespace forest
 
             Playfield workingPlayfield = Utils.CreatePlayfield(sizeX, sizeY);
 
-            SplitNode root = new SplitNode();
+            root = new SplitNode();
             root.left = 0;
             root.right = sizeX;
             root.top = 0;
@@ -312,8 +388,7 @@ namespace forest
                 }
             }
 
-
-            List<SplitNode> toDraw = new List<SplitNode>();
+            rooms = new List<SplitNode>();
             Stack<SplitNode> walk = new Stack<SplitNode>();
             walk.Push(root);
             while (walk.Count > 0)
@@ -323,7 +398,7 @@ namespace forest
                 {
                     if (cur.Width >= minRoomSize && cur.Height >= minRoomSize)
                     {
-                        toDraw.Add(cur);
+                        rooms.Add(cur);
                     }
                 }
                 else
@@ -340,7 +415,7 @@ namespace forest
                 }
             }
 
-            foreach(SplitNode cur in toDraw)
+            foreach(SplitNode cur in rooms)
             {
                 for(int x = cur.left + cur.borderRadius; x < cur.right - cur.borderRadius; ++x)
                 {

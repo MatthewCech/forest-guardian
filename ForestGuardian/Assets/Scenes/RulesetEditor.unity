@@ -349,7 +349,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc765a92ba1eec84db13f4f3e7fbb2f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  generatorType: 3
+  generatorType: 11
   repeatedlyRefresh: 0
   viewingCamera: {fileID: 1199193438}
   visualPlayfield: {fileID: 546421707}
