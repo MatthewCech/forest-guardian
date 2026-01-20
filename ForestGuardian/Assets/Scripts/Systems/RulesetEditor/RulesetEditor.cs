@@ -40,6 +40,8 @@ namespace forest
         [SerializeField][Min(1)] private int sizeYMax = 20;
         [SerializeField] private bool useRandomSeed = false;
         [SerializeField] private int seed = 123;
+        [SerializeField] private bool trimPlayfield = false;
+        [SerializeField][Min(0)] private int trimPadding = 0;
         private int prevSizeXMin = -1;
         private int prevSizeYMin = -1;
         private int prevSizeXMax = -1;
@@ -47,6 +49,8 @@ namespace forest
         private bool prevUseRandomSeed = false;
         private int prevSeed = -1;
         private Playfield aggregatePlayfield = null;
+        private bool prevTrimPlayfield = false;
+        private int prevTrimPadding = 0;
 
         [Header("PERLIN (settings)")]
         [SerializeField][Min(0.001f)] private float scale = 0.1f;
@@ -86,8 +90,6 @@ namespace forest
         [SerializeField][Range(0, 1)] private float stainThreshold = 0.8f;
         private float prevStainThreshold = 0.8f;
 
-
-
         private void Start()
         {
             prevSizeXMin = sizeXMin;
@@ -117,6 +119,8 @@ namespace forest
             needsRedraw |= TryUpdate(ref prevSizeYMax, sizeYMax);
             needsRedraw |= TryUpdate(ref prevUseRandomSeed, useRandomSeed);
             needsRedraw |= TryUpdate(ref prevSeed, seed);
+            needsRedraw |= TryUpdate(ref prevTrimPlayfield, trimPlayfield);
+            needsRedraw |= TryUpdate(ref prevTrimPadding, trimPadding);
 
             needsRedraw |= TryUpdate(ref prevScale, scale);
             needsRedraw |= TryUpdate(ref prevThresholdWall, thresholdWall);
@@ -153,47 +157,66 @@ namespace forest
             switch(generatorType)
             {
                 case GeneratorType.PERLIN:
-                    aggregatePlayfield = CreatePerlinPlayfield(aggregatePlayfield);
+                    Playfield perlin = CreatePerlinPlayfield(aggregatePlayfield);
+                    aggregatePlayfield = TrimPerSettings(perlin);
                     break;
+
                 case GeneratorType.PATH:
-                    aggregatePlayfield = CreatePathPlayfield();
+                    Playfield path = CreatePathPlayfield();
+                    aggregatePlayfield = TrimPerSettings(path);
                     break;
 
                 case GeneratorType.SUBDIVIDE:
-                    aggregatePlayfield = CreateSubdividePlayfield();
+                    Playfield subdivided = CreateSubdividePlayfield();
+                    aggregatePlayfield = TrimPerSettings(subdivided);
                     break;
 
                 case GeneratorType.CITIES:
-                    aggregatePlayfield = CreateCitiesPlayfield();
+                    Playfield cities = CreateCitiesPlayfield();
+                    aggregatePlayfield = TrimPerSettings(cities);
                     break;
 
                 case GeneratorType.PERLIN_PATH:
                     ClearWorkingPlayfield();
-                    Playfield perlin = CreatePerlinPlayfield(aggregatePlayfield);
-                    Playfield path = CreatePathPlayfield();
-                    aggregatePlayfield = Utils.LayerPlayfields(perlin, path);
+                    Playfield perlinUnderlay = CreatePerlinPlayfield(aggregatePlayfield);
+                    Playfield pathOverlay = CreatePathPlayfield();
+                    Playfield layered = Utils.LayerPlayfields(perlinUnderlay, pathOverlay);
+                    aggregatePlayfield = TrimPerSettings(layered);
                     break;
 
                 case GeneratorType.SUBDIVIDE_PATH:
-                    aggregatePlayfield = SubdividePath();
+                    Playfield subdividedPath = SubdividePath();
+                    aggregatePlayfield = TrimPerSettings(subdividedPath);
                     break;
 
                 case GeneratorType.PATH_STAIN:
                     ClearWorkingPlayfield();
                     Playfield toStain = CreatePathPlayfield();
-                    aggregatePlayfield = StainPlayfield(toStain, VisualLookup.TILE_GENERIC_MARSH, onTop: true);
+                    Playfield trimmedPath = TrimPerSettings(toStain);
+                    Playfield pretrimTopStain = StainPlayfield(trimmedPath, VisualLookup.TILE_GENERIC_MARSH, onTop: true);
                     break;
 
                 case GeneratorType.SUBDIVIDE_PATH_STAIN:
                     ClearWorkingPlayfield();
                     Playfield subdividepath = SubdividePath();
-                    aggregatePlayfield = StainPlayfield(subdividepath, VisualLookup.TILE_GENERIC_WALL, onTop: false);
+                    Playfield trimmedPreStain = TrimPerSettings(subdividepath);
+                    aggregatePlayfield = StainPlayfield(trimmedPreStain, VisualLookup.TILE_GENERIC_WALL, onTop: false);
                     break;
             }
 
             visualPlayfield.DisplayAll(aggregatePlayfield);
+            CenterCamera();
         }
 
+        public Playfield TrimPerSettings(Playfield playfield)
+        {
+            if(trimPlayfield)
+            {
+                return Utils.TrimPlayfield(playfield, trimPadding);
+            }
+
+            return playfield;
+        }
 
         public Playfield CreateCitiesPlayfield()
         {
@@ -786,7 +809,7 @@ namespace forest
             visualPlayfield.DisplayAll(aggregatePlayfield);
         }
 
-        public void CameraCenter()
+        public void CenterCamera()
         {
             Utils.CenterCamera(viewingCamera, visualPlayfield);
         }
@@ -818,14 +841,14 @@ namespace forest
                 if (GUILayout.Button("Refresh Playfield"))
                 {
                     (target as RulesetEditor).DrawPlayfield();
-                    (target as RulesetEditor).CameraCenter();
+                    (target as RulesetEditor).CenterCamera();
                 }
 
                 if (GUILayout.Button("Refresh Playfield New Seed"))
                 {
                     (target as RulesetEditor).NewRandSeed();
                     (target as RulesetEditor).DrawPlayfield();
-                    (target as RulesetEditor).CameraCenter();
+                    (target as RulesetEditor).CenterCamera();
                 }
 
                 base.OnInspectorGUI();

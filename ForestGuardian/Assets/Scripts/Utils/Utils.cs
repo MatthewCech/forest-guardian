@@ -150,6 +150,148 @@ namespace forest
         }
 
         /// <summary>
+        /// Locates the first non-default tiles on the left, right, top, and bottom.
+        /// Adds a new playfield with the expected border on both sides, and copies over
+        /// the previous playfield non-destructively with specified border.
+        /// </summary>
+        public static Playfield TrimPlayfield(Playfield toTrim, int border)
+        {
+            int GetLeft()
+            {
+                for (int x = 0; x < toTrim.Width(); ++x)
+                {
+                    for (int y = 0; y < toTrim.Height(); ++y)
+                    {
+                        if (!toTrim.world.Get(x, y).tag.Equals(VisualLookup.TILE_DEFAULT_NAME))
+                        {
+                            return x; ;
+                        }
+                    }
+                }
+
+                return 0;
+            }
+
+            int GetRight()
+            {
+                for (int x = toTrim.Width() - 1; x >= 0; --x)
+                {
+                    for (int y = 0; y < toTrim.Height(); ++y)
+                    {
+                        if (!toTrim.world.Get(x, y).tag.Equals(VisualLookup.TILE_DEFAULT_NAME))
+                        {
+                            return x;
+                        }
+                    }
+                }
+
+                return toTrim.Width() - 1;
+            }
+
+            int GetTop()
+            {
+                for (int y = 0; y < toTrim.Height(); ++y)
+                {
+                    for (int x = 0; x < toTrim.Width(); ++x)
+                    {
+                        if (toTrim.world.Get(x, y).tag.Equals(VisualLookup.TILE_DEFAULT_NAME))
+                        {
+                            return y;
+                        }
+                    }
+                }
+
+                return 0;
+            }
+
+            int GetBottom()
+            {
+                for (int y = toTrim.Height() - 1; y >= 0; ++y)
+                {
+                    for (int x = 0; x < toTrim.Width(); ++x)
+                    {
+                        if (toTrim.world.Get(x, y).tag.Equals(VisualLookup.TILE_DEFAULT_NAME))
+                        {
+                            return y;
+                        }
+                    }
+                }
+
+                return toTrim.Height() - 1;
+            }
+
+            int left = GetLeft();
+            int right = GetRight();
+            int top = GetTop();
+            int bottom = GetBottom();
+
+            int width = right - left + border * 2 + 1;
+            int height = bottom - top + border * 2 + 1;
+
+            Playfield newPlayfield = Utils.CreatePlayfield(width, height);
+
+            for (int x = left; x < right + 1; ++x)
+            {
+                for (int y = top; y < bottom + 1; ++y)
+                {
+                    PlayfieldTile newTile = toTrim.world.Get(x, y).Clone(newPlayfield.GetNextID());
+                    newPlayfield.world.Set(x - left + border, y - top + border, newTile);
+                }
+            }
+
+            newPlayfield.tagLabel = toTrim.tagLabel;
+            newPlayfield.description = toTrim.description;
+
+            foreach (string tag in toTrim.tagsBestowed)
+            {
+                newPlayfield.tagsBestowed.Add(tag);
+            }
+
+            for (int i = 0; i < toTrim.units.Count; ++i)
+            {
+                PlayfieldUnit unit = toTrim.units[i].Clone(newPlayfield.GetNextID());
+                for (int loc = 0; loc < unit.locations.Count; ++loc)
+                {
+                    Vector2Int moved = unit.locations[loc];
+                    moved.x = moved.x - left + border;
+                    moved.y = moved.y - top + border;
+                    unit.locations[loc] = moved;
+                }
+                
+                newPlayfield.units.Add(unit);
+            }
+
+            for (int i = 0; i < toTrim.items.Count; ++i)
+            {
+                PlayfieldItem item = toTrim.items[i].Clone(newPlayfield.GetNextID());
+                item.location.x = item.location.x - left + border;
+                item.location.y = item.location.y - top + border;
+
+                newPlayfield.items.Add(item);
+            }
+
+            for (int i = 0; i < toTrim.portals.Count; ++i)
+            {
+                PlayfieldPortal portal = toTrim.portals[i].Clone(newPlayfield.GetNextID());
+                portal.location.x = portal.location.x - left + border;
+                portal.location.y = portal.location.y - top + border;
+
+                newPlayfield.portals.Add(portal);
+            }
+
+            for (int i = 0; i < toTrim.origins.Count; ++i)
+            {
+                PlayfieldOrigin origin = toTrim.origins[i].Clone(newPlayfield.GetNextID());
+                origin.location.x = origin.location.x - left + border;
+                origin.location.y = origin.location.y - top + border;
+
+                newPlayfield.origins.Add(origin);
+            }
+
+            return newPlayfield;
+        }
+
+        /// <summary>
         /// Initializes a new playfield with the specialized size with default tiles.
         /// 
         /// If an existing playfield is provided, attempts to move the data over by either cropping 
@@ -167,6 +309,10 @@ namespace forest
 
             // Create and configure blank playfield
             Playfield newPlayfield = new Playfield();
+            newPlayfield.tagLabel = null;
+            newPlayfield.description = null;
+            newPlayfield.tagsBestowed = new List<string>();
+
             newPlayfield.items = new List<PlayfieldItem>();
             newPlayfield.units = new List<PlayfieldUnit>();
             newPlayfield.world = new Collection2D<PlayfieldTile>(newWidth, newHeight);

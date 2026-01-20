@@ -349,7 +349,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc765a92ba1eec84db13f4f3e7fbb2f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  generatorType: 11
+  generatorType: 13
   repeatedlyRefresh: 0
   viewingCamera: {fileID: 1199193438}
   visualPlayfield: {fileID: 546421707}
@@ -360,6 +360,8 @@ MonoBehaviour:
   sizeYMax: 15
   useRandomSeed: 0
   seed: -724166
+  trimPlayfield: 0
+  trimPadding: 0
   scale: 0.2
   thresholdWall: 0.832
   thresholdLand: 0.51
@@ -374,7 +376,7 @@ MonoBehaviour:
   roomPadding: 1
   minRoomSize: 4
   splitChancePerUnitArea: 0.01
-  stainThresholdMarsh: 0.8
+  stainThreshold: 0.8
 --- !u!1 &546924576
 GameObject:
   m_ObjectHideFlags: 0
