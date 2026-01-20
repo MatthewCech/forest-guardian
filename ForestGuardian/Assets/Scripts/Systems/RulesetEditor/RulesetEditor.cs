@@ -20,7 +20,8 @@ namespace forest
             // Combo generators
             PERLIN_PATH = 10,
             SUBDIVIDE_PATH = 11,
-            PATH_STAINING = 12
+            PATH_STAIN = 12,
+            SUBDIVIDE_PATH_STAIN = 13
         }
 
         [SerializeField] private GeneratorType generatorType = GeneratorType.PERLIN;
@@ -81,9 +82,9 @@ namespace forest
         private int prevMinRoomSize = 3;
         private float prevSplitChancePerUnitArea = 0.01f;
 
-        [Header("STAINED PATH (settings)")]
-        [SerializeField][Range(0, 1)] private float stainThresholdMarsh = 0.8f;
-        private float prevStainThresholdMarsh = 0.8f;
+        [Header("STAIN (settings)")]
+        [SerializeField][Range(0, 1)] private float stainThreshold = 0.8f;
+        private float prevStainThreshold = 0.8f;
 
 
 
@@ -134,7 +135,7 @@ namespace forest
             needsRedraw |= TryUpdate(ref prevMinRoomSize, minRoomSize);
             needsRedraw |= TryUpdate(ref prevSplitChancePerUnitArea, splitChancePerUnitArea);
 
-            needsRedraw |= TryUpdate(ref prevStainThresholdMarsh, stainThresholdMarsh);
+            needsRedraw |= TryUpdate(ref prevStainThreshold, stainThreshold);
 
             if (needsRedraw)
             {
@@ -177,10 +178,16 @@ namespace forest
                     aggregatePlayfield = SubdividePath();
                     break;
 
-                case GeneratorType.PATH_STAINING:
+                case GeneratorType.PATH_STAIN:
                     ClearWorkingPlayfield();
                     Playfield toStain = CreatePathPlayfield();
-                    aggregatePlayfield = CreateStainedPath(toStain);
+                    aggregatePlayfield = StainPlayfield(toStain, VisualLookup.TILE_GENERIC_MARSH, onTop: true);
+                    break;
+
+                case GeneratorType.SUBDIVIDE_PATH_STAIN:
+                    ClearWorkingPlayfield();
+                    Playfield subdividepath = SubdividePath();
+                    aggregatePlayfield = StainPlayfield(subdividepath, VisualLookup.TILE_GENERIC_WALL, onTop: false);
                     break;
             }
 
@@ -269,10 +276,10 @@ namespace forest
 
             for (int outlines = 0; outlines < outlineLayers; ++outlines)
             {
-                AddTileOutline(paths, VisualLookup.TILE_GENERIC_GROUND, VisualLookup.TILE_GENERIC_GROUND);
+                AddTileOutline(paths, VisualLookup.TILE_GENERIC_GROUND, VisualLookup.TILE_GENERIC_MARSH);
             }
 
-            Playfield combined = Utils.LayerPlayfields(subdivides, paths);
+            Playfield combined = Utils.LayerPlayfields(paths, subdivides);
 
             SplitNode portalRoom = rooms[rooms.Count - 1];
             PlayfieldPortal portal = new PlayfieldPortal();
@@ -451,34 +458,39 @@ namespace forest
             return workingPlayfield;
         }
 
-        private Playfield CreateStainedPath(Playfield toStain)
+        private Playfield StainPlayfield(Playfield toStain, string stainTag, bool onTop)
         {
             Random.InitState(seed);
 
-            int width = toStain.world.GetWidth();
-            int height = toStain.world.GetHeight();
+            int width = toStain.Width();
+            int height = toStain.Height();
 
-            List<Vector2Int> marshTiles = new List<Vector2Int>();
-
+            Playfield stain = Utils.CreatePlayfield(toStain.Width(), toStain.Height());
             for (int x = 0; x < width; ++x)
             {
                 for (int y = 0; y < height; ++y)
                 {
                     float height01 = Mathf.PerlinNoise(seed + (x * scale), seed + (y * scale));
 
-                    if(height01 > stainThresholdMarsh)
+                    if(height01 > stainThreshold)
                     {
                         PlayfieldTile tile = new PlayfieldTile();
-                        tile.id = toStain.GetNextID();
-                        tile.tag = VisualLookup.TILE_GENERIC_MARSH;
+                        tile.id = stain.GetNextID();
+                        tile.tag = stainTag;
 
-                        toStain.world.Set(x, y, tile);
-                        marshTiles.Add(new Vector2Int(x, y));
+                        stain.world.Set(x, y, tile);
                     }
                 }
             }
 
-            return toStain;
+            if(onTop)
+            {
+                return Utils.LayerPlayfields(toStain, stain);
+            }
+            else
+            {
+                return Utils.LayerPlayfields(stain, toStain);
+            }
         }
 
         /// <summary>
@@ -609,12 +621,34 @@ namespace forest
         /// Given a specific type of tyle, goes and adds an outline at the expense of any other tile
         /// at the target location. Does so greedily, inefficiently, and in a way that burns a lot of IDs.
         /// </summary>
-        private static void AddTileOutline(Playfield workingPlayfield, string targetTag, string outlineTag)
+        private static void AddTileOutline(Playfield workingPlayfield, string targetTag, string outlineTag, bool writeOverExisting = false)
         {
             int sizeX = workingPlayfield.world.GetWidth();
             int sizeY = workingPlayfield.world.GetHeight();
 
             List<Vector2Int> toAdd = new List<Vector2Int>();
+
+            void AddToEmpty(Vector2Int pos)
+            {
+                if (!writeOverExisting)
+                {
+                    if (workingPlayfield.world.IsPosInGrid(pos))
+                    {
+                        PlayfieldTile tile = workingPlayfield.world.Get(pos);
+
+                        // Tile must be default to apply outline
+                        if (tile.tag.Equals(VisualLookup.TILE_DEFAULT_NAME))
+                        {
+                            toAdd.Add(pos);
+                        }
+                    }
+                }
+                else
+                {
+                    toAdd.Add(pos);
+                }
+            }
+
             for (int x = 0; x < workingPlayfield.world.GetWidth(); ++x)
             {
                 for (int y = 0; y < workingPlayfield.world.GetHeight(); ++y)
@@ -622,10 +656,10 @@ namespace forest
                     PlayfieldTile existingTile = workingPlayfield.world.Get(x, y);
                     if (existingTile.tag.Equals(targetTag))
                     {
-                        toAdd.Add(new Vector2Int(x + 1, y));
-                        toAdd.Add(new Vector2Int(x - 1, y));
-                        toAdd.Add(new Vector2Int(x, y + 1));
-                        toAdd.Add(new Vector2Int(x, y - 1));
+                        AddToEmpty(new Vector2Int(x + 1, y));
+                        AddToEmpty(new Vector2Int(x - 1, y));
+                        AddToEmpty(new Vector2Int(x, y + 1));
+                        AddToEmpty(new Vector2Int(x, y - 1));
                     }
                 }
             }
