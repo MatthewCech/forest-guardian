@@ -1,3 +1,5 @@
+using Loam;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +7,17 @@ using UnityEngine.UI;
 
 namespace forest
 {
+    [AttributeUsage(AttributeTargets.Field)]
+    public class DunGenAttribute : Attribute
+    {
+        public readonly string name;
+
+        public DunGenAttribute(string name)
+        {
+            this.name = name;
+        }
+    }
+
     public class RulesetEditor : MonoBehaviour
     {
         public enum GeneratorType
@@ -89,6 +102,9 @@ namespace forest
         [Header("STAIN (settings)")]
         [SerializeField][Range(0, 1)] private float stainThreshold = 0.8f;
         private float prevStainThreshold = 0.8f;
+
+        // Internal
+        WHRandom rand = new WHRandom();
 
         private void Start()
         {
@@ -218,12 +234,14 @@ namespace forest
             return playfield;
         }
 
+
+
         public Playfield CreateCitiesPlayfield()
         {
-            Random.InitState(seed);
-
-            int sizeX = Random.Range(sizeXMin, sizeXMax + 1);
-            int sizeY = Random.Range(sizeYMin, sizeYMax + 1);
+            rand.InitState(seed);
+            
+            int sizeX = rand.Range(sizeXMin, sizeXMax + 1);
+            int sizeY = rand.Range(sizeYMin, sizeYMax + 1);
 
             Playfield workingPlayfield = Utils.CreatePlayfield(sizeX, sizeY);
 
@@ -307,8 +325,8 @@ namespace forest
             SplitNode portalRoom = rooms[rooms.Count - 1];
             PlayfieldPortal portal = new PlayfieldPortal();
             portal.id = combined.GetNextID();
-            int portalRelX = Random.Range(roomPadding, portalRoom.Width - roomPadding);
-            int portalRelY = Random.Range(roomPadding, portalRoom.Height - roomPadding);
+            int portalRelX = rand.Range(roomPadding, portalRoom.Width - roomPadding);
+            int portalRelY = rand.Range(roomPadding, portalRoom.Height - roomPadding);
             portal.location = new Vector2Int(portalRoom.left + portalRelX, portalRoom.top + portalRelY);
             combined.portals.Add(portal);
             
@@ -317,8 +335,8 @@ namespace forest
             SplitNode originRoom = rooms[0];
             while (placing && tries-- > 0)
             {
-                int originRelX = Random.Range(roomPadding, originRoom.Width - roomPadding);
-                int originRelY = Random.Range(roomPadding, originRoom.Height - roomPadding);
+                int originRelX = rand.Range(roomPadding, originRoom.Width - roomPadding);
+                int originRelY = rand.Range(roomPadding, originRoom.Height - roomPadding);
                 Vector2Int pos = new Vector2Int(originRoom.left + originRelX, originRoom.top + originRelY);
                 if (!combined.TryGetPortalAt(pos, out PlayfieldPortal _))
                 {
@@ -335,10 +353,10 @@ namespace forest
 
         private Playfield SubdivideInternal(out SplitNode root, out List<SplitNode> rooms)
         {
-            Random.InitState(seed);
+            rand.InitState(seed);
 
-            int sizeX = Random.Range(sizeXMin, sizeXMax + 1);
-            int sizeY = Random.Range(sizeYMin, sizeYMax + 1);
+            int sizeX = rand.Range(sizeXMin, sizeXMax + 1);
+            int sizeY = rand.Range(sizeYMin, sizeYMax + 1);
 
             Playfield workingPlayfield = Utils.CreatePlayfield(sizeX, sizeY);
 
@@ -362,14 +380,14 @@ namespace forest
                     continue;
                 }
 
-                float splitRoll = Random.Range(0f, 1f);
+                float splitRoll = (float)rand.Next();
                 float chance = node.Width * node.Height * splitChancePerUnitArea;
                 if (chance < splitRoll) // roll failed
                 {
                     continue;
                 }
                 
-                node.splitStyle = Random.Range(0, 2) > 0 ? SplitStyle.Horizontal : SplitStyle.Vertical;
+                node.splitStyle = rand.FlipCoin() ? SplitStyle.Horizontal : SplitStyle.Vertical;
                 if(node.parent != null)
                 {
                     if(node.parent.splitStyle == SplitStyle.Horizontal)
@@ -384,7 +402,7 @@ namespace forest
 
                 if (node.splitStyle == SplitStyle.Horizontal)
                 {
-                    int horizontalSplitPos = Random.Range(node.left + splitPadding, node.right - splitPadding + 1);
+                    int horizontalSplitPos = rand.Range(node.left + splitPadding, node.right - splitPadding + 1);
 
                     SplitNode newLeft = new SplitNode();
                     newLeft.left = node.left;
@@ -410,7 +428,7 @@ namespace forest
                 }
                 else
                 {
-                    int verticalSplitPos = Random.Range(node.top + splitPadding, node.bottom - splitPadding + 1);
+                    int verticalSplitPos = rand.Range(node.top + splitPadding, node.bottom - splitPadding + 1);
 
                     SplitNode newTop = new SplitNode();
                     newTop.left = node.left;
@@ -483,7 +501,7 @@ namespace forest
 
         private Playfield StainPlayfield(Playfield toStain, string stainTag, bool onTop)
         {
-            Random.InitState(seed);
+            rand.InitState(seed);
 
             int width = toStain.Width();
             int height = toStain.Height();
@@ -522,10 +540,10 @@ namespace forest
         /// </summary>
         private Playfield CreatePerlinPlayfield(Playfield existingPlayfield = null)
         {
-            Random.InitState(seed);
+            rand.InitState(seed);
 
-            int sizeX = Random.Range(sizeXMin, sizeXMax + 1);
-            int sizeY = Random.Range(sizeYMin, sizeYMax + 1);
+            int sizeX = rand.Range(sizeXMin, sizeXMax + 1);
+            int sizeY = rand.Range(sizeYMin, sizeYMax + 1);
 
             Playfield workingPlayfield = Utils.CreatePlayfield(sizeX, sizeY, existingPlayfield);
 
@@ -572,11 +590,11 @@ namespace forest
         /// </summary>
         private Playfield CreatePathPlayfield(Playfield existingPlayfield = null)
         {
-            Random.InitState(seed);
+            rand.InitState(seed);
 
             // Ensure minimum size
-            int sizeX = Random.Range(sizeXMin, sizeXMax + 1);
-            int sizeY = Random.Range(sizeYMin, sizeYMax + 1);
+            int sizeX = rand.Range(sizeXMin, sizeXMax + 1);
+            int sizeY = rand.Range(sizeYMin, sizeYMax + 1);
 
             int minSize = Mathf.Max(originBorderRange * 2, 2);
             sizeX = Mathf.Max(sizeX, minSize);
@@ -586,18 +604,18 @@ namespace forest
             Playfield workingPlayfield = Utils.CreatePlayfield(sizeX, sizeY, existingPlayfield);
 
             // Establish origin location
-            bool originIsHorizontal = Random.Range(0, 2) > 0;
-            bool originIsPositive = Random.Range(0, 2) > 0;
-            int originOffset = Random.Range(originBorderMin, originBorderMin + originBorderRange);
-            int portalOffset = Random.Range(portalBorderMin, portalBorderMin + portalBorderRange);
+            bool originIsHorizontal = rand.FlipCoin();
+            bool originIsPositive = rand.FlipCoin();
+            int originOffset = rand.Range(originBorderMin, originBorderMin + originBorderRange);
+            int portalOffset = rand.Range(portalBorderMin, portalBorderMin + portalBorderRange);
             Vector2Int originPos = new Vector2Int(-1, -1);
             Vector2Int portalPos = new Vector2Int(-1, -1);
 
             if (originIsHorizontal) 
             {
                 // Randomly place along the X axis
-                originPos.x = Random.Range(originBorderMin, sizeX - originBorderMin);
-                portalPos.x = Random.Range(portalBorderMin, sizeX - portalBorderMin);
+                originPos.x = rand.Range(originBorderMin, sizeX - originBorderMin);
+                portalPos.x = rand.Range(portalBorderMin, sizeX - portalBorderMin);
 
                 // Place origin and portal on opposite top/bottom sides
                 originPos.y = originIsPositive ? sizeY - originOffset - 1 : originOffset;
@@ -606,8 +624,8 @@ namespace forest
             else
             {
                 // Randomly place along the Y axis
-                originPos.y = Random.Range(originBorderMin, sizeY - originBorderMin);
-                portalPos.y = Random.Range(portalBorderMin, sizeY - portalBorderMin);
+                originPos.y = rand.Range(originBorderMin, sizeY - originBorderMin);
+                portalPos.y = rand.Range(portalBorderMin, sizeY - portalBorderMin);
 
                 // Place origin and portal on opposite left/right sides
                 portalPos.x = !originIsPositive ? sizeX - portalOffset - 1 : portalOffset;
@@ -737,9 +755,9 @@ namespace forest
                 float yDiff = Mathf.Abs(target.y - yCurrent);
 
                 float moveOnX = xDiff / (xDiff + yDiff);
-                float rollXY = Random.Range(0.0f, 1.0f);
+                float rollXY = (float)rand.Next();
 
-                float rollNoise = Random.Range(0.0f, 1.0f);
+                float rollNoise = (float)rand.Next();
                 bool preferNoise = pathNoise > rollNoise;
                 if (watchdog-- < 0)
                 {
@@ -754,15 +772,13 @@ namespace forest
 
                 if (preferNoise)
                 {
-                    bool doX = Random.Range(0, 2) > 0;
-
-                    if (doX)
+                    if (rand.FlipCoin())
                     {
-                        xCurrent += Random.Range(-1, 2);
+                        xCurrent += rand.Range(-1, 2);
                     }
                     else
                     {
-                        yCurrent += Random.Range(-1, 2);
+                        yCurrent += rand.Range(-1, 2);
                     }
                 }
                 else
@@ -800,9 +816,9 @@ namespace forest
             }
             else
             {
-                Random.InitState(seed);
-                sizeX = Random.Range(sizeXMin, sizeXMax + 1);
-                sizeY = Random.Range(sizeYMin, sizeYMax + 1);
+                rand.InitState(seed);
+                sizeX = rand.Range(sizeXMin, sizeXMax + 1);
+                sizeY = rand.Range(sizeYMin, sizeYMax + 1);
             }
 
             aggregatePlayfield = Utils.CreatePlayfield(sizeX, sizeY);
@@ -816,7 +832,7 @@ namespace forest
 
         private void NewRandSeed()
         {
-            seed = Random.Range(-999999, 999999);
+            seed = UnityEngine.Random.Range(0, 20000);
             prevSeed = seed;
         }
 
