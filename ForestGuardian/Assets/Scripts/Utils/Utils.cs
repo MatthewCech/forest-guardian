@@ -164,7 +164,7 @@ namespace forest
                     {
                         if (!toTrim.world.Get(x, y).tag.Equals(VisualLookup.TILE_DEFAULT_NAME))
                         {
-                            return x; ;
+                            return x;
                         }
                     }
                 }
@@ -194,7 +194,7 @@ namespace forest
                 {
                     for (int x = 0; x < toTrim.Width(); ++x)
                     {
-                        if (toTrim.world.Get(x, y).tag.Equals(VisualLookup.TILE_DEFAULT_NAME))
+                        if (!toTrim.world.Get(x, y).tag.Equals(VisualLookup.TILE_DEFAULT_NAME))
                         {
                             return y;
                         }
@@ -206,11 +206,11 @@ namespace forest
 
             int GetBottom()
             {
-                for (int y = toTrim.Height() - 1; y >= 0; ++y)
+                for (int y = toTrim.Height() - 1; y >= 0; --y)
                 {
                     for (int x = 0; x < toTrim.Width(); ++x)
                     {
-                        if (toTrim.world.Get(x, y).tag.Equals(VisualLookup.TILE_DEFAULT_NAME))
+                        if (!toTrim.world.Get(x, y).tag.Equals(VisualLookup.TILE_DEFAULT_NAME))
                         {
                             return y;
                         }
