@@ -28,7 +28,6 @@ namespace forest
             PERLIN,
             PATH,
             SUBDIVIDE,
-            CITIES,
 
             // Combo generators
             PERLIN_PATH = 10,
@@ -94,9 +93,13 @@ namespace forest
         [Header("SUBDIVIDE (settings)")]
         [SerializeField][Min(0)] private int roomPadding = 0;
         [SerializeField][Min(1)] private int minRoomSize = 3;
+        [SerializeField][Range(0, 8)] private int minRoomCount = 1;
         [SerializeField][Range(0, 0.1f)] private float splitChancePerUnitArea = 0.01f;
+        [SerializeField][Range(1, 20)] private int maxSubdivisionRerolls = 5;
         private int prevRoomPadding = 0;
         private int prevMinRoomSize = 3;
+        private int prevMinRoomCount = 1;
+        private int prevMaxSubdivisionReroll = 5;
         private float prevSplitChancePerUnitArea = 0.01f;
 
         [Header("STAIN (settings)")]
@@ -104,7 +107,8 @@ namespace forest
         private float prevStainThreshold = 0.8f;
 
         // Internal
-        WHRandom rand = new WHRandom();
+        private WHRandom rand = new WHRandom();
+        private bool isFirstUpdate = true;
 
         private void Start()
         {
@@ -153,16 +157,23 @@ namespace forest
 
             needsRedraw |= TryUpdate(ref prevRoomPadding, roomPadding);
             needsRedraw |= TryUpdate(ref prevMinRoomSize, minRoomSize);
+            needsRedraw |= TryUpdate(ref prevMinRoomCount, minRoomCount);
+            needsRedraw |= TryUpdate(ref prevMaxSubdivisionReroll, maxSubdivisionRerolls);
             needsRedraw |= TryUpdate(ref prevSplitChancePerUnitArea, splitChancePerUnitArea);
 
             needsRedraw |= TryUpdate(ref prevStainThreshold, stainThreshold);
 
-            if (needsRedraw)
+            if (!isFirstUpdate && needsRedraw)
             {
                 DrawPlayfield();
             }
+
+            isFirstUpdate = false;
         }
 
+        /// <summary>
+        /// Use the appropriate generator combinations depending on the set generator type
+        /// </summary>
         private void DrawPlayfield()
         {
             if (useRandomSeed)
@@ -183,13 +194,8 @@ namespace forest
                     break;
 
                 case GeneratorType.SUBDIVIDE:
-                    Playfield subdivided = CreateSubdividePlayfield();
+                    Playfield subdivided = Subdivide(out List<Room> _);
                     aggregatePlayfield = TrimPerSettings(subdivided);
-                    break;
-
-                case GeneratorType.CITIES:
-                    Playfield cities = CreateCitiesPlayfield();
-                    aggregatePlayfield = TrimPerSettings(cities);
                     break;
 
                 case GeneratorType.PERLIN_PATH:
@@ -201,7 +207,7 @@ namespace forest
                     break;
 
                 case GeneratorType.SUBDIVIDE_PATH:
-                    Playfield subdividedPath = SubdividePath();
+                    Playfield subdividedPath = SubdividePath(out List<Room> _);
                     aggregatePlayfield = TrimPerSettings(subdividedPath);
                     break;
 
@@ -214,8 +220,9 @@ namespace forest
 
                 case GeneratorType.SUBDIVIDE_PATH_STAIN:
                     ClearWorkingPlayfield();
-                    Playfield subdividepath = SubdividePath();
-                    Playfield trimmedPreStain = TrimPerSettings(subdividepath);
+                    Playfield subdividepath = SubdividePath(out List<Room> rooms);
+                    Playfield subdividePopulated = PopulateRooms(subdividepath, rooms);
+                    Playfield trimmedPreStain = TrimPerSettings(subdividePopulated);
                     aggregatePlayfield = StainPlayfield(trimmedPreStain, VisualLookup.TILE_GENERIC_WALL, onTop: false);
                     break;
             }
@@ -232,22 +239,6 @@ namespace forest
             }
 
             return playfield;
-        }
-
-
-
-        public Playfield CreateCitiesPlayfield()
-        {
-            rand.InitState(seed);
-            
-            int sizeX = rand.Range(sizeXMin, sizeXMax + 1);
-            int sizeY = rand.Range(sizeYMin, sizeYMax + 1);
-
-            Playfield workingPlayfield = Utils.CreatePlayfield(sizeX, sizeY);
-
-            // #TODO
-
-            return workingPlayfield;
         }
 
         private class PerlinThresholdPair
@@ -267,7 +258,7 @@ namespace forest
             public int right = -1;
             public int top = -1;
             public int bottom = -1;
-            public int borderRadius = 0;
+            public int padding = 0;
 
             public SplitStyle splitStyle = SplitStyle.Horizontal;
 
@@ -282,10 +273,34 @@ namespace forest
             public int Height => Mathf.Abs(top - bottom);
         }
 
-        private Playfield CreateSubdividePlayfield()
+        private class Room
         {
-            Playfield playfield = SubdivideInternal(out SplitNode _, out List<SplitNode> _);
-            return playfield;
+            public int Left { get; private set; }
+            public int Right { get; private set; }
+            public int Top { get; private set; }
+            public int Bottom { get; private set; }
+            public int Padding { get; private set; }
+            public int Width => Mathf.Abs(Right - Left);
+            public int Height => Mathf.Abs(Top - Bottom);
+            public Vector2Int GetCenter() => new Vector2Int(Left + (Right - Left) / 2, Top + (Bottom - Top) / 2);
+
+            public Room(SplitNode toPull)
+            {
+                Left = toPull.left;
+                Right = toPull.right;
+                Top = toPull.top;
+                Bottom = toPull.bottom;
+                Padding = toPull.padding;
+            }
+
+            public Room(int left, int right, int top, int bottom, int padding)
+            {
+                Left = left;
+                Right = right;
+                Top = top;
+                Bottom = bottom;
+                Padding = padding;
+            }
         }
 
         private class PairLineDraw
@@ -294,11 +309,89 @@ namespace forest
             public Vector2Int end;
         }
 
-        private Playfield SubdividePath()
+        /// <summary>
+        /// Take a collection of rooms and an existing playfield and place surface objects
+        /// like origins, portals, acorns, enemies, etc on the playfield.
+        /// </summary>
+        private Playfield PopulateRooms(Playfield toPopulate, List<Room> rooms)
         {
-            Playfield subdivides = SubdivideInternal(out SplitNode root, out List<SplitNode> rooms);
-            Playfield paths = Utils.CreatePlayfield(subdivides.world.GetWidth(), subdivides.world.GetHeight());
+            Playfield workingPlayfield = Utils.CreatePlayfield(toPopulate.Width(), toPopulate.Height(), toPopulate);
 
+            // Place portal
+            Room portalRoom = rooms[rooms.Count - 1];
+            PlayfieldPortal portal = new PlayfieldPortal();
+            portal.target = Globals.NEXT_GENERATOR_FLOOR_KEY;
+            portal.id = workingPlayfield.GetNextID();
+            int portalRelX = rand.Range(roomPadding, portalRoom.Width - roomPadding);
+            int portalRelY = rand.Range(roomPadding, portalRoom.Height - roomPadding);
+            portal.location = new Vector2Int(portalRoom.Left + portalRelX, portalRoom.Top + portalRelY);
+            workingPlayfield.portals.Add(portal);
+
+            // Place origins
+            bool placing = true;
+            int tries = 20;
+            Room originRoom = rooms[0];
+            while (placing && tries-- > 0)
+            {
+                int originRelX = rand.Range(roomPadding, originRoom.Width - roomPadding);
+                int originRelY = rand.Range(roomPadding, originRoom.Height - roomPadding);
+                Vector2Int pos = new Vector2Int(originRoom.Left + originRelX, originRoom.Top + originRelY);
+                if (!workingPlayfield.TryGetPortalAt(pos, out PlayfieldPortal _))
+                {
+                    PlayfieldOrigin origin = new PlayfieldOrigin();
+                    origin.id = workingPlayfield.GetNextID();
+                    origin.location = pos;
+                    workingPlayfield.origins.Add(origin);
+                    placing = false;
+                }
+            }
+
+            return workingPlayfield;
+        }
+
+        /// <summary>
+        /// Uses subdivision generator to split the space out into rooms, then connects those rooms
+        /// with the path system. Outlines the paths accordingly. Ensures there's at minmum *a* room.
+        /// </summary>
+        /// <param name="rooms">A list of all the rooms generated</param>
+        /// <returns>Generated playfield</returns>
+        private Playfield SubdividePath(out List<Room> rooms)
+        {
+            Playfield subdivides;
+            rooms = new List<Room>();
+            int retriesLeft = maxSubdivisionRerolls;
+            do
+            {
+                subdivides = Subdivide(out rooms);
+                if (rooms.Count <= prevMinRoomCount)
+                {
+                    seed = rand.Range(0, WHRandom.MAX_SEED + 1);
+                    prevSeed = seed;
+                }
+            }
+            while (rooms.Count <= prevMinRoomCount && retriesLeft-- > 0);
+
+            if(retriesLeft <= 0)
+            {
+                Debug.LogError($"UGH! Hands up, can't make this, hit {maxSubdivisionRerolls} rerolls looking for {prevMinRoomCount} rooms minimum.");
+                Playfield fallback = Utils.CreatePlayfield(rand.Range(minRoomSize, sizeXMin), rand.Range(minRoomSize, sizeYMin));
+                for(int x = 0; x < fallback.Width(); x++)
+                {
+                    for(int y = 0; y < fallback.Height(); y++)
+                    {
+                        fallback.world.Set(x, y, new PlayfieldTile()
+                        {
+                            id = fallback.GetNextID(),
+                            tag = VisualLookup.TILE_GENERIC_GROUND
+                        });
+                    }
+                }
+                Room room = new Room(0, fallback.Width() - 1, 0, fallback.Height() - 1, roomPadding);
+                rooms.Add(room);
+                subdivides = fallback;
+            }
+
+            Playfield paths = Utils.CreatePlayfield(subdivides.world.GetWidth(), subdivides.world.GetHeight());
             List<PairLineDraw> toDraw = new List<PairLineDraw>();
 
             for(int i = 1; i < rooms.Count; ++i)
@@ -321,37 +414,16 @@ namespace forest
             }
 
             Playfield combined = Utils.LayerPlayfields(paths, subdivides);
-
-            SplitNode portalRoom = rooms[rooms.Count - 1];
-            PlayfieldPortal portal = new PlayfieldPortal();
-            portal.id = combined.GetNextID();
-            int portalRelX = rand.Range(roomPadding, portalRoom.Width - roomPadding);
-            int portalRelY = rand.Range(roomPadding, portalRoom.Height - roomPadding);
-            portal.location = new Vector2Int(portalRoom.left + portalRelX, portalRoom.top + portalRelY);
-            combined.portals.Add(portal);
-            
-            bool placing = true;
-            int tries = 20;
-            SplitNode originRoom = rooms[0];
-            while (placing && tries-- > 0)
-            {
-                int originRelX = rand.Range(roomPadding, originRoom.Width - roomPadding);
-                int originRelY = rand.Range(roomPadding, originRoom.Height - roomPadding);
-                Vector2Int pos = new Vector2Int(originRoom.left + originRelX, originRoom.top + originRelY);
-                if (!combined.TryGetPortalAt(pos, out PlayfieldPortal _))
-                {
-                    PlayfieldOrigin origin = new PlayfieldOrigin();
-                    origin.id = combined.GetNextID();
-                    origin.location = pos;
-                    combined.origins.Add(origin);
-                    placing = false;
-                }
-            }
-
             return combined;
         }
 
-        private Playfield SubdivideInternal(out SplitNode root, out List<SplitNode> rooms)
+        /// <summary>
+        /// Generate a playfield with conventional rogue/brogue style room layout.
+        /// The rooms get bundled and spit out.
+        /// </summary>
+        /// <param name="rooms"></param>
+        /// <returns></returns>
+        private Playfield Subdivide(out List<Room> rooms)
         {
             rand.InitState(seed);
 
@@ -360,12 +432,12 @@ namespace forest
 
             Playfield workingPlayfield = Utils.CreatePlayfield(sizeX, sizeY);
 
-            root = new SplitNode();
+            SplitNode root = new SplitNode();
             root.left = 0;
             root.right = sizeX;
             root.top = 0;
             root.bottom = sizeY;
-            root.borderRadius = roomPadding;
+            root.padding = roomPadding;
 
             Stack<SplitNode> toSplit = new Stack<SplitNode>();
             toSplit.Push(root);
@@ -409,7 +481,7 @@ namespace forest
                     newLeft.right = horizontalSplitPos;
                     newLeft.top = node.top;
                     newLeft.bottom = node.bottom;
-                    newLeft.borderRadius = roomPadding;
+                    newLeft.padding = roomPadding;
                     newLeft.parent = node;
 
                     node.child1 = newLeft;
@@ -420,7 +492,7 @@ namespace forest
                     newRight.right = node.right;
                     newRight.top = node.top;
                     newRight.bottom = node.bottom;
-                    newRight.borderRadius = roomPadding;
+                    newRight.padding = roomPadding;
                     newRight.parent = node;
 
                     node.child2 = newRight;
@@ -435,7 +507,7 @@ namespace forest
                     newTop.right = node.right;
                     newTop.top = node.top;
                     newTop.bottom = verticalSplitPos;
-                    newTop.borderRadius = roomPadding;
+                    newTop.padding = roomPadding;
                     newTop.parent = node;
 
                     node.child1 = newTop;
@@ -446,7 +518,7 @@ namespace forest
                     newBottom.right = node.right;
                     newBottom.top = verticalSplitPos;
                     newBottom.bottom = node.bottom;
-                    newBottom.borderRadius = roomPadding;
+                    newBottom.padding = roomPadding;
                     newBottom.parent = node;
 
                     node.child2 = newBottom;
@@ -454,7 +526,7 @@ namespace forest
                 }
             }
 
-            rooms = new List<SplitNode>();
+            rooms = new List<Room>();
             Stack<SplitNode> walk = new Stack<SplitNode>();
             walk.Push(root);
             while (walk.Count > 0)
@@ -464,7 +536,7 @@ namespace forest
                 {
                     if (cur.Width >= minRoomSize && cur.Height >= minRoomSize)
                     {
-                        rooms.Add(cur);
+                        rooms.Add(new Room(cur));
                     }
                 }
                 else
@@ -481,11 +553,11 @@ namespace forest
                 }
             }
 
-            foreach(SplitNode cur in rooms)
+            foreach(Room cur in rooms)
             {
-                for(int x = cur.left + cur.borderRadius; x < cur.right - cur.borderRadius; ++x)
+                for(int x = cur.Left + cur.Padding; x < cur.Right - cur.Padding; ++x)
                 {
-                    for(int y = cur.top + cur.borderRadius; y < cur.bottom - cur.borderRadius; ++y)
+                    for(int y = cur.Top + cur.Padding; y < cur.Bottom - cur.Padding; ++y)
                     {
                         workingPlayfield.world.Set(x, y, new PlayfieldTile()
                         {
@@ -499,6 +571,10 @@ namespace forest
             return workingPlayfield;
         }
 
+        /// <summary>
+        /// Generate some perlin noise using a single type of tile and then
+        /// either put the existing playfield on top of it or put it on the exisint playfield
+        /// </summary>
         private Playfield StainPlayfield(Playfield toStain, string stainTag, bool onTop)
         {
             rand.InitState(seed);
@@ -793,8 +869,8 @@ namespace forest
                     }
                 }
 
-                xCurrent = Mathf.Clamp(xCurrent, 0, sizeX - 1);
-                yCurrent = Mathf.Clamp(yCurrent, 0, sizeY - 1);
+                xCurrent = Mathf.Clamp(xCurrent, 0, sizeX);
+                yCurrent = Mathf.Clamp(yCurrent, 0, sizeY);
 
                 workingPlayfield.world.Set(new Vector2Int(xCurrent, yCurrent), new PlayfieldTile()
                 {
@@ -804,6 +880,10 @@ namespace forest
             }
         }
 
+        /// <summary>
+        /// Clear the existing playfield, using a reset number generator for things
+        /// or leaning on the existing size. 
+        /// </summary>
         public void ClearWorkingPlayfield()
         {
             int sizeX = -1;
@@ -849,6 +929,9 @@ namespace forest
 
 
 #if UNITY_EDITOR
+        /// <summary>
+        /// Add some custom refresh options
+        /// </summary>
         [UnityEditor.CustomEditor(typeof(RulesetEditor))]
         public class RulesetEditorEditor : UnityEditor.Editor
         {

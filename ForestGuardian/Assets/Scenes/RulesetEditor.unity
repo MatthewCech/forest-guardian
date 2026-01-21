@@ -359,9 +359,9 @@ MonoBehaviour:
   sizeYMin: 15
   sizeYMax: 15
   useRandomSeed: 0
-  seed: -724166
-  trimPlayfield: 0
-  trimPadding: 0
+  seed: 14354
+  trimPlayfield: 1
+  trimPadding: 1
   scale: 0.2
   thresholdWall: 0.832
   thresholdLand: 0.51
@@ -375,8 +375,10 @@ MonoBehaviour:
   outlineLayers: 1
   roomPadding: 1
   minRoomSize: 4
-  splitChancePerUnitArea: 0.01
-  stainThreshold: 0.8
+  minRoomCount: 1
+  splitChancePerUnitArea: 0.014
+  maxSubdivisionRerolls: 5
+  stainThreshold: 0.45
 --- !u!1 &546924576
 GameObject:
   m_ObjectHideFlags: 0

@@ -17,6 +17,13 @@ namespace forest
             return Mathf.Abs(@this.x - other.x) + Mathf.Abs(@this.y - other.y);
         }
 
+        /// <summary>
+        /// Random int within a range
+        /// </summary>
+        /// <param name="this"></param>
+        /// <param name="min">Inclusive</param>
+        /// <param name="max">Exclusive</param>
+        /// <returns></returns>
         public static int Range(this WHRandom @this, int min, int max)
         {
             float val = (float)@this.Next();
