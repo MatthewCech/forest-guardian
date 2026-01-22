@@ -1,4 +1,5 @@
 using Loam;
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,115 +8,166 @@ using UnityEngine.UI;
 
 namespace forest
 {
-    [AttributeUsage(AttributeTargets.Field)]
-    public class DunGenAttribute : Attribute
+    public enum GeneratorType
     {
-        public readonly string name;
+        DEFAULT = 0,
 
-        public DunGenAttribute(string name)
+        // Single generators
+        PERLIN,
+        PATH,
+        SUBDIVIDE,
+
+        // Combo generators
+        PERLIN_PATH = 10,
+        SUBDIVIDE_PATH = 11,
+        PATH_STAIN = 12,
+        SUBDIVIDE_PATH_STAIN = 13
+    }
+
+    [System.Serializable]
+    [JsonObject(MemberSerialization.OptIn)]
+    public class PlayfieldRuleset
+    {
+        [Header("General")]
+        [JsonProperty][SerializeField] public GeneratorType generatorType = GeneratorType.PERLIN;
+        [JsonProperty][SerializeField][Min(1)] public int sizeXMin = 10;
+        [JsonProperty][SerializeField][Min(1)] public int sizeXMax = 20;
+        [JsonProperty][SerializeField][Min(1)] public int sizeYMin = 10;
+        [JsonProperty][SerializeField][Min(1)] public int sizeYMax = 20;
+        [JsonProperty][SerializeField] public int seed = 123;
+        [JsonProperty][SerializeField] public bool trimPlayfield = false;
+        [JsonProperty][SerializeField][Min(0)] public int trimPadding = 0;
+        [NonSerialized] public GeneratorType prevGeneratorType = GeneratorType.DEFAULT;
+        [NonSerialized] public int prevSizeXMin = -1;
+        [NonSerialized] public int prevSizeYMin = -1;
+        [NonSerialized] public int prevSizeXMax = -1;
+        [NonSerialized] public int prevSizeYMax = -1;
+        [NonSerialized] public int prevSeed = -1;
+        [NonSerialized] public bool prevTrimPlayfield = false;
+        [NonSerialized] public int prevTrimPadding = 0;
+
+        [Header("PERLIN (settings)")]
+        [JsonProperty][SerializeField][Min(0.001f)] public float scale = 0.1f;
+        [JsonProperty][SerializeField][Range(0, 1)] public float thresholdWall = 0.9f;
+        [JsonProperty][SerializeField][Range(0, 1)] public float thresholdLand = 0.5f;
+        [JsonProperty][SerializeField][Range(0, 1)] public float thresholdMarsh = 0.4f;
+        [NonSerialized] public float prevScale = -1;
+        [NonSerialized] public float prevThresholdWall = -1;
+        [NonSerialized] public float prevThresholdLand = -1;
+        [NonSerialized] public float prevThresholdMarsh = -1;
+
+        [Header("PATH (settings)")]
+        [JsonProperty][SerializeField][Range(0, 25)] public int originBorderMin = 1;
+        [JsonProperty][SerializeField][Range(0, 25)] public int originBorderRange = 2;
+        [JsonProperty][SerializeField][Range(0, 25)] public int portalBorderMin = 1;
+        [JsonProperty][SerializeField][Range(0, 25)] public int portalBorderRange = 2;
+        [JsonProperty][SerializeField][Range(0, 1)] public float pathNoise = 0.1f;
+        [JsonProperty][SerializeField][Min(0)] public int noiseWatchdog = 50;
+        [JsonProperty][SerializeField][Range(0, 10)] public int outlineLayers = 0;
+        [NonSerialized] public int prevOriginBorderMin = 1;
+        [NonSerialized] public int prevOriginBorderRange = 2;
+        [NonSerialized] public int prevPortalBorderMin = 1;
+        [NonSerialized] public int prevPortalBorderRange = 2;
+        [NonSerialized] public float prevPathNoise = 0.1f;
+        [NonSerialized] public int prevOutlineLayers = 0;
+        [NonSerialized] public int prevNoiseWatchdog = 50;
+
+        [Header("SUBDIVIDE (settings)")]
+        [JsonProperty][SerializeField][Min(0)] public int roomPadding = 0;
+        [JsonProperty][SerializeField][Min(1)] public int minRoomSize = 3;
+        [JsonProperty][SerializeField][Range(0, 8)] public int minRoomCount = 1;
+        [JsonProperty][SerializeField][Range(0, 0.1f)] public float splitChancePerUnitArea = 0.01f;
+        [JsonProperty][SerializeField][Range(1, 20)] public int maxSubdivisionRerolls = 5;
+        [NonSerialized] public int prevRoomPadding = 0;
+        [NonSerialized] public int prevMinRoomSize = 3;
+        [NonSerialized] public int prevMinRoomCount = 1;
+        [NonSerialized] public int prevMaxSubdivisionReroll = 5;
+        [NonSerialized] public float prevSplitChancePerUnitArea = 0.01f;
+
+        [Header("STAIN (settings)")]
+        [JsonProperty][SerializeField][Range(0, 1)] public float stainThreshold = 0.8f;
+        [NonSerialized] public float prevStainThreshold = 0.8f;
+
+        /// <summary>
+        /// Returns if an update did occur at any point
+        /// </summary>
+        /// <param name="toCheck"></param>
+        /// <returns></returns>
+        public bool CheckForChangesAndUpdate()
         {
-            this.name = name;
+            bool didChange = false;
+
+            didChange |= TryUpdate(ref this.prevGeneratorType, this.generatorType);
+            didChange |= TryUpdate(ref this.prevSizeXMin, this.sizeXMin);
+            didChange |= TryUpdate(ref this.prevSizeYMin, this.sizeYMin);
+            didChange |= TryUpdate(ref this.prevSizeXMax, this.sizeXMax);
+            didChange |= TryUpdate(ref this.prevSizeYMax, this.sizeYMax);
+            didChange |= TryUpdate(ref this.prevSeed, this.seed);
+            didChange |= TryUpdate(ref this.prevTrimPlayfield, this.trimPlayfield);
+            didChange |= TryUpdate(ref this.prevTrimPadding, this.trimPadding);
+
+            didChange |= TryUpdate(ref this.prevScale, this.scale);
+            didChange |= TryUpdate(ref this.prevThresholdWall, this.thresholdWall);
+            didChange |= TryUpdate(ref this.prevThresholdLand, this.thresholdLand);
+            didChange |= TryUpdate(ref this.prevThresholdMarsh, this.thresholdMarsh);
+
+            didChange |= TryUpdate(ref this.prevOriginBorderMin, this.originBorderMin);
+            didChange |= TryUpdate(ref this.prevOriginBorderRange, this.originBorderRange);
+            didChange |= TryUpdate(ref this.prevPortalBorderMin, this.portalBorderMin);
+            didChange |= TryUpdate(ref this.prevPortalBorderRange, this.portalBorderRange);
+            didChange |= TryUpdate(ref this.prevPathNoise, this.pathNoise);
+            didChange |= TryUpdate(ref this.prevNoiseWatchdog, this.noiseWatchdog);
+            didChange |= TryUpdate(ref this.prevOutlineLayers, this.outlineLayers);
+
+            didChange |= TryUpdate(ref this.prevRoomPadding, this.roomPadding);
+            didChange |= TryUpdate(ref this.prevMinRoomSize, this.minRoomSize);
+            didChange |= TryUpdate(ref this.prevMinRoomCount, this.minRoomCount);
+            didChange |= TryUpdate(ref this.prevMaxSubdivisionReroll, this.maxSubdivisionRerolls);
+            didChange |= TryUpdate(ref this.prevSplitChancePerUnitArea, this.splitChancePerUnitArea);
+
+            didChange |= TryUpdate(ref this.prevStainThreshold, this.stainThreshold);
+
+            return didChange;
         }
+
+        public static bool TryUpdate<T>(ref T prevValue, T value)
+        {
+            if (!prevValue.Equals(value))
+            {
+                prevValue = value;
+                return true;
+            }
+
+            return false;
+        }
+
     }
 
     public class RulesetEditor : MonoBehaviour
     {
-        public enum GeneratorType
-        {
-            DEFAULT = 0,
-
-            // Single generators
-            PERLIN,
-            PATH,
-            SUBDIVIDE,
-
-            // Combo generators
-            PERLIN_PATH = 10,
-            SUBDIVIDE_PATH = 11,
-            PATH_STAIN = 12,
-            SUBDIVIDE_PATH_STAIN = 13
-        }
-
-        [SerializeField] private GeneratorType generatorType = GeneratorType.PERLIN;
-        [SerializeField] private bool repeatedlyRefresh = false;
-        private GeneratorType prevGeneratorType = GeneratorType.DEFAULT;
-
         [Header("Links")]
         [SerializeField] private Camera viewingCamera;
         [SerializeField] private VisualPlayfield visualPlayfield;
         [SerializeField] private VisualLookup visualLookup;
 
-        [Header("General")]
-        [SerializeField][Min(1)] private int sizeXMin = 10;
-        [SerializeField][Min(1)] private int sizeXMax = 20;
-        [SerializeField][Min(1)] private int sizeYMin = 10;
-        [SerializeField][Min(1)] private int sizeYMax = 20;
+        [Header("Debug Only")]
+        [SerializeField] private bool repeatedlyRefresh = false;
         [SerializeField] private bool useRandomSeed = false;
-        [SerializeField] private int seed = 123;
-        [SerializeField] private bool trimPlayfield = false;
-        [SerializeField][Min(0)] private int trimPadding = 0;
-        private int prevSizeXMin = -1;
-        private int prevSizeYMin = -1;
-        private int prevSizeXMax = -1;
-        private int prevSizeYMax = -1;
         private bool prevUseRandomSeed = false;
-        private int prevSeed = -1;
-        private Playfield aggregatePlayfield = null;
-        private bool prevTrimPlayfield = false;
-        private int prevTrimPadding = 0;
 
-        [Header("PERLIN (settings)")]
-        [SerializeField][Min(0.001f)] private float scale = 0.1f;
-        [SerializeField][Range(0, 1)] private float thresholdWall = 0.9f;
-        [SerializeField][Range(0, 1)] private float thresholdLand = 0.5f;
-        [SerializeField][Range(0, 1)] private float thresholdMarsh = 0.4f;
-        private float prevScale = -1;
-        private float prevThresholdWall = -1;
-        private float prevThresholdLand = -1;
-        private float prevThresholdMarsh = -1;
-
-        [Header("PATH (settings)")]
-        [SerializeField][Range(0, 25)] private int originBorderMin = 1;
-        [SerializeField][Range(0, 25)] private int originBorderRange = 2;
-        [SerializeField][Range(0, 25)] private int portalBorderMin = 1;
-        [SerializeField][Range(0, 25)] private int portalBorderRange = 2;
-        [SerializeField][Range(0, 1)] private float pathNoise = 0.1f;
-        [SerializeField][Min(0)] private int noiseWatchdog = 50;
-        [SerializeField][Range(0, 10)] private int outlineLayers = 0;
-        private int prevOriginBorderMin = 1;
-        private int prevOriginBorderRange = 2;
-        private int prevPortalBorderMin = 1;
-        private int prevPortalBorderRange = 2;
-        private float prevPathNoise = 0.1f;
-        private int prevOutlineLayers = 0;
-        private int prevNoiseWatchdog = 50;
-
-        [Header("SUBDIVIDE (settings)")]
-        [SerializeField][Min(0)] private int roomPadding = 0;
-        [SerializeField][Min(1)] private int minRoomSize = 3;
-        [SerializeField][Range(0, 8)] private int minRoomCount = 1;
-        [SerializeField][Range(0, 0.1f)] private float splitChancePerUnitArea = 0.01f;
-        [SerializeField][Range(1, 20)] private int maxSubdivisionRerolls = 5;
-        private int prevRoomPadding = 0;
-        private int prevMinRoomSize = 3;
-        private int prevMinRoomCount = 1;
-        private int prevMaxSubdivisionReroll = 5;
-        private float prevSplitChancePerUnitArea = 0.01f;
-
-        [Header("STAIN (settings)")]
-        [SerializeField][Range(0, 1)] private float stainThreshold = 0.8f;
-        private float prevStainThreshold = 0.8f;
+        [SerializeField] private PlayfieldRuleset ruleset;
 
         // Internal
+        private Playfield aggregatePlayfield = null;
         private WHRandom rand = new WHRandom();
         private bool isFirstUpdate = true;
 
         private void Start()
         {
-            prevSizeXMin = sizeXMin;
-            prevSizeYMin = sizeYMin;
-            prevSizeXMax = sizeXMax;
-            prevSizeYMax = sizeYMax;
+            ruleset.prevSizeXMin = ruleset.sizeXMin;
+            ruleset.prevSizeYMin = ruleset.sizeYMin;
+            ruleset.prevSizeXMax = ruleset.sizeXMax;
+            ruleset.prevSizeYMax = ruleset.sizeYMax;
 
             visualPlayfield.Initialize(visualLookup);
 
@@ -126,42 +178,9 @@ namespace forest
         private void Update()
         {
             bool needsRedraw = repeatedlyRefresh;
-            if(TryUpdate(ref prevGeneratorType, generatorType))
-            {
-                // If generator type changes, always clear out existing playfield.
-                aggregatePlayfield = null;
-                needsRedraw = true;
-            }
 
-            needsRedraw |= TryUpdate(ref prevSizeXMin, sizeXMin);
-            needsRedraw |= TryUpdate(ref prevSizeYMin, sizeYMin);
-            needsRedraw |= TryUpdate(ref prevSizeXMax, sizeXMax);
-            needsRedraw |= TryUpdate(ref prevSizeYMax, sizeYMax);
-            needsRedraw |= TryUpdate(ref prevUseRandomSeed, useRandomSeed);
-            needsRedraw |= TryUpdate(ref prevSeed, seed);
-            needsRedraw |= TryUpdate(ref prevTrimPlayfield, trimPlayfield);
-            needsRedraw |= TryUpdate(ref prevTrimPadding, trimPadding);
-
-            needsRedraw |= TryUpdate(ref prevScale, scale);
-            needsRedraw |= TryUpdate(ref prevThresholdWall, thresholdWall);
-            needsRedraw |= TryUpdate(ref prevThresholdLand, thresholdLand);
-            needsRedraw |= TryUpdate(ref prevThresholdMarsh, thresholdMarsh);
-
-            needsRedraw |= TryUpdate(ref prevOriginBorderMin, originBorderMin);
-            needsRedraw |= TryUpdate(ref prevOriginBorderRange, originBorderRange);
-            needsRedraw |= TryUpdate(ref prevPortalBorderMin, portalBorderMin);
-            needsRedraw |= TryUpdate(ref prevPortalBorderRange, portalBorderRange);
-            needsRedraw |= TryUpdate(ref prevPathNoise, pathNoise);
-            needsRedraw |= TryUpdate(ref prevNoiseWatchdog, noiseWatchdog);
-            needsRedraw |= TryUpdate(ref prevOutlineLayers, outlineLayers);
-
-            needsRedraw |= TryUpdate(ref prevRoomPadding, roomPadding);
-            needsRedraw |= TryUpdate(ref prevMinRoomSize, minRoomSize);
-            needsRedraw |= TryUpdate(ref prevMinRoomCount, minRoomCount);
-            needsRedraw |= TryUpdate(ref prevMaxSubdivisionReroll, maxSubdivisionRerolls);
-            needsRedraw |= TryUpdate(ref prevSplitChancePerUnitArea, splitChancePerUnitArea);
-
-            needsRedraw |= TryUpdate(ref prevStainThreshold, stainThreshold);
+            needsRedraw |= PlayfieldRuleset.TryUpdate(ref prevUseRandomSeed, useRandomSeed);
+            needsRedraw |= ruleset.CheckForChangesAndUpdate();
 
             if (!isFirstUpdate && needsRedraw)
             {
@@ -181,49 +200,49 @@ namespace forest
                 NewRandSeed();
             }
 
-            switch(generatorType)
+            switch(ruleset.generatorType)
             {
                 case GeneratorType.PERLIN:
-                    Playfield perlin = CreatePerlinPlayfield(aggregatePlayfield);
-                    aggregatePlayfield = TrimPerSettings(perlin);
+                    Playfield perlin = CreatePerlinPlayfield(ruleset,aggregatePlayfield);
+                    aggregatePlayfield = TrimPerSettings(ruleset, perlin);
                     break;
 
                 case GeneratorType.PATH:
-                    Playfield path = CreatePathPlayfield();
-                    aggregatePlayfield = TrimPerSettings(path);
+                    Playfield path = CreatePathPlayfield(ruleset);
+                    aggregatePlayfield = TrimPerSettings(ruleset, path);
                     break;
 
                 case GeneratorType.SUBDIVIDE:
-                    Playfield subdivided = Subdivide(out List<Room> _);
-                    aggregatePlayfield = TrimPerSettings(subdivided);
+                    Playfield subdivided = Subdivide(ruleset, out List<Room> _);
+                    aggregatePlayfield = TrimPerSettings(ruleset, subdivided);
                     break;
 
                 case GeneratorType.PERLIN_PATH:
-                    ClearWorkingPlayfield();
-                    Playfield perlinUnderlay = CreatePerlinPlayfield(aggregatePlayfield);
-                    Playfield pathOverlay = CreatePathPlayfield();
+                    ClearWorkingPlayfield(ruleset);
+                    Playfield perlinUnderlay = CreatePerlinPlayfield(ruleset,aggregatePlayfield);
+                    Playfield pathOverlay = CreatePathPlayfield(ruleset);
                     Playfield layered = Utils.LayerPlayfields(perlinUnderlay, pathOverlay);
-                    aggregatePlayfield = TrimPerSettings(layered);
+                    aggregatePlayfield = TrimPerSettings(ruleset, layered);
                     break;
 
                 case GeneratorType.SUBDIVIDE_PATH:
-                    Playfield subdividedPath = SubdividePath(out List<Room> _);
-                    aggregatePlayfield = TrimPerSettings(subdividedPath);
+                    Playfield subdividedPath = SubdividePath(ruleset,out List <Room> _);
+                    aggregatePlayfield = TrimPerSettings(ruleset, subdividedPath);
                     break;
 
                 case GeneratorType.PATH_STAIN:
-                    ClearWorkingPlayfield();
-                    Playfield toStain = CreatePathPlayfield();
-                    Playfield trimmedPath = TrimPerSettings(toStain);
-                    Playfield pretrimTopStain = StainPlayfield(trimmedPath, VisualLookup.TILE_GENERIC_MARSH, onTop: true);
+                    ClearWorkingPlayfield(ruleset);
+                    Playfield toStain = CreatePathPlayfield(ruleset);
+                    Playfield trimmedPath = TrimPerSettings(ruleset, toStain);
+                    Playfield pretrimTopStain = StainPlayfield(ruleset,trimmedPath, VisualLookup.TILE_GENERIC_MARSH, onTop: true);
                     break;
 
                 case GeneratorType.SUBDIVIDE_PATH_STAIN:
-                    ClearWorkingPlayfield();
-                    Playfield subdividepath = SubdividePath(out List<Room> rooms);
-                    Playfield subdividePopulated = PopulateRooms(subdividepath, rooms);
-                    Playfield trimmedPreStain = TrimPerSettings(subdividePopulated);
-                    aggregatePlayfield = StainPlayfield(trimmedPreStain, VisualLookup.TILE_GENERIC_WALL, onTop: false);
+                    ClearWorkingPlayfield(ruleset);
+                    Playfield subdividepath = SubdividePath(ruleset, out List <Room> rooms);
+                    Playfield subdividePopulated = PopulateRooms(ruleset, subdividepath, rooms);
+                    Playfield trimmedPreStain = TrimPerSettings(ruleset, subdividePopulated);
+                    aggregatePlayfield = StainPlayfield(ruleset,trimmedPreStain, VisualLookup.TILE_GENERIC_WALL, onTop: false);
                     break;
             }
 
@@ -231,11 +250,11 @@ namespace forest
             CenterCamera();
         }
 
-        public Playfield TrimPerSettings(Playfield playfield)
+        public static Playfield TrimPerSettings(PlayfieldRuleset rules, Playfield playfield)
         {
-            if(trimPlayfield)
+            if(rules.trimPlayfield)
             {
-                return Utils.TrimPlayfield(playfield, trimPadding);
+                return Utils.TrimPlayfield(playfield, rules.trimPadding);
             }
 
             return playfield;
@@ -313,7 +332,7 @@ namespace forest
         /// Take a collection of rooms and an existing playfield and place surface objects
         /// like origins, portals, acorns, enemies, etc on the playfield.
         /// </summary>
-        private Playfield PopulateRooms(Playfield toPopulate, List<Room> rooms)
+        private Playfield PopulateRooms(PlayfieldRuleset rules, Playfield toPopulate, List<Room> rooms)
         {
             Playfield workingPlayfield = Utils.CreatePlayfield(toPopulate.Width(), toPopulate.Height(), toPopulate);
 
@@ -322,8 +341,8 @@ namespace forest
             PlayfieldPortal portal = new PlayfieldPortal();
             portal.target = Globals.NEXT_GENERATOR_FLOOR_KEY;
             portal.id = workingPlayfield.GetNextID();
-            int portalRelX = rand.Range(roomPadding, portalRoom.Width - roomPadding);
-            int portalRelY = rand.Range(roomPadding, portalRoom.Height - roomPadding);
+            int portalRelX = rand.Range(rules.roomPadding, portalRoom.Width - rules.roomPadding);
+            int portalRelY = rand.Range(rules.roomPadding, portalRoom.Height - rules.roomPadding);
             portal.location = new Vector2Int(portalRoom.Left + portalRelX, portalRoom.Top + portalRelY);
             workingPlayfield.portals.Add(portal);
 
@@ -333,8 +352,8 @@ namespace forest
             Room originRoom = rooms[0];
             while (placing && tries-- > 0)
             {
-                int originRelX = rand.Range(roomPadding, originRoom.Width - roomPadding);
-                int originRelY = rand.Range(roomPadding, originRoom.Height - roomPadding);
+                int originRelX = rand.Range(rules.roomPadding, originRoom.Width - rules.roomPadding);
+                int originRelY = rand.Range(rules.roomPadding, originRoom.Height - rules.roomPadding);
                 Vector2Int pos = new Vector2Int(originRoom.Left + originRelX, originRoom.Top + originRelY);
                 if (!workingPlayfield.TryGetPortalAt(pos, out PlayfieldPortal _))
                 {
@@ -355,26 +374,26 @@ namespace forest
         /// </summary>
         /// <param name="rooms">A list of all the rooms generated</param>
         /// <returns>Generated playfield</returns>
-        private Playfield SubdividePath(out List<Room> rooms)
+        private Playfield SubdividePath(PlayfieldRuleset rules, out List<Room> rooms)
         {
             Playfield subdivides;
             rooms = new List<Room>();
-            int retriesLeft = maxSubdivisionRerolls;
+            int retriesLeft = rules.maxSubdivisionRerolls;
             do
             {
-                subdivides = Subdivide(out rooms);
-                if (rooms.Count <= prevMinRoomCount)
+                subdivides = Subdivide(rules, out rooms);
+                if (rooms.Count <= rules.prevMinRoomCount)
                 {
-                    seed = rand.Range(0, WHRandom.MAX_SEED + 1);
-                    prevSeed = seed;
+                    rules.seed = rand.Range(0, WHRandom.MAX_SEED + 1);
+                    rules.prevSeed = rules.seed;
                 }
             }
-            while (rooms.Count <= prevMinRoomCount && retriesLeft-- > 0);
+            while (rooms.Count <= rules.prevMinRoomCount && retriesLeft-- > 0);
 
             if(retriesLeft <= 0)
             {
-                Debug.LogError($"UGH! Hands up, can't make this, hit {maxSubdivisionRerolls} rerolls looking for {prevMinRoomCount} rooms minimum.");
-                Playfield fallback = Utils.CreatePlayfield(rand.Range(minRoomSize, sizeXMin), rand.Range(minRoomSize, sizeYMin));
+                Debug.LogError($"UGH! Hands up, can't make this, hit {rules.maxSubdivisionRerolls} rerolls looking for {rules.prevMinRoomCount} rooms minimum.");
+                Playfield fallback = Utils.CreatePlayfield(rand.Range(rules.minRoomSize, rules.sizeXMin), rand.Range(rules.minRoomSize, rules.sizeYMin));
                 for(int x = 0; x < fallback.Width(); x++)
                 {
                     for(int y = 0; y < fallback.Height(); y++)
@@ -386,7 +405,7 @@ namespace forest
                         });
                     }
                 }
-                Room room = new Room(0, fallback.Width() - 1, 0, fallback.Height() - 1, roomPadding);
+                Room room = new Room(0, fallback.Width() - 1, 0, fallback.Height() - 1, rules.roomPadding);
                 rooms.Add(room);
                 subdivides = fallback;
             }
@@ -405,10 +424,10 @@ namespace forest
             for (int i = 0; i < toDraw.Count; ++i)
             {
                 PairLineDraw pair = toDraw[i];
-                CreatePathToTarget(paths, pair.start, pair.end);
+                CreatePathToTarget(ruleset, paths, pair.start, pair.end);
             }
 
-            for (int outlines = 0; outlines < outlineLayers; ++outlines)
+            for (int outlines = 0; outlines < rules.outlineLayers; ++outlines)
             {
                 AddTileOutline(paths, VisualLookup.TILE_GENERIC_GROUND, VisualLookup.TILE_GENERIC_MARSH);
             }
@@ -423,12 +442,12 @@ namespace forest
         /// </summary>
         /// <param name="rooms"></param>
         /// <returns></returns>
-        private Playfield Subdivide(out List<Room> rooms)
+        private Playfield Subdivide(PlayfieldRuleset rules, out List<Room> rooms)
         {
-            rand.InitState(seed);
+            rand.InitState(rules.seed);
 
-            int sizeX = rand.Range(sizeXMin, sizeXMax + 1);
-            int sizeY = rand.Range(sizeYMin, sizeYMax + 1);
+            int sizeX = rand.Range(rules.sizeXMin, rules.sizeXMax + 1);
+            int sizeY = rand.Range(rules.sizeYMin, rules.sizeYMax + 1);
 
             Playfield workingPlayfield = Utils.CreatePlayfield(sizeX, sizeY);
 
@@ -437,7 +456,7 @@ namespace forest
             root.right = sizeX;
             root.top = 0;
             root.bottom = sizeY;
-            root.padding = roomPadding;
+            root.padding = rules.roomPadding;
 
             Stack<SplitNode> toSplit = new Stack<SplitNode>();
             toSplit.Push(root);
@@ -446,14 +465,14 @@ namespace forest
             {
                 SplitNode node = toSplit.Pop();
 
-                int splitPadding = Mathf.CeilToInt(minRoomSize / 2.0f);
+                int splitPadding = Mathf.CeilToInt(rules.minRoomSize / 2.0f);
                 if(node.Width < splitPadding * 2 || node.Height < splitPadding * 2)
                 {
                     continue;
                 }
 
                 float splitRoll = (float)rand.Next();
-                float chance = node.Width * node.Height * splitChancePerUnitArea;
+                float chance = node.Width * node.Height * rules.splitChancePerUnitArea;
                 if (chance < splitRoll) // roll failed
                 {
                     continue;
@@ -481,7 +500,7 @@ namespace forest
                     newLeft.right = horizontalSplitPos;
                     newLeft.top = node.top;
                     newLeft.bottom = node.bottom;
-                    newLeft.padding = roomPadding;
+                    newLeft.padding = rules.roomPadding;
                     newLeft.parent = node;
 
                     node.child1 = newLeft;
@@ -492,7 +511,7 @@ namespace forest
                     newRight.right = node.right;
                     newRight.top = node.top;
                     newRight.bottom = node.bottom;
-                    newRight.padding = roomPadding;
+                    newRight.padding = rules.roomPadding;
                     newRight.parent = node;
 
                     node.child2 = newRight;
@@ -507,7 +526,7 @@ namespace forest
                     newTop.right = node.right;
                     newTop.top = node.top;
                     newTop.bottom = verticalSplitPos;
-                    newTop.padding = roomPadding;
+                    newTop.padding = rules.roomPadding;
                     newTop.parent = node;
 
                     node.child1 = newTop;
@@ -518,7 +537,7 @@ namespace forest
                     newBottom.right = node.right;
                     newBottom.top = verticalSplitPos;
                     newBottom.bottom = node.bottom;
-                    newBottom.padding = roomPadding;
+                    newBottom.padding = rules.roomPadding;
                     newBottom.parent = node;
 
                     node.child2 = newBottom;
@@ -534,7 +553,7 @@ namespace forest
                 SplitNode cur = walk.Pop();
                 if (cur.IsLeaf)
                 {
-                    if (cur.Width >= minRoomSize && cur.Height >= minRoomSize)
+                    if (cur.Width >= rules.minRoomSize && cur.Height >= rules.minRoomSize)
                     {
                         rooms.Add(new Room(cur));
                     }
@@ -575,9 +594,9 @@ namespace forest
         /// Generate some perlin noise using a single type of tile and then
         /// either put the existing playfield on top of it or put it on the exisint playfield
         /// </summary>
-        private Playfield StainPlayfield(Playfield toStain, string stainTag, bool onTop)
+        private Playfield StainPlayfield(PlayfieldRuleset rules, Playfield toStain, string stainTag, bool onTop)
         {
-            rand.InitState(seed);
+            rand.InitState(rules.seed);
 
             int width = toStain.Width();
             int height = toStain.Height();
@@ -587,9 +606,9 @@ namespace forest
             {
                 for (int y = 0; y < height; ++y)
                 {
-                    float height01 = Mathf.PerlinNoise(seed + (x * scale), seed + (y * scale));
+                    float height01 = Mathf.PerlinNoise(rules.seed + (x * rules.scale), rules.seed + (y * rules.scale));
 
-                    if(height01 > stainThreshold)
+                    if(height01 > rules.stainThreshold)
                     {
                         PlayfieldTile tile = new PlayfieldTile();
                         tile.id = stain.GetNextID();
@@ -614,20 +633,20 @@ namespace forest
         /// A straight perlin noise only approach to generating terrain. Allows different
         /// thresholds to be selected but makes no guarantees of clean pathing.
         /// </summary>
-        private Playfield CreatePerlinPlayfield(Playfield existingPlayfield = null)
+        private Playfield CreatePerlinPlayfield(PlayfieldRuleset rules, Playfield existingPlayfield = null)
         {
-            rand.InitState(seed);
+            rand.InitState(rules.seed);
 
-            int sizeX = rand.Range(sizeXMin, sizeXMax + 1);
-            int sizeY = rand.Range(sizeYMin, sizeYMax + 1);
+            int sizeX = rand.Range(rules.sizeXMin, rules.sizeXMax + 1);
+            int sizeY = rand.Range(rules.sizeYMin, rules.sizeYMax + 1);
 
             Playfield workingPlayfield = Utils.CreatePlayfield(sizeX, sizeY, existingPlayfield);
 
             List<PerlinThresholdPair> thresholds = new List<PerlinThresholdPair>
             {
-                new PerlinThresholdPair() { threshold = thresholdLand, tag = VisualLookup.TILE_GENERIC_GROUND },
-                new PerlinThresholdPair() { threshold = thresholdMarsh, tag = VisualLookup.TILE_GENERIC_MARSH },
-                new PerlinThresholdPair() { threshold = thresholdWall, tag = VisualLookup.TILE_GENERIC_WALL }
+                new PerlinThresholdPair() { threshold = rules.thresholdLand, tag = VisualLookup.TILE_GENERIC_GROUND },
+                new PerlinThresholdPair() { threshold = rules.thresholdMarsh, tag = VisualLookup.TILE_GENERIC_MARSH },
+                new PerlinThresholdPair() { threshold = rules.thresholdWall, tag = VisualLookup.TILE_GENERIC_WALL }
             };
 
             thresholds.Sort((lhs, rhs) => { return lhs.threshold < rhs.threshold ? 1 : -1; });
@@ -636,7 +655,7 @@ namespace forest
             {
                 for(int y = 0; y < sizeY; ++y)
                 {
-                    float height01 = Mathf.PerlinNoise(seed + (x * scale), seed + (y * scale));
+                    float height01 = Mathf.PerlinNoise(rules.seed + (x * rules.scale), rules.seed + (y * rules.scale));
 
                     PlayfieldTile tile = new PlayfieldTile();
 
@@ -664,15 +683,15 @@ namespace forest
         /// A wanderer draws a path between a start and an end that get placed in specific areas.
         /// Noise is added at various points, but creates a wibbly line of an experience.
         /// </summary>
-        private Playfield CreatePathPlayfield(Playfield existingPlayfield = null)
+        private Playfield CreatePathPlayfield(PlayfieldRuleset rules, Playfield existingPlayfield = null)
         {
-            rand.InitState(seed);
+            rand.InitState(rules.seed);
 
             // Ensure minimum size
-            int sizeX = rand.Range(sizeXMin, sizeXMax + 1);
-            int sizeY = rand.Range(sizeYMin, sizeYMax + 1);
+            int sizeX = rand.Range(rules.sizeXMin, rules.sizeXMax + 1);
+            int sizeY = rand.Range(rules.sizeYMin, rules.sizeYMax + 1);
 
-            int minSize = Mathf.Max(originBorderRange * 2, 2);
+            int minSize = Mathf.Max(rules.originBorderRange * 2, 2);
             sizeX = Mathf.Max(sizeX, minSize);
             sizeY = Mathf.Max(sizeY, minSize);
 
@@ -682,16 +701,16 @@ namespace forest
             // Establish origin location
             bool originIsHorizontal = rand.FlipCoin();
             bool originIsPositive = rand.FlipCoin();
-            int originOffset = rand.Range(originBorderMin, originBorderMin + originBorderRange);
-            int portalOffset = rand.Range(portalBorderMin, portalBorderMin + portalBorderRange);
+            int originOffset = rand.Range(rules.originBorderMin, rules.originBorderMin + rules.originBorderRange);
+            int portalOffset = rand.Range(rules.portalBorderMin, rules.portalBorderMin + rules.portalBorderRange);
             Vector2Int originPos = new Vector2Int(-1, -1);
             Vector2Int portalPos = new Vector2Int(-1, -1);
 
             if (originIsHorizontal) 
             {
                 // Randomly place along the X axis
-                originPos.x = rand.Range(originBorderMin, sizeX - originBorderMin);
-                portalPos.x = rand.Range(portalBorderMin, sizeX - portalBorderMin);
+                originPos.x = rand.Range(rules.originBorderMin, sizeX - rules.originBorderMin);
+                portalPos.x = rand.Range(rules.portalBorderMin, sizeX - rules.portalBorderMin);
 
                 // Place origin and portal on opposite top/bottom sides
                 originPos.y = originIsPositive ? sizeY - originOffset - 1 : originOffset;
@@ -700,8 +719,8 @@ namespace forest
             else
             {
                 // Randomly place along the Y axis
-                originPos.y = rand.Range(originBorderMin, sizeY - originBorderMin);
-                portalPos.y = rand.Range(portalBorderMin, sizeY - portalBorderMin);
+                originPos.y = rand.Range(rules.originBorderMin, sizeY - rules.originBorderMin);
+                portalPos.y = rand.Range(rules.portalBorderMin, sizeY - rules.portalBorderMin);
 
                 // Place origin and portal on opposite left/right sides
                 portalPos.x = !originIsPositive ? sizeX - portalOffset - 1 : portalOffset;
@@ -723,10 +742,10 @@ namespace forest
             });
 
             // Draw wibbly core path by stepping from the origin to the exit portal
-            CreatePathToTarget(workingPlayfield, originPos, portalPos);
+            CreatePathToTarget(ruleset, workingPlayfield, originPos, portalPos);
 
             // Perform outline passes
-            for (int outlines = 0; outlines < outlineLayers; ++outlines)
+            for (int outlines = 0; outlines < rules.outlineLayers; ++outlines)
             {
                 AddTileOutline(workingPlayfield, VisualLookup.TILE_GENERIC_GROUND, VisualLookup.TILE_GENERIC_GROUND);
             }
@@ -808,7 +827,7 @@ namespace forest
         /// <param name="workingPlayfield"></param>
         /// <param name="start"></param>
         /// <param name="target"></param>
-        private void CreatePathToTarget(Playfield workingPlayfield, Vector2Int start, Vector2Int target)
+        private void CreatePathToTarget(PlayfieldRuleset rules, Playfield workingPlayfield, Vector2Int start, Vector2Int target)
         {
             int sizeX = workingPlayfield.world.GetWidth();
             int sizeY = workingPlayfield.world.GetHeight();
@@ -816,7 +835,7 @@ namespace forest
             int xCurrent = start.x;
             int yCurrent = start.y;
 
-            int watchdog = noiseWatchdog;
+            int watchdog = rules.noiseWatchdog;
             bool didWatchdogNotify = false;
 
             workingPlayfield.world.Set(new Vector2Int(xCurrent, yCurrent), new PlayfieldTile()
@@ -834,12 +853,12 @@ namespace forest
                 float rollXY = (float)rand.Next();
 
                 float rollNoise = (float)rand.Next();
-                bool preferNoise = pathNoise > rollNoise;
+                bool preferNoise = rules.pathNoise > rollNoise;
                 if (watchdog-- < 0)
                 {
                     if (!didWatchdogNotify)
                     {
-                        Debug.LogWarning($"Noise watchdog(${noiseWatchdog}) hit. Est steps from target min:{xDiff + yDiff}, est: {(xDiff + yDiff) / (1 - pathNoise)}");
+                        Debug.LogWarning($"Noise watchdog(${rules.noiseWatchdog}) hit. Est steps from target min:{xDiff + yDiff}, est: {(xDiff + yDiff) / (1 - rules.pathNoise)}");
                         didWatchdogNotify = true;
                     }
 
@@ -884,7 +903,7 @@ namespace forest
         /// Clear the existing playfield, using a reset number generator for things
         /// or leaning on the existing size. 
         /// </summary>
-        public void ClearWorkingPlayfield()
+        public void ClearWorkingPlayfield(PlayfieldRuleset rules)
         {
             int sizeX = -1;
             int sizeY = -1;
@@ -896,9 +915,9 @@ namespace forest
             }
             else
             {
-                rand.InitState(seed);
-                sizeX = rand.Range(sizeXMin, sizeXMax + 1);
-                sizeY = rand.Range(sizeYMin, sizeYMax + 1);
+                rand.InitState(rules.seed);
+                sizeX = rand.Range(rules.sizeXMin, rules.sizeXMax + 1);
+                sizeY = rand.Range(rules.sizeYMin, rules.sizeYMax + 1);
             }
 
             aggregatePlayfield = Utils.CreatePlayfield(sizeX, sizeY);
@@ -912,20 +931,10 @@ namespace forest
 
         private void NewRandSeed()
         {
-            seed = UnityEngine.Random.Range(0, 20000);
-            prevSeed = seed;
+            ruleset.seed = UnityEngine.Random.Range(0, 20000);
+            ruleset.prevSeed = ruleset.seed;
         }
 
-        private bool TryUpdate<T>(ref T prevValue, T value)
-        {
-            if (!prevValue.Equals(value))
-            {
-                prevValue = value;
-                return true;
-            }
-
-            return false;
-        }
 
 
 #if UNITY_EDITOR
