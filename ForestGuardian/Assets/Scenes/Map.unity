@@ -53131,7 +53131,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1672223266829813505, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
       propertyPath: m_text
-      value: '<b>Glade Camp</b>
+      value: '<b>Glade</b>
 
         <i>Tutorial<i>'
       objectReference: {fileID: 0}
@@ -53153,7 +53153,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.2
+      value: -2.175
       objectReference: {fileID: 0}
     - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
       propertyPath: m_LocalPosition.y
@@ -53161,7 +53161,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.15
+      value: 1.666
       objectReference: {fileID: 0}
     - target: {fileID: 1874569068419587787, guid: 4df9604848601ee44bbaf7e16c8836e2, type: 3}
       propertyPath: m_LocalRotation.w
@@ -53518,7 +53518,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7444760060522020155, guid: 25091790c23650a409db382290a8c885, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.000029413328
+      value: 0.0006107552
       objectReference: {fileID: 0}
     - target: {fileID: 7504255272786054419, guid: 25091790c23650a409db382290a8c885, type: 3}
       propertyPath: m_AnchorMax.x
