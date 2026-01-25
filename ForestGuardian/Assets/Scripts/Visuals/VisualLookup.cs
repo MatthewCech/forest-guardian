@@ -13,6 +13,12 @@ namespace forest
     [CreateAssetMenu(fileName = "Lookup Data", menuName = "ScriptableObjects/Visual Lookup Data", order = 1)]
     public class VisualLookup : ScriptableObject
     {
+        // This is risky. If we ever change the name of the tile prefabs, this no longer works.
+        public const string TILE_DEFAULT_NAME = "Nothing";
+        public const string TILE_GENERIC_GROUND = "Basic";
+        public const string TILE_GENERIC_MARSH = "Marsh";
+        public const string TILE_GENERIC_WALL = "Wall";
+
         public float interactionZPriority = 0.4f; // Used as -z in practice to move towards camera
         public float unitZPriority = 0.2f; // Used as -z in practice to move towards camera
 

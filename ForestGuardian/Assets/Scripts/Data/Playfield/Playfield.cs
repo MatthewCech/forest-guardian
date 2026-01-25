@@ -45,14 +45,29 @@ namespace forest
         /// <summary>
         /// Return whether or not this is a special case tutorial level.
         /// </summary>
-        /// <returns></returns>
         public bool IsTutorial()
         {
             return flagIsTutorial;
         }
 
         /// <summary>
-        /// Determine if the data makes sense
+        /// Return the width of the underlying world collection.
+        /// </summary>
+        public int Width()
+        {
+            return world.GetWidth();
+        }
+
+        /// <summary>
+        /// Return the height of the underlying world collection.
+        /// </summary>
+        public int Height()
+        {
+            return world.GetHeight();
+        }
+
+        /// <summary>
+        /// Determine if the data makes sense.
         /// </summary>
         /// <returns></returns>
         public bool Validate()

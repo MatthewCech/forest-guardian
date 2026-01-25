@@ -1,0 +1,967 @@
+using Loam;
+using Newtonsoft.Json;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace forest
+{
+    public enum GeneratorType
+    {
+        DEFAULT = 0,
+
+        // Single generators
+        PERLIN,
+        PATH,
+        SUBDIVIDE,
+
+        // Combo generators
+        PERLIN_PATH = 10,
+        SUBDIVIDE_PATH = 11,
+        PATH_STAIN = 12,
+        SUBDIVIDE_PATH_STAIN = 13
+    }
+
+    [System.Serializable]
+    [JsonObject(MemberSerialization.OptIn)]
+    public class PlayfieldRuleset
+    {
+        [Header("General")]
+        [JsonProperty][SerializeField] public GeneratorType generatorType = GeneratorType.PERLIN;
+        [JsonProperty][SerializeField][Min(1)] public int sizeXMin = 10;
+        [JsonProperty][SerializeField][Min(1)] public int sizeXMax = 20;
+        [JsonProperty][SerializeField][Min(1)] public int sizeYMin = 10;
+        [JsonProperty][SerializeField][Min(1)] public int sizeYMax = 20;
+        [JsonProperty][SerializeField] public int seed = 123;
+        [JsonProperty][SerializeField] public bool trimPlayfield = false;
+        [JsonProperty][SerializeField][Min(0)] public int trimPadding = 0;
+        [NonSerialized] public GeneratorType prevGeneratorType = GeneratorType.DEFAULT;
+        [NonSerialized] public int prevSizeXMin = -1;
+        [NonSerialized] public int prevSizeYMin = -1;
+        [NonSerialized] public int prevSizeXMax = -1;
+        [NonSerialized] public int prevSizeYMax = -1;
+        [NonSerialized] public int prevSeed = -1;
+        [NonSerialized] public bool prevTrimPlayfield = false;
+        [NonSerialized] public int prevTrimPadding = 0;
+
+        [Header("PERLIN (settings)")]
+        [JsonProperty][SerializeField][Min(0.001f)] public float scale = 0.1f;
+        [JsonProperty][SerializeField][Range(0, 1)] public float thresholdWall = 0.9f;
+        [JsonProperty][SerializeField][Range(0, 1)] public float thresholdLand = 0.5f;
+        [JsonProperty][SerializeField][Range(0, 1)] public float thresholdMarsh = 0.4f;
+        [NonSerialized] public float prevScale = -1;
+        [NonSerialized] public float prevThresholdWall = -1;
+        [NonSerialized] public float prevThresholdLand = -1;
+        [NonSerialized] public float prevThresholdMarsh = -1;
+
+        [Header("PATH (settings)")]
+        [JsonProperty][SerializeField][Range(0, 25)] public int originBorderMin = 1;
+        [JsonProperty][SerializeField][Range(0, 25)] public int originBorderRange = 2;
+        [JsonProperty][SerializeField][Range(0, 25)] public int portalBorderMin = 1;
+        [JsonProperty][SerializeField][Range(0, 25)] public int portalBorderRange = 2;
+        [JsonProperty][SerializeField][Range(0, 1)] public float pathNoise = 0.1f;
+        [JsonProperty][SerializeField][Min(0)] public int noiseWatchdog = 50;
+        [JsonProperty][SerializeField][Range(0, 10)] public int outlineLayers = 0;
+        [NonSerialized] public int prevOriginBorderMin = 1;
+        [NonSerialized] public int prevOriginBorderRange = 2;
+        [NonSerialized] public int prevPortalBorderMin = 1;
+        [NonSerialized] public int prevPortalBorderRange = 2;
+        [NonSerialized] public float prevPathNoise = 0.1f;
+        [NonSerialized] public int prevOutlineLayers = 0;
+        [NonSerialized] public int prevNoiseWatchdog = 50;
+
+        [Header("SUBDIVIDE (settings)")]
+        [JsonProperty][SerializeField][Min(0)] public int roomPadding = 0;
+        [JsonProperty][SerializeField][Min(1)] public int minRoomSize = 3;
+        [JsonProperty][SerializeField][Range(0, 8)] public int minRoomCount = 1;
+        [JsonProperty][SerializeField][Range(0, 0.1f)] public float splitChancePerUnitArea = 0.01f;
+        [JsonProperty][SerializeField][Range(1, 20)] public int maxSubdivisionRerolls = 5;
+        [NonSerialized] public int prevRoomPadding = 0;
+        [NonSerialized] public int prevMinRoomSize = 3;
+        [NonSerialized] public int prevMinRoomCount = 1;
+        [NonSerialized] public int prevMaxSubdivisionReroll = 5;
+        [NonSerialized] public float prevSplitChancePerUnitArea = 0.01f;
+
+        [Header("STAIN (settings)")]
+        [JsonProperty][SerializeField][Range(0, 1)] public float stainThreshold = 0.8f;
+        [NonSerialized] public float prevStainThreshold = 0.8f;
+
+        /// <summary>
+        /// Returns if an update did occur at any point
+        /// </summary>
+        /// <param name="toCheck"></param>
+        /// <returns></returns>
+        public bool CheckForChangesAndUpdate()
+        {
+            bool didChange = false;
+
+            didChange |= TryUpdate(ref this.prevGeneratorType, this.generatorType);
+            didChange |= TryUpdate(ref this.prevSizeXMin, this.sizeXMin);
+            didChange |= TryUpdate(ref this.prevSizeYMin, this.sizeYMin);
+            didChange |= TryUpdate(ref this.prevSizeXMax, this.sizeXMax);
+            didChange |= TryUpdate(ref this.prevSizeYMax, this.sizeYMax);
+            didChange |= TryUpdate(ref this.prevSeed, this.seed);
+            didChange |= TryUpdate(ref this.prevTrimPlayfield, this.trimPlayfield);
+            didChange |= TryUpdate(ref this.prevTrimPadding, this.trimPadding);
+
+            didChange |= TryUpdate(ref this.prevScale, this.scale);
+            didChange |= TryUpdate(ref this.prevThresholdWall, this.thresholdWall);
+            didChange |= TryUpdate(ref this.prevThresholdLand, this.thresholdLand);
+            didChange |= TryUpdate(ref this.prevThresholdMarsh, this.thresholdMarsh);
+
+            didChange |= TryUpdate(ref this.prevOriginBorderMin, this.originBorderMin);
+            didChange |= TryUpdate(ref this.prevOriginBorderRange, this.originBorderRange);
+            didChange |= TryUpdate(ref this.prevPortalBorderMin, this.portalBorderMin);
+            didChange |= TryUpdate(ref this.prevPortalBorderRange, this.portalBorderRange);
+            didChange |= TryUpdate(ref this.prevPathNoise, this.pathNoise);
+            didChange |= TryUpdate(ref this.prevNoiseWatchdog, this.noiseWatchdog);
+            didChange |= TryUpdate(ref this.prevOutlineLayers, this.outlineLayers);
+
+            didChange |= TryUpdate(ref this.prevRoomPadding, this.roomPadding);
+            didChange |= TryUpdate(ref this.prevMinRoomSize, this.minRoomSize);
+            didChange |= TryUpdate(ref this.prevMinRoomCount, this.minRoomCount);
+            didChange |= TryUpdate(ref this.prevMaxSubdivisionReroll, this.maxSubdivisionRerolls);
+            didChange |= TryUpdate(ref this.prevSplitChancePerUnitArea, this.splitChancePerUnitArea);
+
+            didChange |= TryUpdate(ref this.prevStainThreshold, this.stainThreshold);
+
+            return didChange;
+        }
+
+        public static bool TryUpdate<T>(ref T prevValue, T value)
+        {
+            if (!prevValue.Equals(value))
+            {
+                prevValue = value;
+                return true;
+            }
+
+            return false;
+        }
+
+    }
+
+    public class RulesetEditor : MonoBehaviour
+    {
+        [Header("Links")]
+        [SerializeField] private Camera viewingCamera;
+        [SerializeField] private VisualPlayfield visualPlayfield;
+        [SerializeField] private VisualLookup visualLookup;
+
+        [Header("Debug Only")]
+        [SerializeField] private bool repeatedlyRefresh = false;
+        [SerializeField] private bool useRandomSeed = false;
+        private bool prevUseRandomSeed = false;
+
+        [SerializeField] private PlayfieldRuleset ruleset;
+
+        // Internal
+        private Playfield aggregatePlayfield = null;
+        private WHRandom rand = new WHRandom();
+        private bool isFirstUpdate = true;
+
+        private void Start()
+        {
+            ruleset.prevSizeXMin = ruleset.sizeXMin;
+            ruleset.prevSizeYMin = ruleset.sizeYMin;
+            ruleset.prevSizeXMax = ruleset.sizeXMax;
+            ruleset.prevSizeYMax = ruleset.sizeYMax;
+
+            visualPlayfield.Initialize(visualLookup);
+
+            DrawPlayfield();
+            Utils.CenterCamera(viewingCamera, visualPlayfield);
+        }
+
+        private void Update()
+        {
+            bool needsRedraw = repeatedlyRefresh;
+
+            needsRedraw |= PlayfieldRuleset.TryUpdate(ref prevUseRandomSeed, useRandomSeed);
+            needsRedraw |= ruleset.CheckForChangesAndUpdate();
+
+            if (!isFirstUpdate && needsRedraw)
+            {
+                DrawPlayfield();
+            }
+
+            isFirstUpdate = false;
+        }
+
+        /// <summary>
+        /// Use the appropriate generator combinations depending on the set generator type
+        /// </summary>
+        private void DrawPlayfield()
+        {
+            if (useRandomSeed)
+            {
+                NewRandSeed();
+            }
+
+            switch(ruleset.generatorType)
+            {
+                case GeneratorType.PERLIN:
+                    Playfield perlin = CreatePerlinPlayfield(ruleset,aggregatePlayfield);
+                    aggregatePlayfield = TrimPerSettings(ruleset, perlin);
+                    break;
+
+                case GeneratorType.PATH:
+                    Playfield path = CreatePathPlayfield(ruleset);
+                    aggregatePlayfield = TrimPerSettings(ruleset, path);
+                    break;
+
+                case GeneratorType.SUBDIVIDE:
+                    Playfield subdivided = Subdivide(ruleset, out List<Room> _);
+                    aggregatePlayfield = TrimPerSettings(ruleset, subdivided);
+                    break;
+
+                case GeneratorType.PERLIN_PATH:
+                    ClearWorkingPlayfield(ruleset);
+                    Playfield perlinUnderlay = CreatePerlinPlayfield(ruleset,aggregatePlayfield);
+                    Playfield pathOverlay = CreatePathPlayfield(ruleset);
+                    Playfield layered = Utils.LayerPlayfields(perlinUnderlay, pathOverlay);
+                    aggregatePlayfield = TrimPerSettings(ruleset, layered);
+                    break;
+
+                case GeneratorType.SUBDIVIDE_PATH:
+                    Playfield subdividedPath = SubdividePath(ruleset,out List <Room> _);
+                    aggregatePlayfield = TrimPerSettings(ruleset, subdividedPath);
+                    break;
+
+                case GeneratorType.PATH_STAIN:
+                    ClearWorkingPlayfield(ruleset);
+                    Playfield toStain = CreatePathPlayfield(ruleset);
+                    Playfield trimmedPath = TrimPerSettings(ruleset, toStain);
+                    Playfield pretrimTopStain = StainPlayfield(ruleset,trimmedPath, VisualLookup.TILE_GENERIC_MARSH, onTop: true);
+                    break;
+
+                case GeneratorType.SUBDIVIDE_PATH_STAIN:
+                    ClearWorkingPlayfield(ruleset);
+                    Playfield subdividepath = SubdividePath(ruleset, out List <Room> rooms);
+                    Playfield subdividePopulated = PopulateRooms(ruleset, subdividepath, rooms);
+                    Playfield trimmedPreStain = TrimPerSettings(ruleset, subdividePopulated);
+                    aggregatePlayfield = StainPlayfield(ruleset,trimmedPreStain, VisualLookup.TILE_GENERIC_WALL, onTop: false);
+                    break;
+            }
+
+            visualPlayfield.DisplayAll(aggregatePlayfield);
+            CenterCamera();
+        }
+
+        public static Playfield TrimPerSettings(PlayfieldRuleset rules, Playfield playfield)
+        {
+            if(rules.trimPlayfield)
+            {
+                return Utils.TrimPlayfield(playfield, rules.trimPadding);
+            }
+
+            return playfield;
+        }
+
+        private class PerlinThresholdPair
+        {
+            public float threshold;
+            public string tag;
+        }
+        public enum SplitStyle
+        {
+            Horizontal,
+            Vertical
+        }
+
+        private class SplitNode
+        {
+            public int left = -1;
+            public int right = -1;
+            public int top = -1;
+            public int bottom = -1;
+            public int padding = 0;
+
+            public SplitStyle splitStyle = SplitStyle.Horizontal;
+
+            public SplitNode child1 = null;
+            public SplitNode child2 = null;
+            public SplitNode parent = null;
+
+            public Vector2Int GetCenter() => new Vector2Int(left + (right - left) / 2, top + (bottom - top) / 2);
+
+            public bool IsLeaf => child1 == null && child2 == null;
+            public int Width => Mathf.Abs(right - left);
+            public int Height => Mathf.Abs(top - bottom);
+        }
+
+        private class Room
+        {
+            public int Left { get; private set; }
+            public int Right { get; private set; }
+            public int Top { get; private set; }
+            public int Bottom { get; private set; }
+            public int Padding { get; private set; }
+            public int Width => Mathf.Abs(Right - Left);
+            public int Height => Mathf.Abs(Top - Bottom);
+            public Vector2Int GetCenter() => new Vector2Int(Left + (Right - Left) / 2, Top + (Bottom - Top) / 2);
+
+            public Room(SplitNode toPull)
+            {
+                Left = toPull.left;
+                Right = toPull.right;
+                Top = toPull.top;
+                Bottom = toPull.bottom;
+                Padding = toPull.padding;
+            }
+
+            public Room(int left, int right, int top, int bottom, int padding)
+            {
+                Left = left;
+                Right = right;
+                Top = top;
+                Bottom = bottom;
+                Padding = padding;
+            }
+        }
+
+        private class PairLineDraw
+        {
+            public Vector2Int start;
+            public Vector2Int end;
+        }
+
+        /// <summary>
+        /// Take a collection of rooms and an existing playfield and place surface objects
+        /// like origins, portals, acorns, enemies, etc on the playfield.
+        /// </summary>
+        private Playfield PopulateRooms(PlayfieldRuleset rules, Playfield toPopulate, List<Room> rooms)
+        {
+            Playfield workingPlayfield = Utils.CreatePlayfield(toPopulate.Width(), toPopulate.Height(), toPopulate);
+
+            // Place portal
+            Room portalRoom = rooms[rooms.Count - 1];
+            PlayfieldPortal portal = new PlayfieldPortal();
+            portal.target = Globals.NEXT_GENERATOR_FLOOR_KEY;
+            portal.id = workingPlayfield.GetNextID();
+            int portalRelX = rand.Range(rules.roomPadding, portalRoom.Width - rules.roomPadding);
+            int portalRelY = rand.Range(rules.roomPadding, portalRoom.Height - rules.roomPadding);
+            portal.location = new Vector2Int(portalRoom.Left + portalRelX, portalRoom.Top + portalRelY);
+            workingPlayfield.portals.Add(portal);
+
+            // Place origins
+            bool placing = true;
+            int tries = 20;
+            Room originRoom = rooms[0];
+            while (placing && tries-- > 0)
+            {
+                int originRelX = rand.Range(rules.roomPadding, originRoom.Width - rules.roomPadding);
+                int originRelY = rand.Range(rules.roomPadding, originRoom.Height - rules.roomPadding);
+                Vector2Int pos = new Vector2Int(originRoom.Left + originRelX, originRoom.Top + originRelY);
+                if (!workingPlayfield.TryGetPortalAt(pos, out PlayfieldPortal _))
+                {
+                    PlayfieldOrigin origin = new PlayfieldOrigin();
+                    origin.id = workingPlayfield.GetNextID();
+                    origin.location = pos;
+                    workingPlayfield.origins.Add(origin);
+                    placing = false;
+                }
+            }
+
+            return workingPlayfield;
+        }
+
+        /// <summary>
+        /// Uses subdivision generator to split the space out into rooms, then connects those rooms
+        /// with the path system. Outlines the paths accordingly. Ensures there's at minmum *a* room.
+        /// </summary>
+        /// <param name="rooms">A list of all the rooms generated</param>
+        /// <returns>Generated playfield</returns>
+        private Playfield SubdividePath(PlayfieldRuleset rules, out List<Room> rooms)
+        {
+            Playfield subdivides;
+            rooms = new List<Room>();
+            int retriesLeft = rules.maxSubdivisionRerolls;
+            do
+            {
+                subdivides = Subdivide(rules, out rooms);
+                if (rooms.Count <= rules.prevMinRoomCount)
+                {
+                    rules.seed = rand.Range(0, WHRandom.MAX_SEED + 1);
+                    rules.prevSeed = rules.seed;
+                }
+            }
+            while (rooms.Count <= rules.prevMinRoomCount && retriesLeft-- > 0);
+
+            if(retriesLeft <= 0)
+            {
+                Debug.LogError($"UGH! Hands up, can't make this, hit {rules.maxSubdivisionRerolls} rerolls looking for {rules.prevMinRoomCount} rooms minimum.");
+                Playfield fallback = Utils.CreatePlayfield(rand.Range(rules.minRoomSize, rules.sizeXMin), rand.Range(rules.minRoomSize, rules.sizeYMin));
+                for(int x = 0; x < fallback.Width(); x++)
+                {
+                    for(int y = 0; y < fallback.Height(); y++)
+                    {
+                        fallback.world.Set(x, y, new PlayfieldTile()
+                        {
+                            id = fallback.GetNextID(),
+                            tag = VisualLookup.TILE_GENERIC_GROUND
+                        });
+                    }
+                }
+                Room room = new Room(0, fallback.Width() - 1, 0, fallback.Height() - 1, rules.roomPadding);
+                rooms.Add(room);
+                subdivides = fallback;
+            }
+
+            Playfield paths = Utils.CreatePlayfield(subdivides.world.GetWidth(), subdivides.world.GetHeight());
+            List<PairLineDraw> toDraw = new List<PairLineDraw>();
+
+            for(int i = 1; i < rooms.Count; ++i)
+            {
+                PairLineDraw line = new PairLineDraw();
+                line.start = rooms[i - 1].GetCenter();
+                line.end = rooms[i].GetCenter();
+                toDraw.Add(line);
+            }
+
+            for (int i = 0; i < toDraw.Count; ++i)
+            {
+                PairLineDraw pair = toDraw[i];
+                CreatePathToTarget(ruleset, paths, pair.start, pair.end);
+            }
+
+            for (int outlines = 0; outlines < rules.outlineLayers; ++outlines)
+            {
+                AddTileOutline(paths, VisualLookup.TILE_GENERIC_GROUND, VisualLookup.TILE_GENERIC_MARSH);
+            }
+
+            Playfield combined = Utils.LayerPlayfields(paths, subdivides);
+            return combined;
+        }
+
+        /// <summary>
+        /// Generate a playfield with conventional rogue/brogue style room layout.
+        /// The rooms get bundled and spit out.
+        /// </summary>
+        /// <param name="rooms"></param>
+        /// <returns></returns>
+        private Playfield Subdivide(PlayfieldRuleset rules, out List<Room> rooms)
+        {
+            rand.InitState(rules.seed);
+
+            int sizeX = rand.Range(rules.sizeXMin, rules.sizeXMax + 1);
+            int sizeY = rand.Range(rules.sizeYMin, rules.sizeYMax + 1);
+
+            Playfield workingPlayfield = Utils.CreatePlayfield(sizeX, sizeY);
+
+            SplitNode root = new SplitNode();
+            root.left = 0;
+            root.right = sizeX;
+            root.top = 0;
+            root.bottom = sizeY;
+            root.padding = rules.roomPadding;
+
+            Stack<SplitNode> toSplit = new Stack<SplitNode>();
+            toSplit.Push(root);
+
+            while (toSplit.Count > 0)
+            {
+                SplitNode node = toSplit.Pop();
+
+                int splitPadding = Mathf.CeilToInt(rules.minRoomSize / 2.0f);
+                if(node.Width < splitPadding * 2 || node.Height < splitPadding * 2)
+                {
+                    continue;
+                }
+
+                float splitRoll = (float)rand.Next();
+                float chance = node.Width * node.Height * rules.splitChancePerUnitArea;
+                if (chance < splitRoll) // roll failed
+                {
+                    continue;
+                }
+                
+                node.splitStyle = rand.FlipCoin() ? SplitStyle.Horizontal : SplitStyle.Vertical;
+                if(node.parent != null)
+                {
+                    if(node.parent.splitStyle == SplitStyle.Horizontal)
+                    {
+                        node.splitStyle = SplitStyle.Vertical;
+                    }
+                    else
+                    {
+                        node.splitStyle = SplitStyle.Horizontal;
+                    }
+                }
+
+                if (node.splitStyle == SplitStyle.Horizontal)
+                {
+                    int horizontalSplitPos = rand.Range(node.left + splitPadding, node.right - splitPadding + 1);
+
+                    SplitNode newLeft = new SplitNode();
+                    newLeft.left = node.left;
+                    newLeft.right = horizontalSplitPos;
+                    newLeft.top = node.top;
+                    newLeft.bottom = node.bottom;
+                    newLeft.padding = rules.roomPadding;
+                    newLeft.parent = node;
+
+                    node.child1 = newLeft;
+                    toSplit.Push(newLeft);
+
+                    SplitNode newRight = new SplitNode();
+                    newRight.left = horizontalSplitPos;
+                    newRight.right = node.right;
+                    newRight.top = node.top;
+                    newRight.bottom = node.bottom;
+                    newRight.padding = rules.roomPadding;
+                    newRight.parent = node;
+
+                    node.child2 = newRight;
+                    toSplit.Push(newRight);
+                }
+                else
+                {
+                    int verticalSplitPos = rand.Range(node.top + splitPadding, node.bottom - splitPadding + 1);
+
+                    SplitNode newTop = new SplitNode();
+                    newTop.left = node.left;
+                    newTop.right = node.right;
+                    newTop.top = node.top;
+                    newTop.bottom = verticalSplitPos;
+                    newTop.padding = rules.roomPadding;
+                    newTop.parent = node;
+
+                    node.child1 = newTop;
+                    toSplit.Push(newTop);
+
+                    SplitNode newBottom = new SplitNode();
+                    newBottom.left = node.left;
+                    newBottom.right = node.right;
+                    newBottom.top = verticalSplitPos;
+                    newBottom.bottom = node.bottom;
+                    newBottom.padding = rules.roomPadding;
+                    newBottom.parent = node;
+
+                    node.child2 = newBottom;
+                    toSplit.Push(newBottom);
+                }
+            }
+
+            rooms = new List<Room>();
+            Stack<SplitNode> walk = new Stack<SplitNode>();
+            walk.Push(root);
+            while (walk.Count > 0)
+            {
+                SplitNode cur = walk.Pop();
+                if (cur.IsLeaf)
+                {
+                    if (cur.Width >= rules.minRoomSize && cur.Height >= rules.minRoomSize)
+                    {
+                        rooms.Add(new Room(cur));
+                    }
+                }
+                else
+                {
+                    if (cur.child1 != null)
+                    {
+                        walk.Push(cur.child1);
+                    }
+
+                    if(cur.child2 != null)
+                    {
+                        walk.Push(cur.child2);
+                    }
+                }
+            }
+
+            foreach(Room cur in rooms)
+            {
+                for(int x = cur.Left + cur.Padding; x < cur.Right - cur.Padding; ++x)
+                {
+                    for(int y = cur.Top + cur.Padding; y < cur.Bottom - cur.Padding; ++y)
+                    {
+                        workingPlayfield.world.Set(x, y, new PlayfieldTile()
+                        {
+                            id = workingPlayfield.GetNextID(),
+                            tag = VisualLookup.TILE_GENERIC_GROUND
+                        });
+                    }
+                }
+            }
+
+            return workingPlayfield;
+        }
+
+        /// <summary>
+        /// Generate some perlin noise using a single type of tile and then
+        /// either put the existing playfield on top of it or put it on the exisint playfield
+        /// </summary>
+        private Playfield StainPlayfield(PlayfieldRuleset rules, Playfield toStain, string stainTag, bool onTop)
+        {
+            rand.InitState(rules.seed);
+
+            int width = toStain.Width();
+            int height = toStain.Height();
+
+            Playfield stain = Utils.CreatePlayfield(toStain.Width(), toStain.Height());
+            for (int x = 0; x < width; ++x)
+            {
+                for (int y = 0; y < height; ++y)
+                {
+                    float height01 = Mathf.PerlinNoise(rules.seed + (x * rules.scale), rules.seed + (y * rules.scale));
+
+                    if(height01 > rules.stainThreshold)
+                    {
+                        PlayfieldTile tile = new PlayfieldTile();
+                        tile.id = stain.GetNextID();
+                        tile.tag = stainTag;
+
+                        stain.world.Set(x, y, tile);
+                    }
+                }
+            }
+
+            if(onTop)
+            {
+                return Utils.LayerPlayfields(toStain, stain);
+            }
+            else
+            {
+                return Utils.LayerPlayfields(stain, toStain);
+            }
+        }
+
+        /// <summary>
+        /// A straight perlin noise only approach to generating terrain. Allows different
+        /// thresholds to be selected but makes no guarantees of clean pathing.
+        /// </summary>
+        private Playfield CreatePerlinPlayfield(PlayfieldRuleset rules, Playfield existingPlayfield = null)
+        {
+            rand.InitState(rules.seed);
+
+            int sizeX = rand.Range(rules.sizeXMin, rules.sizeXMax + 1);
+            int sizeY = rand.Range(rules.sizeYMin, rules.sizeYMax + 1);
+
+            Playfield workingPlayfield = Utils.CreatePlayfield(sizeX, sizeY, existingPlayfield);
+
+            List<PerlinThresholdPair> thresholds = new List<PerlinThresholdPair>
+            {
+                new PerlinThresholdPair() { threshold = rules.thresholdLand, tag = VisualLookup.TILE_GENERIC_GROUND },
+                new PerlinThresholdPair() { threshold = rules.thresholdMarsh, tag = VisualLookup.TILE_GENERIC_MARSH },
+                new PerlinThresholdPair() { threshold = rules.thresholdWall, tag = VisualLookup.TILE_GENERIC_WALL }
+            };
+
+            thresholds.Sort((lhs, rhs) => { return lhs.threshold < rhs.threshold ? 1 : -1; });
+
+            for (int x = 0; x < sizeX; ++x)
+            {
+                for(int y = 0; y < sizeY; ++y)
+                {
+                    float height01 = Mathf.PerlinNoise(rules.seed + (x * rules.scale), rules.seed + (y * rules.scale));
+
+                    PlayfieldTile tile = new PlayfieldTile();
+
+                    tile.tag = VisualLookup.TILE_DEFAULT_NAME;
+                    for (int i = 0; i < thresholds.Count; ++i)
+                    {
+                        PerlinThresholdPair cur = thresholds[i];
+                        if (height01 > cur.threshold)
+                        {
+                            tile.tag = cur.tag;
+                            break;
+                        }
+                    }    
+
+                    tile.id = workingPlayfield.GetNextID();
+
+                    workingPlayfield.world.Set(x, y, tile);
+                }
+            }
+
+            return workingPlayfield;
+        }
+
+        /// <summary>
+        /// A wanderer draws a path between a start and an end that get placed in specific areas.
+        /// Noise is added at various points, but creates a wibbly line of an experience.
+        /// </summary>
+        private Playfield CreatePathPlayfield(PlayfieldRuleset rules, Playfield existingPlayfield = null)
+        {
+            rand.InitState(rules.seed);
+
+            // Ensure minimum size
+            int sizeX = rand.Range(rules.sizeXMin, rules.sizeXMax + 1);
+            int sizeY = rand.Range(rules.sizeYMin, rules.sizeYMax + 1);
+
+            int minSize = Mathf.Max(rules.originBorderRange * 2, 2);
+            sizeX = Mathf.Max(sizeX, minSize);
+            sizeY = Mathf.Max(sizeY, minSize);
+
+            // Create playfield based on previous
+            Playfield workingPlayfield = Utils.CreatePlayfield(sizeX, sizeY, existingPlayfield);
+
+            // Establish origin location
+            bool originIsHorizontal = rand.FlipCoin();
+            bool originIsPositive = rand.FlipCoin();
+            int originOffset = rand.Range(rules.originBorderMin, rules.originBorderMin + rules.originBorderRange);
+            int portalOffset = rand.Range(rules.portalBorderMin, rules.portalBorderMin + rules.portalBorderRange);
+            Vector2Int originPos = new Vector2Int(-1, -1);
+            Vector2Int portalPos = new Vector2Int(-1, -1);
+
+            if (originIsHorizontal) 
+            {
+                // Randomly place along the X axis
+                originPos.x = rand.Range(rules.originBorderMin, sizeX - rules.originBorderMin);
+                portalPos.x = rand.Range(rules.portalBorderMin, sizeX - rules.portalBorderMin);
+
+                // Place origin and portal on opposite top/bottom sides
+                originPos.y = originIsPositive ? sizeY - originOffset - 1 : originOffset;
+                portalPos.y = !originIsPositive ? sizeY - portalOffset - 1 : portalOffset; 
+            }
+            else
+            {
+                // Randomly place along the Y axis
+                originPos.y = rand.Range(rules.originBorderMin, sizeY - rules.originBorderMin);
+                portalPos.y = rand.Range(rules.portalBorderMin, sizeY - rules.portalBorderMin);
+
+                // Place origin and portal on opposite left/right sides
+                portalPos.x = !originIsPositive ? sizeX - portalOffset - 1 : portalOffset;
+                originPos.x = originIsPositive ? sizeX - originOffset - 1 : originOffset; 
+            }
+
+            workingPlayfield.origins.Add(new PlayfieldOrigin
+            {
+                id = workingPlayfield.GetNextID(),
+                location = originPos,
+                partyIndex = 0
+            });
+
+            workingPlayfield.portals.Add(new PlayfieldPortal
+            {
+                id = workingPlayfield.GetNextID(),
+                location = portalPos,
+                target = Globals.NEXT_GENERATOR_FLOOR_KEY
+            });
+
+            // Draw wibbly core path by stepping from the origin to the exit portal
+            CreatePathToTarget(ruleset, workingPlayfield, originPos, portalPos);
+
+            // Perform outline passes
+            for (int outlines = 0; outlines < rules.outlineLayers; ++outlines)
+            {
+                AddTileOutline(workingPlayfield, VisualLookup.TILE_GENERIC_GROUND, VisualLookup.TILE_GENERIC_GROUND);
+            }
+
+            return workingPlayfield;
+        }
+
+        /// <summary>
+        /// Given a specific type of tyle, goes and adds an outline at the expense of any other tile
+        /// at the target location. Does so greedily, inefficiently, and in a way that burns a lot of IDs.
+        /// </summary>
+        private static void AddTileOutline(Playfield workingPlayfield, string targetTag, string outlineTag, bool writeOverExisting = false)
+        {
+            int sizeX = workingPlayfield.world.GetWidth();
+            int sizeY = workingPlayfield.world.GetHeight();
+
+            List<Vector2Int> toAdd = new List<Vector2Int>();
+
+            void AddToEmpty(Vector2Int pos)
+            {
+                if (!writeOverExisting)
+                {
+                    if (workingPlayfield.world.IsPosInGrid(pos))
+                    {
+                        PlayfieldTile tile = workingPlayfield.world.Get(pos);
+
+                        // Tile must be default to apply outline
+                        if (tile.tag.Equals(VisualLookup.TILE_DEFAULT_NAME))
+                        {
+                            toAdd.Add(pos);
+                        }
+                    }
+                }
+                else
+                {
+                    toAdd.Add(pos);
+                }
+            }
+
+            for (int x = 0; x < workingPlayfield.world.GetWidth(); ++x)
+            {
+                for (int y = 0; y < workingPlayfield.world.GetHeight(); ++y)
+                {
+                    PlayfieldTile existingTile = workingPlayfield.world.Get(x, y);
+                    if (existingTile.tag.Equals(targetTag))
+                    {
+                        AddToEmpty(new Vector2Int(x + 1, y));
+                        AddToEmpty(new Vector2Int(x - 1, y));
+                        AddToEmpty(new Vector2Int(x, y + 1));
+                        AddToEmpty(new Vector2Int(x, y - 1));
+                    }
+                }
+            }
+
+            for (int i = 0; i < toAdd.Count; ++i)
+            {
+                Vector2Int cur = toAdd[i];
+
+                int x = Mathf.Clamp(cur.x, 0, sizeX - 1);
+                int y = Mathf.Clamp(cur.y, 0, sizeY - 1);
+
+                workingPlayfield.world.Set(new Vector2Int(x, y), new PlayfieldTile()
+                {
+                    id = workingPlayfield.GetNextID(),
+                    tag = outlineTag
+                });
+            }
+        }
+
+        /// <summary>
+        /// Create a wanderer that goes from the start to the target, taking X or Y steps based
+        /// on how many in that direction are needed still. Eg: 4 to the right, 2 up gives a 4/6
+        /// chance to move on the X axis.
+        /// 
+        /// This is modified a noise roll that overrides this if the roll is made, selecting a random
+        /// direction. To prevent runaway noisy wandering, a watchdog is honored and if the number of 
+        /// noise steps exceeds the watchdog's allowed steps, walk conventionally.
+        /// </summary>
+        /// <param name="workingPlayfield"></param>
+        /// <param name="start"></param>
+        /// <param name="target"></param>
+        private void CreatePathToTarget(PlayfieldRuleset rules, Playfield workingPlayfield, Vector2Int start, Vector2Int target)
+        {
+            int sizeX = workingPlayfield.world.GetWidth();
+            int sizeY = workingPlayfield.world.GetHeight();
+
+            int xCurrent = start.x;
+            int yCurrent = start.y;
+
+            int watchdog = rules.noiseWatchdog;
+            bool didWatchdogNotify = false;
+
+            workingPlayfield.world.Set(new Vector2Int(xCurrent, yCurrent), new PlayfieldTile()
+            {
+                id = workingPlayfield.GetNextID(),
+                tag = VisualLookup.TILE_GENERIC_GROUND
+            });
+
+            while (xCurrent != target.x || yCurrent != target.y)
+            {
+                float xDiff = Mathf.Abs(target.x - xCurrent);
+                float yDiff = Mathf.Abs(target.y - yCurrent);
+
+                float moveOnX = xDiff / (xDiff + yDiff);
+                float rollXY = (float)rand.Next();
+
+                float rollNoise = (float)rand.Next();
+                bool preferNoise = rules.pathNoise > rollNoise;
+                if (watchdog-- < 0)
+                {
+                    if (!didWatchdogNotify)
+                    {
+                        Debug.LogWarning($"Noise watchdog(${rules.noiseWatchdog}) hit. Est steps from target min:{xDiff + yDiff}, est: {(xDiff + yDiff) / (1 - rules.pathNoise)}");
+                        didWatchdogNotify = true;
+                    }
+
+                    preferNoise = false;
+                }
+
+                if (preferNoise)
+                {
+                    if (rand.FlipCoin())
+                    {
+                        xCurrent += rand.Range(-1, 2);
+                    }
+                    else
+                    {
+                        yCurrent += rand.Range(-1, 2);
+                    }
+                }
+                else
+                {
+                    if (rollXY < moveOnX)
+                    {
+                        xCurrent += target.x < xCurrent ? -1 : 1;
+                    }
+                    else
+                    {
+                        yCurrent += target.y < yCurrent ? -1 : 1;
+                    }
+                }
+
+                xCurrent = Mathf.Clamp(xCurrent, 0, sizeX);
+                yCurrent = Mathf.Clamp(yCurrent, 0, sizeY);
+
+                workingPlayfield.world.Set(new Vector2Int(xCurrent, yCurrent), new PlayfieldTile()
+                {
+                    id = workingPlayfield.GetNextID(),
+                    tag = VisualLookup.TILE_GENERIC_GROUND
+                });
+            }
+        }
+
+        /// <summary>
+        /// Clear the existing playfield, using a reset number generator for things
+        /// or leaning on the existing size. 
+        /// </summary>
+        public void ClearWorkingPlayfield(PlayfieldRuleset rules)
+        {
+            int sizeX = -1;
+            int sizeY = -1;
+
+            if (aggregatePlayfield != null)
+            {
+                sizeX = aggregatePlayfield.world.GetWidth();
+                sizeY = aggregatePlayfield.world.GetHeight();
+            }
+            else
+            {
+                rand.InitState(rules.seed);
+                sizeX = rand.Range(rules.sizeXMin, rules.sizeXMax + 1);
+                sizeY = rand.Range(rules.sizeYMin, rules.sizeYMax + 1);
+            }
+
+            aggregatePlayfield = Utils.CreatePlayfield(sizeX, sizeY);
+            visualPlayfield.DisplayAll(aggregatePlayfield);
+        }
+
+        public void CenterCamera()
+        {
+            Utils.CenterCamera(viewingCamera, visualPlayfield);
+        }
+
+        private void NewRandSeed()
+        {
+            ruleset.seed = UnityEngine.Random.Range(0, 20000);
+            ruleset.prevSeed = ruleset.seed;
+        }
+
+
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// Add some custom refresh options
+        /// </summary>
+        [UnityEditor.CustomEditor(typeof(RulesetEditor))]
+        public class RulesetEditorEditor : UnityEditor.Editor
+        {
+            public override void OnInspectorGUI()
+            {
+                if (GUILayout.Button("Refresh Playfield"))
+                {
+                    (target as RulesetEditor).DrawPlayfield();
+                    (target as RulesetEditor).CenterCamera();
+                }
+
+                if (GUILayout.Button("Refresh Playfield New Seed"))
+                {
+                    (target as RulesetEditor).NewRandSeed();
+                    (target as RulesetEditor).DrawPlayfield();
+                    (target as RulesetEditor).CenterCamera();
+                }
+
+                base.OnInspectorGUI();
+            }
+        }
+#endif
+    }
+}
