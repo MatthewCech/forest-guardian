@@ -565,5 +565,12 @@ namespace forest
             }
             target.exit = existing.exit;
         }
+
+
+        public static void CopyToClipboard(string toClipboard)
+        {
+            GUIUtility.systemCopyBuffer = toClipboard;
+        }
+
     }
 }

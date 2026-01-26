@@ -10,6 +10,7 @@ namespace forest
         [SerializeField] private Core.ForestLevel levelToLoad;
         [SerializeField] private Button target;
         [SerializeField] private bool confirmAction = false;
+        [SerializeField] private bool saveOnAction = false;
 
 #if UNITY_EDITOR
         private void OnValidate()
@@ -33,7 +34,12 @@ namespace forest
 
         void TryLoad()
         {
-            if(confirmAction)
+            if (saveOnAction)
+            {
+                Loam.Postmaster.Instance.Send(new MsgSaveGame());
+            }
+
+            if (confirmAction)
             {
                 Core.Instance.UICore.DisplayCoDA($"Really head to {levelToLoad.ToString()}?", () =>
                 {

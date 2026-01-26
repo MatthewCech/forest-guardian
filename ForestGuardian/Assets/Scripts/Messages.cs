@@ -151,15 +151,27 @@ namespace forest
 
     [MessageMetadata(
     friendlyName: "New level unlocked",
-    description: "",
+    description: "Adds the tag internally to the list of unlocked levels. Imacts map visibility.",
     isVisible: true)]
     public class MsgLevelUnlockAdded : Loam.Message
     {
         public string newUnlock;
     }
 
+    [MessageMetadata(
+    friendlyName: "New level Finished",
+    description: "Adds the level tag internally to the list of finished levels. Imacts map highlights.",
+    isVisible: true)]
     public class MsgLevelFinishedAdded : Loam.Message
     {
         public string newFinishedLevel;
+    }
+
+    [MessageMetadata(
+    friendlyName: "Save the game",
+    description: "Requests that the game get saved",
+    isVisible: true)]
+    public class MsgSaveGame : Loam.Message
+    {
     }
 }

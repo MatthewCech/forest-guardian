@@ -311,8 +311,8 @@ MonoBehaviour:
       moveDamage: 2
       moveRange: 1
       moveFX: 1
-      moveDescription: 'This bird''s got a sharp beak that can do some damage to
-        errant '
+      moveDescription: This bird's got a sharp beak that can do some damage to errant
+        plants
   head: {fileID: 334675950987140449}
   segmentLink: {fileID: 6897957375675128042}
   uiIcon: {fileID: 21300000, guid: c094ef0f30b7e1a4480e7cc8a7a86f00, type: 3}

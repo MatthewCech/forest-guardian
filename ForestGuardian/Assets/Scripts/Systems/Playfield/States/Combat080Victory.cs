@@ -47,14 +47,8 @@ namespace forest
             for (int i = 0; i < StateMachine.Playfield.tagsBestowed.Count; ++i)
             {
                 string toUnlock = StateMachine.Playfield.tagsBestowed[i];
-                if (!string.IsNullOrWhiteSpace(toUnlock))
-                {
-                    bool tagAlreadyUnlocked = Core.Instance.GameData.unlockedTags.Contains(toUnlock);
-                    if (!tagAlreadyUnlocked)
-                    {
-                        Core.Instance.GameData.unlockedTags.Add(toUnlock);
-                    }
-                }
+                Core.Instance.GameData.UnlockLevel(toUnlock);
+                Core.Instance.GameData.FinishLevel(toUnlock);
             }
         }
 

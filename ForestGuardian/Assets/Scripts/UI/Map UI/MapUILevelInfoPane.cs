@@ -15,6 +15,7 @@ namespace forest
 
         [SerializeField] private TMPro.TextMeshProUGUI levelTitle;
         [SerializeField] private TMPro.TextMeshProUGUI levelFloors;
+        [SerializeField] private GameObject levelFloorsArea;
         [SerializeField] private TMPro.TextMeshProUGUI levelDescription;
         [SerializeField] private Button buttonExit;
         [SerializeField] private Button buttonStart;
@@ -62,7 +63,10 @@ namespace forest
             canvasGroup.SetCanvasActive(true);
 
             levelTitle.text = interactable.LevelName;
+            levelDescription.text = interactable.Description;
             levelFloors.text = interactable.LevelDepth.ToString();
+            levelFloorsArea.SetActive(interactable.IsDungeon);
+            levelFloors.gameObject.SetActive(interactable.IsDungeon);
 
             // LERP content
             timeSoFar = 0;
@@ -70,6 +74,8 @@ namespace forest
             targetPosition = interactable.transform.position;
             startPosition = mapUIMenu.cameraPivot.position;
             isMoving = true;
+
+            LayoutRebuilder.ForceRebuildLayoutImmediate(canvasGroup.gameObject.transform as RectTransform);
         }
 
         private void Update()

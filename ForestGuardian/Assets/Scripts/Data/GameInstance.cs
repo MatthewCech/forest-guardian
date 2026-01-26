@@ -17,6 +17,7 @@ namespace forest
         [System.NonSerialized] public const int FLAG_COUNT = 1;
         [System.NonSerialized] public const int FLAG_STORY_INTRO = 0;
 
+        [System.NonSerialized] public const string FAKE_LEVEL_CAMP = "camp";
         [System.NonSerialized] public const string LEVEL_TUTORIAL = "tutorial";
         [System.NonSerialized] public const string LEVEL_1_1 = "ivy-grove";
 
@@ -35,7 +36,7 @@ namespace forest
         [System.NonSerialized] public Playfield lastFloor = null; // for use during multi-floor dungeons
         
         /// <summary>
-        /// Provides defaults. Arguments and construction can and should be reworked 
+        /// Provides defaults. Arguments and construction can and should be reworked.
         /// </summary>
         public void PopulateDefaults(VisualLookup lookup)
         {
@@ -43,6 +44,8 @@ namespace forest
 
             AddToRoster(lookup, "Guardian");
             AddToRoster(lookup, "Soot");
+
+            UnlockLevel(FAKE_LEVEL_CAMP);
         }
 
         /// <summary>
@@ -72,6 +75,13 @@ namespace forest
         /// </summary>
         public void UnlockLevel(string toAdd)
         {
+            if(string.IsNullOrWhiteSpace(toAdd))
+            {
+                Debug.LogError("Unlock tag provided is empty?");
+                return;
+            }
+
+            toAdd = toAdd.ToLower().Trim();
             if(unlockedTags.Contains(toAdd))
             {
                 return;
@@ -83,7 +93,14 @@ namespace forest
 
         public void FinishLevel(string toAdd)
         {
-            if(finishedTags.Contains(toAdd))
+            if (string.IsNullOrWhiteSpace(toAdd))
+            {
+                Debug.LogError("Finish tag provided is empty?");
+                return;
+            }
+
+            toAdd = toAdd.ToLower().Trim();
+            if (finishedTags.Contains(toAdd))
             {
                 return;
             }

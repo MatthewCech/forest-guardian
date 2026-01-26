@@ -24,9 +24,15 @@ namespace forest
 
             sliderMusic.onValueChanged.AddListener(RequestNewMusicVolume);
             sliderSFX.onValueChanged.AddListener(RequestNewSFXVolume);
+            clearAllData.onClick.AddListener(ResetData);
 
             // The timing on this is potentially strange.
             TryForceUpdateSliderValues();
+        }
+
+        private void ResetData()
+        {
+            Core.Instance.ClearSaveData();
         }
 
         private void Start()
@@ -47,6 +53,7 @@ namespace forest
 
         void OnDisable()
         {
+            clearAllData.onClick.RemoveListener(ResetData);
             sliderSFX.onValueChanged.RemoveListener(RequestNewSFXVolume);
             sliderMusic.onValueChanged.RemoveListener(RequestNewMusicVolume);
 

@@ -1344,7 +1344,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 1
-  m_AdditionalShaderChannelsFlag: 1
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 1
@@ -2202,7 +2202,7 @@ MonoBehaviour:
   sliderMusicValue: {fileID: 2453805316734818032}
   sliderSFX: {fileID: 5685035063665044192}
   sliderSFXValue: {fileID: 7009926920399057063}
-  clearAllData: {fileID: 0}
+  clearAllData: {fileID: 7710424833145156515}
 --- !u!1 &4317139640559758486
 GameObject:
   m_ObjectHideFlags: 0

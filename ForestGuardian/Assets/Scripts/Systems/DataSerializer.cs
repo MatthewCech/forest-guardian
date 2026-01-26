@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Loam;
 
 namespace forest
 {
@@ -16,10 +17,19 @@ namespace forest
         private const string volumeSFXKey = "forestVolumeSFX";
         public float VolumeSFX { get { return volumeSFX; } set { SetValue(volumeSFXKey, value, ref volumeSFX); } }
 
+        private MessageSubscription subSaveRequest;
+
         public void Initialize()
         {
             GetValue(volumeMusicKey, ref volumeMusic);
             GetValue(volumeSFXKey, ref volumeSFX);
+
+            subSaveRequest = Postmaster.Instance.Subscribe<MsgSaveGame>(SaveGame);
+        }
+
+        public void SaveGame(Message _)
+        {
+            SaveGameInstance(Core.Instance.GameData);
         }
 
         private void SetValue(string key, float value, ref float variable)

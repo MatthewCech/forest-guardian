@@ -59,7 +59,9 @@ namespace forest
 
         private void DEBUG_DumpInstanceStateToConsole()
         {
-            Debug.Log("Game Instance State:\n" + JsonUtility.ToJson(Core.Instance.GameData, true));
+            string json = JsonUtility.ToJson(Core.Instance.GameData, true);
+            Utils.CopyToClipboard(json);
+            Debug.Log("Copied following game instance state to clipboard:\n" + json); 
         }
     }
 }

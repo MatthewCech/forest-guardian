@@ -22,6 +22,8 @@ namespace forest
         [Header("Auto-populated")]
         [Tooltip("Level name, used for unlocking")][SerializeField] private string tagLabel;
         [Tooltip("the unlock provided by finishing this dungeon")][SerializeField] private List<string> tagsBestowed;
+        [Tooltip("Level description, used for UI")][SerializeField] private string description;
+        [Tooltip("Whether or not this is a dungeon")][SerializeField] private bool isDungeon = true;
         [Tooltip("Allow override for this section")][SerializeField] private bool overrideAutoPop = false;
 
         // Internal
@@ -32,10 +34,12 @@ namespace forest
 
         // Properties
         public string TagLabel { get { return tagLabel; } }
+        public string Description { get { return description; } }
         public List<string> TagsBestowed { get { return tagsBestowed; } }
         public TextAsset LevelData { get { return levelData; } }
         public string LevelName { get { return visibleName; } }
         public int LevelDepth { get { return depth; } }
+        public bool IsDungeon { get { return isDungeon; } }
 
 #if UNITY_EDITOR
         /// <summary>
@@ -49,6 +53,7 @@ namespace forest
                 this.gameObject.name = $"Dungeon '{pf.tagLabel}' (unlocks '{pf.GetBestowedList()}')";
                 this.tagLabel = pf.tagLabel;
                 this.tagsBestowed = pf.tagsBestowed;
+                this.description = pf.description;
             }
         }
 #endif
@@ -174,5 +179,27 @@ namespace forest
         {
             unfinished.gameObject.SetActive(!isUnlocked);
         }
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// Add some custom refresh options
+        /// </summary>
+        [UnityEditor.CustomEditor(typeof(MapInteractionPoint))]
+        public class MapInteractionPointEditor : UnityEditor.Editor
+        {
+            public override void OnInspectorGUI()
+            {
+                base.OnInspectorGUI();
+                if (GUILayout.Button("Force Re-Validate"))
+                {
+                    UnityEditor.EditorUtility.SetDirty(target);
+                    UnityEditor.Undo.RecordObject(target, "Autopopulation Reset");
+                    (target as MapInteractionPoint).overrideAutoPop = false;
+                    (target as MapInteractionPoint).OnValidate();
+                    UnityEditor.EditorUtility.SetDirty(target);
+                }
+            }
+        }
+#endif
     }
 }
