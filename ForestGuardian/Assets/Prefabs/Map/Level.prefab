@@ -139,6 +139,9 @@ MonoBehaviour:
   depth: 1
   tagLabel: 
   tagsBestowed: []
+  description: 
+  isDungeon: 1
+  overrideAutoPop: 0
 --- !u!61 &8891748128559753134
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -32,7 +32,10 @@ namespace forest
 
         private void ResetData()
         {
-            Core.Instance.ClearSaveData();
+            Core.Instance.UICore.DisplayCoDA("Really reset all progress? This cannot be undone!", () =>
+            {
+                Core.Instance.ClearSaveData();
+            });
         }
 
         private void Start()

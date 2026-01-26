@@ -48,8 +48,9 @@ namespace forest
             {
                 string toUnlock = StateMachine.Playfield.tagsBestowed[i];
                 Core.Instance.GameData.UnlockLevel(toUnlock);
-                Core.Instance.GameData.FinishLevel(toUnlock);
             }
+
+            Core.Instance.GameData.FinishLevel(StateMachine.Playfield.tagLabel);
         }
 
         private IEnumerator ScreenDelay()

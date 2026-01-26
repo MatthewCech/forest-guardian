@@ -14,6 +14,7 @@ namespace forest
         [Header("Debug")]
         [SerializeField] private Button buttonDumpGameInstanceState;
         [SerializeField] private Button buttonSelectAndLoadLevel;
+        [SerializeField] private Button buttonSave;
 
         [Header("Links")]
         [SerializeField] private TMPro.TextMeshProUGUI currencyDisplay;
@@ -28,10 +29,12 @@ namespace forest
             buttonRoster.onClick.AddListener(ToggleRosterVisibility);
             buttonDumpGameInstanceState.onClick.AddListener(DEBUG_DumpInstanceStateToConsole);
             buttonSelectAndLoadLevel.onClick.AddListener(DEBUG_SelectAndLoadLevel);
+            buttonSave.onClick.AddListener(DEBUG_Save);
         }
 
         private void OnDisable()
         {
+            buttonSave.onClick.RemoveListener(DEBUG_Save);
             buttonSelectAndLoadLevel.onClick.RemoveListener(DEBUG_SelectAndLoadLevel);
             buttonDumpGameInstanceState.onClick.RemoveListener(DEBUG_DumpInstanceStateToConsole);
             buttonRoster.onClick.RemoveListener(ToggleRosterVisibility);
@@ -40,6 +43,12 @@ namespace forest
         private void ToggleRosterVisibility()
         {
             roster.SetVisibility(!roster.IsVisible);
+        }
+
+        private void DEBUG_Save()
+        {
+            Debug.Log("Saved game!");
+            Loam.Postmaster.Instance.Send(new MsgSaveGame());
         }
 
         private void DEBUG_SelectAndLoadLevel()

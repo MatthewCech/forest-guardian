@@ -144,7 +144,7 @@ namespace forest
             return false;
         }
 
-        private bool UpdateFinished()
+        private void UpdateFinished()
         {
             for (int i = 0; i < Core.Instance.GameData.finishedTags.Count; ++i)
             {
@@ -152,11 +152,11 @@ namespace forest
                 if (string.Equals(tagLabel, curTag, System.StringComparison.InvariantCultureIgnoreCase))
                 {
                     SetFinished(true);
-                    return true;
+                    return;
                 }
             }
 
-            return false;
+            SetFinished(false);
         }
 
         private void LevelFinished(Message raw)
@@ -175,9 +175,9 @@ namespace forest
             shadow.gameObject.SetActive(!isHighlighted);
         }
 
-        private void SetFinished(bool isUnlocked)
+        private void SetFinished(bool isFinished)
         {
-            unfinished.gameObject.SetActive(!isUnlocked);
+            unfinished.gameObject.SetActive(!isFinished);
         }
 
 #if UNITY_EDITOR
