@@ -66,7 +66,6 @@ public class ScatterPlacer : MonoBehaviour
         Gizmos.color = new Color(.1f, .9f, .2f, .2f);
         Gizmos.DrawWireCube(this.transform.position, placementArea);
     }
-#endif
 
     private void Clear()
     {
@@ -97,7 +96,7 @@ public class ScatterPlacer : MonoBehaviour
 
         for (int i = 0; i < number; i++)
         {
-            Scatter scatter = GameObject.Instantiate(scatterTemplate);
+            Scatter scatter = UnityEditor.PrefabUtility.InstantiatePrefab(scatterTemplate) as Scatter;
 
             // Color set
             Color.RGBToHSV(baseColor, out float h, out float s, out float v);
@@ -128,6 +127,7 @@ public class ScatterPlacer : MonoBehaviour
             instances.Add(scatter);
         }
     }
+#endif
 
     private void Write()
     {
