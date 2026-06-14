@@ -185,6 +185,7 @@ namespace forest
             if (!isFirstUpdate && needsRedraw)
             {
                 DrawPlayfield();
+                ValidatePlayfield(aggregatePlayfield);
             }
 
             isFirstUpdate = false;
@@ -248,6 +249,14 @@ namespace forest
 
             visualPlayfield.DisplayAll(aggregatePlayfield);
             CenterCamera();
+        }
+
+        // Asserts on issue
+        private void ValidatePlayfield(Playfield toCheck)
+        {
+            Vector2Int exit = toCheck.exit.location;
+            string tileUnderExit = toCheck.world.Get(exit).tag;
+            UnityEngine.Assertions.Assert.IsTrue(tileUnderExit.Equals(VisualLookup.TILE_GENERIC_GROUND), "You must be able to navigate to the exit");
         }
 
         public static Playfield TrimPerSettings(PlayfieldRuleset rules, Playfield playfield)

@@ -11018,7 +11018,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scatterTemplate: {fileID: -5091748097083394750, guid: 2382d96086b03f0418a4066a2ba92576, type: 3}
-  baseColor: {r: 0.28337488, g: 0.29496768, b: 0.3018868, a: 1}
+  baseColor: {r: 1, g: 1, b: 1, a: 1}
   vibranceFlux: 0.096
   scaleMin: 0.06
   scaleMax: 0.43
@@ -17570,7 +17570,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scatterTemplate: {fileID: 1918843761082771923, guid: 8140861a06eefa64c966c677790c8b56, type: 3}
-  baseColor: {r: 0.29411766, g: 0.37647063, b: 0.2392157, a: 1}
+  baseColor: {r: 0.62734073, g: 0.6792453, b: 0.5927376, a: 1}
   vibranceFlux: 0.05
   scaleMin: 0.34
   scaleMax: 1.31
@@ -24130,6 +24130,7 @@ MonoBehaviour:
   levelToLoad: 2
   target: {fileID: 1853024283}
   confirmAction: 0
+  saveOnAction: 0
 --- !u!114 &604513517
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -24145,6 +24146,7 @@ MonoBehaviour:
   levelToLoad: 4
   target: {fileID: 338412598}
   confirmAction: 0
+  saveOnAction: 0
 --- !u!1 &606468831
 GameObject:
   m_ObjectHideFlags: 0
